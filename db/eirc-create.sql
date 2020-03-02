@@ -1,0 +1,369 @@
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
+
+-- ------------------------------
+-- User
+-- ------------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE  `user` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `login` VARCHAR(64) NOT NULL COMMENT 'Логин',
+  `password` VARCHAR(64) NOT NULL COMMENT 'Пароль',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_key_login` (`login`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Пользователь';
+
+INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
+
+
+-- ------------------------------
+-- User group
+-- ------------------------------
+DROP TABLE IF EXISTS `user_group`;
+CREATE TABLE  `user_group` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
+  `name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`login`, `name`),
+  CONSTRAINT `fk_user_group__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Группа пользователя';
+
+INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
+
+
+-- ------------------------------
+-- Locale
+-- ------------------------------
+
+DROP TABLE IF EXISTS `locale`;
+CREATE TABLE `locale` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локали',
+  `locale` VARCHAR(2) NOT NULL COMMENT 'Код локали',
+  `system` TINYINT(1) NOT NULL default 0 COMMENT 'Является ли локаль системной',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_key_locale` (`locale`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локаль';
+
+INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (1, 'RU', 1);
+INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (2, 'UA', 0);
+
+
+-- ------------------------------
+-- Update
+-- ------------------------------
+
+DROP TABLE IF EXISTS `update`;
+CREATE TABLE `update` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `version` VARCHAR(64) NOT NULL COMMENT 'Версия',
+  `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата обновления',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Обновление базы данных';
+
+
+-- ------------------------------
+-- Entity
+-- ------------------------------
+
+DROP TABLE IF EXISTS `entity`;
+CREATE TABLE `entity` (
+  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `name` VARCHAR(100) NOT NULL COMMENT 'Название сущности',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_entity` (`name`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Сущность';
+
+DROP TABLE IF EXISTS `entity_attribute`;
+CREATE TABLE `entity_attribute` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
+  `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
+  `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
+  `reference_id` BIGINT(20) COMMENT  'Внешний ключ',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`entity_attribute_id`, `entity_id`),
+  KEY `key_entity_id` (`entity_id`),
+  KEY `key_value_type_id` (`value_type_id`),
+  CONSTRAINT `fk_attribute_type__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип атрибута сущности';
+
+DROP TABLE IF EXISTS `entity_value`;
+CREATE TABLE `entity_value` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
+  `entity_attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор типа аттрибута',
+  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `text` VARCHAR(1000) COMMENT 'Текстовое значение',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`entity_id`, `entity_attribute_id`, `locale_id`),
+  KEY `key_entity_id` (`entity_id`),
+  KEY `key_entity_attribute_id` (`entity_attribute_id`),
+  KEY `key_locale` (`locale_id`),
+  KEY `key_value` (`text`(128)),
+  CONSTRAINT `fk_entity_value__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`, `entity_id`)
+    REFERENCES `entity_attribute` (`entity_attribute_id`, `entity_id`),
+  CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
+
+DROP TABLE IF EXISTS entity_value_type;
+CREATE TABLE `entity_value_type` (
+  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа значения атрибута',
+  `value_type` VARCHAR(100) NOT NULL COMMENT 'Тип значения атрибута',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип значения атрибута';
+
+INSERT INTO entity_value_type (id, value_type) VALUE (0, 'text_list');
+INSERT INTO entity_value_type (id, value_type) VALUE (1, 'string');
+INSERT INTO entity_value_type (id, value_type) VALUE (2, 'boolean');
+INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
+INSERT INTO entity_value_type (id, value_type) VALUE (4, 'integer');
+INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
+
+INSERT INTO entity_value_type (id, value_type) VALUE (10, 'entity');
+INSERT INTO entity_value_type (id, value_type) VALUE (11, 'entity_list');
+
+-- ------------------------------
+-- Permission
+-- ------------------------------
+
+DROP TABLE IF EXISTS `permission`;
+CREATE TABLE `permission` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `permission_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор права доступа',
+  `table` VARCHAR(64) NOT NULL COMMENT 'Таблица',
+  `entity` VARCHAR(64) NOT NULL COMMENT 'Сущность',
+  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `key_unique` (`permission_id`, `entity`, `object_id`),
+  KEY `key_permission_id` (`permission_id`),
+  KEY `key_table` (`table`),
+  KEY `key_entity` (`entity`),
+  KEY `key_object_id` (`object_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Права доступа';
+
+
+-- ------------------------------
+-- Procedure
+-- ------------------------------
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS createDomainTables;
+CREATE PROCEDURE createDomainTables (IN entityName VARCHAR(64) CHARSET utf8,
+                                     IN entityDescription VARCHAR(256) CHARSET utf8)
+BEGIN
+    SET @createDomain = CONCAT('
+        CREATE TABLE `', entityName, '`
+        (
+            `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `object_id`        BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `parent_id`        BIGINT(20) COMMENT ''Идентификатор родительского объекта'',
+            `parent_entity_id` BIGINT(20) COMMENT ''Идентификатор сущности родительского объекта'',
+            `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия объекта'',
+            `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия объекта'',
+            `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `permission_id`    BIGINT(20) NULL COMMENT ''Ключ прав доступа к объекту'',
+            `user_id`          BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
+            KEY `key_object_id` (`object_id`),
+            KEY `key_parent_id` (`parent_id`),
+            KEY `key_parent_entity_id` (`parent_entity_id`),
+            KEY `key_start_date` (`start_date`),
+            KEY `key_end_date` (`end_date`),
+            KEY `key_status` (`status`),
+            KEY `key_permission_id` (`permission_id`),
+            CONSTRAINT `fk_', entityName, '__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+            CONSTRAINT `fk_', entityName, '__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
+            CONSTRAINT `fk_', entityName, '__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ''';');
+
+    PREPARE QUERY FROM @createDomain; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @createAttribute = CONCAT('
+        CREATE TABLE `', entityName, '_attribute`
+        (
+            `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `object_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `entity_attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор типа атрибута'',
+            `text`                VARCHAR(255) COMMENT ''Текст'',
+            `number`              BIGINT(20) COMMENT ''Число'',
+            `date`                DATETIME COMMENT ''Дата'',
+            `start_date`          TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия атрибута'',
+            `end_date`            TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия атрибута'',
+            `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `user_id`             BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            PRIMARY KEY (`id`),
+            KEY `key_object_id` (`object_id`),
+            KEY `key_entity_attribute_id` (`entity_attribute_id`),
+            KEY `key_text` (`text`),
+            KEY `key_number` (`number`),
+            KEY `key_date` (`date`),
+            KEY `key_start_date` (`start_date`),
+            KEY `key_end_date` (`end_date`),
+            KEY `key_status` (`status`),
+            CONSTRAINT `fk_', entityName, '_attribute__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `',
+                entityName, '` (`object_id`),
+            CONSTRAINT `fk_', entityName, '_attribute__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ' - Аттрибуты'';');
+
+    PREPARE QUERY FROM @createAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @createValue = CONCAT('
+        CREATE TABLE `', entityName, '_value`
+        (
+            `id`           BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор атрибута'',
+            `locale_id`    BIGINT(20) COMMENT ''Идентификатор локали'',
+            `text`         VARCHAR(1000) COMMENT ''Текстовое значение'',
+            `number`       BIGINT(20) COMMENT ''Числовое значение'',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `unique_id__locale` (`attribute_id`, `locale_id`),
+            KEY `key_attribute_id` (`attribute_id`),
+            KEY `key_locale` (`locale_id`),
+            KEY `key_value` (`text`(128)),
+            CONSTRAINT `fk_', entityName, '_value__', entityName, '_attribute` FOREIGN KEY (`attribute_id`) REFERENCES `',
+                entityName, '_attribute` (`id`),
+            CONSTRAINT `fk_', entityName, '_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
+        ) ENGINE = InnoDB
+          CHARSET = utf8
+          COLLATE = utf8_unicode_ci COMMENT ''', entityDescription, ' - Значения атрибутов'';');
+
+    PREPARE QUERY FROM @createValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DROP PROCEDURE IF EXISTS createEntity;
+CREATE PROCEDURE createEntity(IN entityId BIGINT,
+                              IN entityName VARCHAR(64) CHARSET utf8,
+                              IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
+                              IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertEntity = CONCAT('INSERT INTO `entity` (`id`, `name`) VALUE (',entityId, ', ''', entityName, ''');');
+
+    PREPARE QUERY FROM @insertEntity; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `locale_id`, `text`) VALUES (', entityId,
+                                    ', 1, ''', entityDescriptionRU, '''), (', entityId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DROP PROCEDURE IF EXISTS createEntityAttribute;
+CREATE PROCEDURE createEntityAttribute(IN entityId BIGINT,
+                                       IN entityAttributeId BIGINT, IN valueTypeId BIGINT,
+                                       IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
+                                       IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`) VALUES (',
+                                  entityId, ', ', entityAttributeId, ', ', valueTypeId, ');');
+
+    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
+                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
+                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DROP PROCEDURE IF EXISTS createEntityAttributeReference;
+CREATE PROCEDURE createEntityAttributeReference(IN entityId BIGINT,
+                                                    IN entityAttributeId BIGINT,
+                                                    IN referenceId BIGINT,
+                                                    IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
+                                                    IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (',
+                                  entityId, ', ', entityAttributeId, ', 10',  ', ', referenceId, ');');
+
+    PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @insertEntityValue = CONCAT('INSERT INTO `entity_value`(`entity_id`, `entity_attribute_id`, `locale_id`, `text`) VALUES (',
+                                    entityId, ', ', entityAttributeId, ', 1, ''', entityDescriptionRU, '''), (',
+                                    entityId, ', ', entityAttributeId, ', 2, ''', entityDescriptionUA, ''');');
+
+    PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DROP PROCEDURE IF EXISTS createDomainEntity;
+CREATE PROCEDURE createDomainEntity(IN entityId BIGINT,
+                                    IN entityName VARCHAR(64) CHARSET utf8,
+                                    IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
+                                    IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
+BEGIN
+    SET @dropValue = CONCAT('DROP TABLE IF EXISTS `', entityName, '_value`');
+    PREPARE QUERY FROM @dropValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @dropAttribute = CONCAT('DROP TABLE IF EXISTS `', entityName, '_attribute`');
+    PREPARE QUERY FROM @dropAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @dropTable = CONCAT('DROP TABLE IF EXISTS `', entityName, '`');
+    PREPARE QUERY FROM @dropTable; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    CALL createDomainTables(entityName, entityDescriptionRU);
+    CALL createEntity(entityId, entityName, entityDescriptionRU, entityDescriptionUA);
+END //
+
+DELIMITER ;
+
+
+-- ---------------------------
+-- Setting
+-- ---------------------------
+
+CALL createDomainEntity(0,'setting', 'Настройки', 'Налаштування');
+CALL createEntityAttribute(0, 1, 2, 'Значение', 'Значення');
+
+
+-- ---------------------------
+-- Address
+-- ---------------------------
+
+CALL createDomainEntity(1,'country', 'Страна', 'Країна');
+CALL createEntityAttribute(1, 1, 0, 'Название', 'Назва');
+
+CALL createDomainEntity(2,'region', 'Регион', 'Регіон');
+CALL createEntityAttribute(2, 1, 0, 'Название', 'Назва');
+
+CALL createDomainEntity(3, 'city_type', 'Тип населенного пункта', 'Тип населеного пункту');
+CALL createEntityAttribute(3, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(3, 2, 0, 'Краткое название', 'Коротка назва');
+
+CALL createDomainEntity(4,'city', 'Населенный пункт', 'Населений пункт');
+CALL createEntityAttribute(4, 1, 0, 'Название', 'Назва');
+CALL createEntityAttributeReference(4, 4, 3, 'Тип нас. пункта', 'Тип нас. пункту');
+
+CALL createDomainEntity(6,'district', 'Район', 'Район');
+CALL createEntityAttribute(6, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(6, 5, 2, 'Код района', 'Код району');
+
+CALL createDomainEntity(7, 'street_type', 'Тип улицы', 'Тип улицы');
+CALL createEntityAttribute(7, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(7, 2, 0, 'Краткое название', 'Коротка назва');
+
+CALL createDomainEntity(8,'street', 'Улица', 'Вулиця');
+CALL createEntityAttribute(8, 1, 0, 'Название', 'Назва');
+CALL createEntityAttributeReference(8, 4, 7, 'Тип улицы', 'Тип вулиці');
+CALL createEntityAttribute(8, 5, 2, 'Код улицы', 'Код вулиці');
+
+CALL createDomainEntity(9,'building', 'Дом', 'Будинок');
+CALL createEntityAttribute(9, 1, 0, 'Номер дома', 'Номер будинку');
+CALL createEntityAttribute(9, 2, 0, 'Корпус', 'Корпус');
+CALL createEntityAttribute(9, 3, 0, 'Строение', 'Строение');
+CALL createEntityAttributeReference(9, 4, 6, 'Район', 'Район');
+CALL createEntityAttribute(9, 5, 0, 'Коды дома', 'Коди будинку');
+
+CALL createDomainEntity(10,'apartment', 'Квартира', 'Квартира');
+CALL createEntityAttribute(10, 1, 0, 'Номер квартиры', 'Номер квартири');
+
+
+
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
