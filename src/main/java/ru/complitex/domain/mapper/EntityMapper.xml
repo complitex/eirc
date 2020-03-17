@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.domain.mapper.EntityMapper">
+<!--    <cache/>-->
+
+    <resultMap id="entityResultMap" type="ru.complitex.domain.entity.Entity">
+        <id column="id" property="id"/>
+
+        <result column="name" property="name"/>
+
+        <collection column="entityId = id" property="values"
+                    select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
+
+        <collection column="entityId = id, entityName = name" property="attributes"
+                    select="ru.complitex.domain.mapper.EntityAttributeMapper.selectEntityAttributes"/>
+    </resultMap>
+
+    <select id="selectEntity" parameterType="long" resultMap="entityResultMap">
+        select * from entity where id = #{id}
+    </select>
+
+    <select id="selectEntityByName" parameterType="string" resultMap="entityResultMap">
+        select * from entity where name = #{name}
+    </select>
+
+    <select id="selectReferenceEntityName" parameterType="map" resultType="string">
+        select r.name from entity_attribute a
+            left join entity e on a.entity_id = e.id
+            left join entity r on a.reference_id = r.id
+          where e.name = #{entityName} and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+</mapper>

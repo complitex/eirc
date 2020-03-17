@@ -22,13 +22,13 @@ DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE  `user_group` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
-  `name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
+  `group_name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `key_unique` (`login`, `name`),
+  UNIQUE KEY `key_unique` (`login`, `group_name`),
   CONSTRAINT `fk_user_group__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Группа пользователя';
 
-INSERT INTO `user_group` (login, name) value ('admin', 'ADMINISTRATORS');
+INSERT INTO `user_group` (login, group_name) value ('admin', 'ADMINISTRATORS');
 
 
 -- ------------------------------
@@ -116,15 +116,16 @@ CREATE TABLE `entity_value_type` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип значения атрибута';
 
-INSERT INTO entity_value_type (id, value_type) VALUE (0, 'text_list');
-INSERT INTO entity_value_type (id, value_type) VALUE (1, 'string');
-INSERT INTO entity_value_type (id, value_type) VALUE (2, 'boolean');
-INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
-INSERT INTO entity_value_type (id, value_type) VALUE (4, 'integer');
-INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
 
-INSERT INTO entity_value_type (id, value_type) VALUE (10, 'entity');
-INSERT INTO entity_value_type (id, value_type) VALUE (11, 'entity_list');
+INSERT INTO entity_value_type (id, value_type) VALUE (1, 'boolean');
+INSERT INTO entity_value_type (id, value_type) VALUE (2, 'number');
+INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
+INSERT INTO entity_value_type (id, value_type) VALUE (4, 'text');
+INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
+INSERT INTO entity_value_type (id, value_type) VALUE (6, 'entity');
+INSERT INTO entity_value_type (id, value_type) VALUE (7, 'number_list');
+INSERT INTO entity_value_type (id, value_type) VALUE (8, 'text_list');
+INSERT INTO entity_value_type (id, value_type) VALUE (9, 'entity_list');
 
 -- ------------------------------
 -- Permission
@@ -282,7 +283,7 @@ CREATE PROCEDURE createEntityAttributeReference(IN entityId BIGINT,
                                                     IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
 BEGIN
     SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (',
-                                  entityId, ', ', entityAttributeId, ', 10',  ', ', referenceId, ');');
+                                  entityId, ', ', entityAttributeId, ', 9',  ', ', referenceId, ');');
 
     PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 
@@ -320,7 +321,7 @@ DELIMITER ;
 -- ---------------------------
 
 CALL createDomainEntity(0,'setting', 'Настройки', 'Налаштування');
-CALL createEntityAttribute(0, 1, 2, 'Значение', 'Значення');
+CALL createEntityAttribute(0, 1, 4, 'Значение', 'Значення');
 
 
 -- ---------------------------
@@ -328,41 +329,41 @@ CALL createEntityAttribute(0, 1, 2, 'Значение', 'Значення');
 -- ---------------------------
 
 CALL createDomainEntity(1,'country', 'Страна', 'Країна');
-CALL createEntityAttribute(1, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(1, 1, 8, 'Название', 'Назва');
 
 CALL createDomainEntity(2,'region', 'Регион', 'Регіон');
-CALL createEntityAttribute(2, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(2, 1, 8, 'Название', 'Назва');
 
 CALL createDomainEntity(3, 'city_type', 'Тип населенного пункта', 'Тип населеного пункту');
-CALL createEntityAttribute(3, 1, 0, 'Название', 'Назва');
-CALL createEntityAttribute(3, 2, 0, 'Краткое название', 'Коротка назва');
+CALL createEntityAttribute(3, 1, 8, 'Название', 'Назва');
+CALL createEntityAttribute(3, 2, 8, 'Краткое название', 'Коротка назва');
 
 CALL createDomainEntity(4,'city', 'Населенный пункт', 'Населений пункт');
-CALL createEntityAttribute(4, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(4, 1, 8, 'Название', 'Назва');
 CALL createEntityAttributeReference(4, 4, 3, 'Тип нас. пункта', 'Тип нас. пункту');
 
 CALL createDomainEntity(6,'district', 'Район', 'Район');
-CALL createEntityAttribute(6, 1, 0, 'Название', 'Назва');
-CALL createEntityAttribute(6, 5, 2, 'Код района', 'Код району');
+CALL createEntityAttribute(6, 1, 8, 'Название', 'Назва');
+CALL createEntityAttribute(6, 5, 4, 'Код района', 'Код району');
 
 CALL createDomainEntity(7, 'street_type', 'Тип улицы', 'Тип улицы');
-CALL createEntityAttribute(7, 1, 0, 'Название', 'Назва');
-CALL createEntityAttribute(7, 2, 0, 'Краткое название', 'Коротка назва');
+CALL createEntityAttribute(7, 1, 8, 'Название', 'Назва');
+CALL createEntityAttribute(7, 2, 8, 'Краткое название', 'Коротка назва');
 
 CALL createDomainEntity(8,'street', 'Улица', 'Вулиця');
-CALL createEntityAttribute(8, 1, 0, 'Название', 'Назва');
+CALL createEntityAttribute(8, 1, 8, 'Название', 'Назва');
 CALL createEntityAttributeReference(8, 4, 7, 'Тип улицы', 'Тип вулиці');
-CALL createEntityAttribute(8, 5, 2, 'Код улицы', 'Код вулиці');
+CALL createEntityAttribute(8, 5, 4, 'Код улицы', 'Код вулиці');
 
 CALL createDomainEntity(9,'building', 'Дом', 'Будинок');
-CALL createEntityAttribute(9, 1, 0, 'Номер дома', 'Номер будинку');
-CALL createEntityAttribute(9, 2, 0, 'Корпус', 'Корпус');
-CALL createEntityAttribute(9, 3, 0, 'Строение', 'Строение');
+CALL createEntityAttribute(9, 1, 8, 'Номер дома', 'Номер будинку');
+CALL createEntityAttribute(9, 2, 8, 'Корпус', 'Корпус');
+CALL createEntityAttribute(9, 3, 8, 'Строение', 'Строение');
 CALL createEntityAttributeReference(9, 4, 6, 'Район', 'Район');
-CALL createEntityAttribute(9, 5, 0, 'Коды дома', 'Коди будинку');
+CALL createEntityAttribute(9, 5, 8, 'Коды дома', 'Коди будинку');
 
 CALL createDomainEntity(10,'apartment', 'Квартира', 'Квартира');
-CALL createEntityAttribute(10, 1, 0, 'Номер квартиры', 'Номер квартири');
+CALL createEntityAttribute(10, 1, 8, 'Номер квартиры', 'Номер квартири');
 
 
 

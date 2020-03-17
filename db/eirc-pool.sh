@@ -20,7 +20,7 @@ echo
 echo Add the named authentication realm
 $GLASSFISH_ASADMIN create-auth-realm \
   --classname="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm" \
-  --property="jaas-context=jdbcRealm:datasource-jndi=jdbc/eircResource:user-table=user:user-name-column=login:password-column=password:group-table=usergroup:group-name-column=group_name:charset=UTF-8:digest-algorithm=SHA-256" eircRealm
+  --property="jaas-context=jdbcRealm:datasource-jndi=jdbc/eircResource:user-table=user:user-name-column=login:password-column=password:group-table=user_group:group-name-column=group_name:charset=UTF-8:digest-algorithm=SHA-256" eircRealm
  
 echo
 echo ---------------------------------------------------

@@ -3,4 +3,22 @@
     "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 <glassfish-web-app>
     <context-root>/eirc</context-root>
+
+    <security-role-mapping>
+        <role-name>AUTHORIZED</role-name>
+        <group-name>AUTHORIZED</group-name>
+        <group-name>ADMINISTRATORS</group-name>
+        <group-name>USERS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USERS</role-name>
+        <group-name>USERS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADMINISTRATORS</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
 </glassfish-web-app>

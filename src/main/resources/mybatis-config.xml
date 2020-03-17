@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+    <typeHandlers>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
+        <typeHandler handler="ru.complitex.common.mybatis.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.ValueType"/>
+    </typeHandlers>
+
+    <environments default="eirc">
+        <environment id="eirc">
+            <transactionManager type="MANAGED"/>
+            <dataSource type="JNDI">
+                <property name="data_source" value="jdbc/Eirc"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="ru/complitex/domain/mapper/EntityMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/EntityAttributeMapper.xml"/>        
+        <mapper resource="ru/complitex/domain/mapper/EntityValueMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
+        <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>
+    </mappers>
+</configuration>

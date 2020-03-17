@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ru.complitex.domain.mapper.DomainMapper">
+<!--    <cache/>-->
+
+    <resultMap id="domainResultMap" type="ru.complitex.domain.entity.Domain">
+        <id column="id" property="id"/>
+        <result column="object_id" property="objectId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_entity_id" property="parentEntityId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+        <result column="permission_id" property="permissionId"/>
+        <result column="external_id" property="externalId"/>
+        <result column="entity_name" property="entityName"/>
+        <result column="user_id" property="userId"/>
+        <collection column="entityName=entity_name, objectId=id" property="attributes"
+                    select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
+    </resultMap>
+
+    <resultMap id="domainResultMapJoin" type="ru.complitex.domain.entity.Domain">
+        <id column="id" property="id"/>
+        <result column="object_id" property="objectId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_entity_id" property="parentEntityId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="status" property="status"/>
+        <result column="permission_id" property="permissionId"/>
+        <result column="external_id" property="externalId"/>
+        <result column="entity_name" property="entityName"/>
+        <result column="user_id" property="userId"/>
+        <collection property="attributes" ofType="ru.complitex.domain.entity.Attribute" notNullColumn="a_id">
+            <id column="a_id" property="id"/>
+            <result column="a_domain_id" property="domainId"/>
+            <result column="a_entity_attribute_id" property="entityAttributeId"/>
+            <result column="a_text" property="text"/>
+            <result column="a_number" property="number"/>
+            <result column="a_date" property="date"/>
+            <result column="a_start_date" property="startDate"/>
+            <result column="a_end_date" property="endDate"/>
+            <result column="a_status" property="status"/>
+            <result column="a_user_id" property="userId"/>
+            <result column="a_entity_name" property="entityName"/>
+            <collection property="values" ofType="ru.complitex.domain.entity.Value" notNullColumn="v_id">
+                <id column="v_id" property="id"/>
+                <result column="v_attribute_id" property="attributeId"/>
+                <result column="v_locale_id" property="localeId"/>
+                <result column="v_text" property="text"/>
+                <result column="v_number" property="number"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <!--suppress SqlResolve -->
+    <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="true" keyProperty="id">
+        insert into `${entityName}` (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id,
+          user_id)
+        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId},
+          #{userId})
+    </insert>
+
+    <!--suppress SqlResolve -->
+    <update id="updateDomainObjectId" parameterType="ru.complitex.domain.entity.Domain">
+        update `${entityName}` set object_id = #{objectId} where id = #{id}
+    </update>
+
+    <sql id="selectDomainSelect">
+        a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+        a.number a_number, <if test="useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.user_id a_user_id, '${entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
+        v.locale_id v_locale_id, v.text v_text <if test="useNumberValue">, v.number v_number</if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectDomainSelectFrom">
+        select d.*, '${entityName}' entity_name,
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelect"/>
+
+        from `${entityName}` d
+        left join `${entityName}_attribute` a on a.domain_id = d.id and a.status = 1
+        left join `${entityName}_value` v on v.attribute_id = a.id
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <sql id="selectDomainSql">
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelectFrom"/>
+
+        <if test="attributes != null and !attributes.isEmpty">
+            <foreach collection="attributes" index="i" item="a">
+                <if test="a.text != null or a.number != null">
+                    left join `${entityName}_attribute` a${i}
+                    on (a${i}.domain_id = d.id and a${i}.entity_attribute_id = #{a.entityAttributeId})
+                </if>
+            </foreach>
+        </if>
+
+        <where>
+            <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` > 0</if>
+            <if test="parentEntityId != null">and d.parent_entity_id = #{parentEntityId}</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d.`status` > 0</if>
+            <if test="attributes != null and !attributes.isEmpty">
+                <foreach collection="attributes" index="i" item="a">
+                    <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
+                    <if test="a.number != null">and (a${i}.number = #{a.number} and a${i}.status = 1)</if>
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMapJoin">
+        <include refid="selectDomainSql"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="hasDomain" parameterType="ru.complitex.domain.entity.Domain" resultType="boolean">
+        select count(d1.object_id) > 0 from (<include refid="selectDomainSql"/>) d1
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomainObjectId" parameterType="ru.complitex.domain.entity.Domain" resultType="long">
+        select d.object_id from `${entityName}` d
+            left join `${entityName}_attribute` a on a.domain_id = d.id
+            left join `${entityName}_value` v on v.attribute_id = a.id
+        <where>
+            <foreach collection="attributes" item="i" separator="and">
+              <foreach collection="i.values" item="j" separator="and">
+                  <if test="j.text != null">
+                      (a.entity_attribute_id = #{i.entityAttributeId} and v.locale_id = #{j.localeId} and v.text = #{j.text})
+                  </if>
+              </foreach>
+            </foreach>
+        </where>
+        limit 1
+    </select>
+
+    <sql id="selectDomainsFrom">
+        from `${object.entityName}` d
+    </sql>
+
+    <sql id="selectDomainsFromFilter">
+        <if test="object.parentEntityAttribute != null and map.parentName != null">
+            left join `${object.parentEntityAttribute.entityName}` p_d on p_d.object_id = d.parent_id
+            left join `${object.parentEntityAttribute.entityName}_attribute` p_a on p_a.domain_id = p_d.id and p_a.status = 1
+            left join `${object.parentEntityAttribute.entityName}_value` p_v on p_v.attribute_id = p_a.id
+        </if>
+
+        <foreach collection="object.attributes" index="i" item="a">
+            <if test="a.text != null or a.number != null or a.date != null">
+                left join `${object.entityName}_attribute` a${i} on (a${i}.domain_id = d.id
+                    and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
+                left join `${object.entityName}_value` v${i} on (v${i}.attribute_id = a${i}.id
+                    and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
+
+                <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
+                    <if test="a.entityAttribute.referenceEntityAttributes != null">
+                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
+                            left join `${ra.entityName}` d${i}_${j}_ref
+
+                            <if test="a.entityAttribute.valueType.id == 10">
+                                on d${i}_${j}_ref.object_id = v${i}.number
+                            </if>
+
+                            <if test="a.entityAttribute.valueType.id == 11">
+                                on d${i}_${j}_ref.object_id = a${i}.number
+                            </if>
+
+                            left join `${ra.entityName}_attribute` a${i}_${j}_ref on a${i}_${j}_ref.domain_id = d${i}_${j}_ref.id
+                                and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1
+                            left join `${ra.entityName}_value` v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+        </foreach>
+        <if test="object.map.attributes != null">
+            <foreach collection="object.map.attributes" index="i" item="b">
+                <if test="b.text != null or b.number != null or b.date != null">
+                    left join `${object.entityName}_attribute` b${i} on b${i}.domain_id = d.id
+                        and b${i}.entity_attribute_id = #{b.entityAttributeId} and b${i}.status = 1
+                    left join `${object.entityName}_value` bv${i} on bv${i}.attribute_id = b${i}.id
+                </if>
+            </foreach>
+        </if>
+        <if test="object.map.notAttributes != null">
+            <foreach collection="object.map.notAttributes" index="i" item="c">
+                <if test="c.text != null or c.number != null or c.date != null">
+                    left join `${object.entityName}_attribute` c${i} on (c${i}.domain_id = d.id
+                        and c${i}.entity_attribute_id = #{c.entityAttributeId} and c${i}.status = 1)
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <sql id="selectDomainsWhere">
+        <where>
+            <if test="object.objectId != null">
+                <choose>
+                    <when test="filter == 'equal'">
+                        d.object_id = #{object.objectId}
+                    </when>
+                    <otherwise>
+                        d.object_id like concat('%', #{object.objectId}, '%')
+                    </otherwise>
+                </choose>
+
+            </if>
+
+            <if test="object.parentId != null"> and d.parent_id = #{object.parentId}</if>
+            <if test="object.parentEntityId != null">and d.parent_entity_id = #{object.parentEntityId}</if>
+
+            <if test="object.parentEntityAttribute != null and map.parentName != null">
+                and (p_a.text like concat('%', #{map.parentName}, '%') or p_v.text like concat('%', #{map.parentName}, '%'))
+            </if>
+
+            and (
+
+            <choose>
+                <when test="filter == 'search'"> false </when>
+                <otherwise> true </otherwise>
+            </choose>
+
+            <foreach collection="object.attributes" index="i" item="a">
+                <choose>
+                    <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttributes != null and a.text != null">
+                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
+                            <choose>
+                                <when test="filter == 'search'"> or </when>
+                                <otherwise> and </otherwise>
+                            </choose>
+
+                            (a${i}_${j}_ref.text like concat('%', #{a.text}, '%') or v${i}_${j}_ref.text like concat('%', #{a.text}, '%'))
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        <if test="a.text != null">
+                            <choose>
+                                <when test="filter == 'equal'">
+                                    and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                                </when>
+                                <otherwise>
+                                    <choose>
+                                        <when test="filter == 'search'"> or </when>
+                                        <otherwise> and </otherwise>
+                                    </choose>
+
+                                    (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%'))
+                                </otherwise>
+                            </choose>
+                        </if>
+
+                        <if test="a.number != null">
+                           <choose>
+                               <when test="a.number == -1">
+                                   and a${i}.number is null
+                               </when>
+                               <when test="a.number == -2">
+                                   and a${i}.number is not null
+                               </when>
+                               <otherwise>
+                                   and (
+                                       a${i}.number = #{a.number}
+                                       <if test="object.useNumberValue">
+                                           or v${i}.number = #{a.number}
+                                       </if>
+                                    )
+                               </otherwise>
+                           </choose>
+                        </if>
+
+                        <if test="a.date != null">
+                            <choose>
+                                <when test="a.filter == 'same_day'">
+                                    and (date(a${i}.date) = date(#{a.date}))
+                                </when>
+
+                                <when test="a.filter == 'same_month'">
+                                    and (year(a${i}.date) = year(#{a.date}) and month(a${i}.date) = month(#{a.date}))
+                                </when>
+
+                                <when test="a.filter == 'before_or_equal_date'">
+                                    and (#{a.date} >= a${i}.date)
+                                </when>
+
+                                <otherwise>
+                                    and (a${i}.date = #{a.date})
+                                </otherwise>
+                            </choose>
+
+                        </if>
+                    </otherwise>
+                </choose>
+            </foreach>
+            )
+
+            <if test="object.map.attributes != null">
+                <foreach collection="object.map.attributes" index="i" item="b">
+                    <if test="b.number != null">
+                        and (b${i}.number = #{b.number} or bv${i}.number = #{b.number})
+                    </if>
+                </foreach>
+            </if>
+
+            <if test="object.map.notAttributes != null">
+                <foreach collection="object.map.notAttributes" index="i" item="c">
+                    <if test="c.number != null">
+                        <![CDATA[
+                            and (c${i}.number <> #{c.number} or c${i}.number is null)
+                        ]]>
+                    </if>
+                </foreach>
+            </if>
+
+            <if test="object.map.excludeObjectIds != null">
+                and d.object_id not in
+                <foreach collection="object.map.excludeObjectIds" item="o" open="(" separator="," close=")">
+                    #{o}
+                </foreach>
+            </if>
+
+            <choose>
+                <when test="status == 'active_and_archive'">
+                    and d.status in (1, 2)
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="object.status != null">
+                            and d.status = #{object.status}
+                        </when>
+                        <otherwise>
+                            and d.status = 1
+                        </otherwise>
+                    </choose>
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <sql id="selectDomainsSelectSort">
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'text'">, sort_a.text</when>
+                <when test="sortProperty.key == 'number'">, sort_a.number</when>
+                <when test="sortProperty.key == 'date'">, sort_a.date</when>
+                <when test="sortProperty.key == 'value'">, sort_v.text</when>
+                <when test="sortProperty.key == 'entity'">, sort_rv.text</when>
+            </choose>
+        </if>
+    </sql>
+
+    <sql id="selectDomainsFromSort">
+        <if test="sortProperty != null">
+            <if test="sortProperty.key == 'parent' and sortProperty.value != null">
+                left join `${sortProperty.value.entityName}` sort_p on sort_p.object_id = d.parent_id
+                left join `${sortProperty.value.entityName}_attribute` sort_pa
+                  on sort_pa.domain_id = sort_p.id
+                    and sort_pa.entity_attribute_id = #{sortProperty.value.entityAttributeId}
+                    and sort_pa.status = 1
+                left join `${sortProperty.value.entityName}_value` sort_rv
+                  on sort_rv.attribute_id = sort_pa.id
+            </if>
+
+            <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity', 'entity_value'}">
+                left join `${object.entityName}_attribute` sort_a
+                  on sort_a.domain_id = d.id
+                    and sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId}
+                    and sort_a.status = 1
+
+                <if test="sortProperty.key in {'value', 'entity_value'}">
+                    left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
+                </if>
+
+                <!--
+                <if test="sortProperty.key == 'entity' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
+                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                      on sort_ra.object_id = sort_a.number
+                        and sort_ra.entity_attribute_id = #{sortProperty.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.status = 1
+                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                      on sort_rv.attribute_id = sort_ra.id
+                </if>
+
+                <if test="sortProperty.key == 'entity_value' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
+                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                      on sort_ra.object_id = sort_v.number
+                        and sort_ra.entity_attribute_id = #{sortProperty.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.status = 1
+                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                      on sort_rv.attribute_id = sort_ra.id
+                </if>
+                -->
+            </if>
+        </if>
+    </sql>
+
+    <sql id="selectDomainsOrderSort">
+        <if test="sortProperty != null">
+            <choose>
+                <when test="sortProperty.key == 'id'">order by d.id ${asc}</when>
+                <when test="sortProperty.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
+                <when test="sortProperty.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
+                <when test="sortProperty.key == 'parent' and sortProperty.value != null">
+                    order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
+                </when>
+                <!--
+                <when test="sortProperty.key in {'entity', 'entity_value'} and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
+                    order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
+                </when>
+                -->
+            </choose>
+        </if>
+    </sql>
+
+    <sql id="selectDomainsSelect">
+        a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
+        a.number a_number, <if test="object.useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.user_id a_user_id, '${object.entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
+        v.locale_id v_locale_id, v.text v_text <if test="object.useNumberValue">, v.number v_number</if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMapJoin">
+        select '${object.entityName}' entity_name, d.*,
+        <include refid="selectDomainsSelect"/>
+        from (
+          select (dd.d_id) dd_id
+          from (
+            select d.id d_id
+            <include refid="selectDomainsFrom"/>
+            <include refid="selectDomainsFromFilter"/>
+            <include refid="selectDomainsFromSort"/>
+            <include refid="selectDomainsWhere"/>
+            group by d.id
+            <include refid="selectDomainsOrderSort"/>
+          ) dd
+          ${limit}
+        ) o
+        left join `${object.entityName}` d on d.id = o.dd_id
+        left join `${object.entityName}_attribute` a on a.domain_id = d.id and a.status = 1
+            <if test="!entityAttributeIds.empty">
+                and a.entity_attribute_id in
+                    <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                        ${i}
+                    </foreach>
+            </if>
+        left join `${object.entityName}_value` v on v.attribute_id = a.id
+        <include refid="selectDomainsFromSort"/>
+        group by d.id, a.id, v.id
+        <include refid="selectDomainsOrderSort"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+        select count(distinct dd.d_id)
+        from (
+          select d.id d_id
+          <include refid="selectDomainsFrom"/>
+          <include refid="selectDomainsFromFilter"/>
+          <include refid="selectDomainsWhere"/>
+        ) dd
+    </select>
+
+    <!--suppress SqlResolve -->
+    <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
+        update `${entityName}` set `parent_id` = #{parentId}, `parent_entity_id` = #{parentEntityId}, `status` = #{status},
+               end_date = #{endDate}
+          where id = #{id}
+    </update>
+
+
+</mapper>

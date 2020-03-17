@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.domain.mapper.EntityAttributeMapper">
+    <resultMap id="entityAttributeResultMap" type="ru.complitex.domain.entity.EntityAttribute">
+        <id column="id" property="id"/>
+        <result column="entity_id" property="entityId"/>
+        <result column="entity_attribute_id" property="entityAttributeId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="value_type_id" property="valueType"/>
+        <result column="reference_id" property="referenceId"/>
+        <result column="entity_name" property="entityName"/>
+        <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="values"
+                    select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
+    </resultMap>
+
+    <select id="selectEntityAttributes" parameterType="map" resultMap="entityAttributeResultMap">
+        select a.*, '${entityName}' entity_name from entity_attribute a where entity_id = #{entityId}
+    </select>
+
+    <select id="selectEntityAttribute" parameterType="map" resultMap="entityAttributeResultMap">
+        select a.*, e.name as entity_name from entity_attribute a left join entity e on a.entity_id = e.id
+          where e.name = #{entityName} and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
+</mapper>
