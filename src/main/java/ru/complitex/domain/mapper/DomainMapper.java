@@ -8,6 +8,7 @@ import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.entity.Value;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Anatoly A. Ivanov
  * 29.11.2017 17:54
  */
+@RequestScoped
 public class DomainMapper extends BaseMapper {
     @Inject
     private AttributeMapper attributeMapper;

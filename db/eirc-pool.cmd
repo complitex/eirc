@@ -1,6 +1,6 @@
 @ECHO off
 
-SET GLASSFISH_ASADMIN=C:\payara5\bin\asadmin.bat --port 14848
+SET GLASSFISH_ASADMIN=C:\payara5\bin\asadmin.bat --port 4848
 
 ECHO ---------------------------------------------------
 ECHO Local database and Realm
@@ -10,7 +10,7 @@ ECHO Register the JDBC connection pool
 call %GLASSFISH_ASADMIN% create-jdbc-connection-pool ^
     --datasourceclassname="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource" ^
     --restype="javax.sql.ConnectionPoolDataSource" ^
-    --property="url=jdbc\:mysql\://localhost\:3306/eirc_db:user=eirc:password=eirc:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true" eircPool
+    --property="url=jdbc\:mysql\://localhost\:3306/eirc_db:user=eirc:password=eirc:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true:useSSL=false:serverTimezone=UTC" eircPool
 
 ECHO.
 ECHO Create a JDBC resource with the specified JNDI name

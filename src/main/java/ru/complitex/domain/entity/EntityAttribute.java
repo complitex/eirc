@@ -26,8 +26,6 @@ public class EntityAttribute implements Serializable {
 
     private List<EntityAttribute> referenceEntityAttributes;
 
-    private EntityAttribute prefixEntityAttribute;
-
     private StringType stringType = StringType.CAPITALIZE;
 
     private boolean required;
@@ -110,10 +108,8 @@ public class EntityAttribute implements Serializable {
         return valueType;
     }
 
-    public EntityAttribute setValueType(ValueType valueType) {
+    public void setValueType(ValueType valueType) {
         this.valueType = valueType;
-
-        return this;
     }
 
     public Long getReferenceId() {
@@ -138,16 +134,6 @@ public class EntityAttribute implements Serializable {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
-    }
-
-    public EntityAttribute getPrefixEntityAttribute() {
-        return prefixEntityAttribute;
-    }
-
-    public EntityAttribute setPrefixEntityAttribute(EntityAttribute prefixEntityAttribute) {
-        this.prefixEntityAttribute = prefixEntityAttribute;
-
-        return this;
     }
 
     public EntityAttribute addReferenceEntityAttribute(EntityAttribute entityAttribute){

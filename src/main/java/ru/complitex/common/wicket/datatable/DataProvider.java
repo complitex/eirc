@@ -8,6 +8,8 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov
@@ -15,24 +17,38 @@ import java.io.Serializable;
  */
 public abstract class DataProvider<T extends Serializable> extends SortableDataProvider<T, SortProperty>
         implements IFilterStateLocator<FilterWrapper<T>> {
-    private FilterWrapper<T> filterState;
+    private FilterWrapper<T> filterWrapper;
 
-    public DataProvider(FilterWrapper<T> filterState) {
-        this.filterState = filterState;
+    public DataProvider(FilterWrapper<T> filterWrapper) {
+        this.filterWrapper = filterWrapper;
     }
 
     @Override
     public FilterWrapper<T> getFilterState() {
-        return filterState;
+        return filterWrapper;
     }
 
     @Override
     public void setFilterState(FilterWrapper<T> filterState) {
-        this.filterState = filterState;
+        this.filterWrapper = filterState;
     }
 
     @Override
     public IModel<T> model(T object) {
         return new CompoundPropertyModel<>(object);
     }
+
+    @Override
+    public Iterator<? extends T> iterator(long first, long count) {
+        FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
+
+        if (getSort() != null){
+            filterWrapper.setSortProperty(getSort().getProperty());
+            filterWrapper.setAscending(getSort().isAscending());
+        }
+
+        return data().iterator();
+    }
+
+    protected abstract List<T> data();
 }

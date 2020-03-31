@@ -3,7 +3,6 @@ package ru.complitex.domain.component.datatable;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -46,18 +45,12 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     private EntityAttribute entityAttribute;
 
-    private boolean loadReference = true;
-
     public DomainColumn(EntityAttribute entityAttribute) {
         super(entityAttribute);
 
         this.entityAttribute = entityAttribute;
-    }
 
-    public DomainColumn(EntityAttribute entityAttribute, IModel<String> displayModel) {
-        super(displayModel != null ? displayModel : displayModel(entityAttribute), sortProperty(entityAttribute));
-
-        this.entityAttribute = entityAttribute;
+        getEntityService().loadReference(entityAttribute);
     }
 
     public EntityService getEntityService() {
@@ -109,12 +102,6 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        if (loadReference){
-            getEntityService().loadReference(entityAttribute);
-
-            loadReference = false;
-        }
-
         String text = "";
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
@@ -165,31 +152,12 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                                 .map(Value::getNumber)
                                 .collect(Collectors.toList());
 
-                        EntityAttribute prefixEntityAttribute = entityAttribute.getPrefixEntityAttribute();
-
                         text = list.stream()
                                 .map(id -> {
                                     Domain<?> domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
 
-                                    String prefix = "";
-
-                                    if (prefixEntityAttribute != null){
-                                        Long prefixDomainId = domain.getNumber(prefixEntityAttribute.getEntityAttributeId());
-
-                                        if (prefixDomainId != null && prefixEntityAttribute.hasReferenceEntityAttributes()) {
-                                            EntityAttribute ea = prefixEntityAttribute.getReferenceEntityAttributes().get(0);
-
-                                            Domain<?> prefixDomain = getDomainService().getDomain(ea.getEntityName(), prefixDomainId);
-
-                                            prefix = prefixDomain.getTextValue(ea.getEntityAttributeId());
-
-                                            prefix = prefix != null ? prefix + " " : "";
-                                        }
-                                    }
-
-                                    String valueText = domain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
-
-                                    return prefix.toLowerCase() + Attributes.displayText(referenceEntityAttribute, valueText);
+                                    return  Attributes.displayText(referenceEntityAttribute,
+                                            domain.getTextValue(referenceEntityAttribute.getEntityAttributeId()));
                                 })
                                 .collect(Collectors.joining("\n"));
                     }else{
@@ -208,9 +176,8 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
         MultiLineLabel label = new MultiLineLabel(componentId, text);
 
-        if (entityAttribute.getPrefixEntityAttribute() != null){
-            label.add(AttributeAppender.append("style", "white-space: nowrap"));
-        }
+        //label.add(AttributeAppender.append("style", "white-space: nowrap"));
+
 
         cellItem.add(label);
     }

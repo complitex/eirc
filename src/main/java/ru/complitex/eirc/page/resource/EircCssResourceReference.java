@@ -1,7 +1,7 @@
 package ru.complitex.eirc.page.resource;
 
 import de.agilecoders.wicket.core.markup.html.themes.bootstrap.BootstrapCssReference;
-import de.agilecoders.wicket.themes.markup.html.material_design.MaterialDesignCssReference;
+import de.agilecoders.wicket.themes.markup.html.bootstrap.BootstrapThemeThemeCssReference;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.request.resource.CssResourceReference;
@@ -23,6 +23,6 @@ public class EircCssResourceReference  extends CssResourceReference {
     @Override
     public List<HeaderItem> getDependencies() {
         return Arrays.asList(CssReferenceHeaderItem.forReference(BootstrapCssReference.instance()),
-                CssReferenceHeaderItem.forReference(new MaterialDesignCssReference()));
+                CssReferenceHeaderItem.forReference(BootstrapThemeThemeCssReference.instance()));
     }
 }

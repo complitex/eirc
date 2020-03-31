@@ -21,13 +21,12 @@ import java.io.Serializable;
  */
 public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractColumn<T, SortProperty>
         implements IFilterDataColumn<T, SortProperty>, Serializable {
+    private EntityAttribute entityAttribute;
 
     private String columnKey;
 
-    private Integer size;
-
-    public AbstractDomainColumn() {
-        super(Model.of(""), null);
+    public AbstractDomainColumn(IModel<String> displayModel) {
+        super(displayModel);
     }
 
     public AbstractDomainColumn(IModel<String> displayModel, SortProperty sortProperty) {
@@ -35,7 +34,8 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
     }
 
     public AbstractDomainColumn(EntityAttribute entityAttribute){
-        super(displayModel(entityAttribute), sortProperty(entityAttribute));
+        super(Model.of(entityAttribute.getValueText()), new SortProperty(entityAttribute.getValueType().getKey(),
+                entityAttribute));
     }
 
     public AbstractDomainColumn(String columnKey) {
@@ -44,39 +44,9 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
         this.columnKey = columnKey;
     }
 
-    public AbstractDomainColumn(String columnKey, Integer size) {
-        this(columnKey);
-
-        this.size = size;
-    }
-
-
-    protected static Model<String> displayModel(EntityAttribute entityAttribute) {
-        if (entityAttribute != null){
-            return Model.of(entityAttribute.getValueText());
-
-        }
-
-        return Model.of("");
-    }
-
-    protected static SortProperty sortProperty(EntityAttribute entityAttribute){
-        if (entityAttribute != null){
-            return new SortProperty(entityAttribute.getValueType().getKey(), entityAttribute);
-        }
-
-        return null;
-    }
-
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
-        TextDataFilter textDataFilter =  new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(),
+        return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(),
                 "map." + columnKey), form);
-
-        if (size != null){
-            textDataFilter.setSize(size);
-        }
-
-        return textDataFilter;
     }
 }

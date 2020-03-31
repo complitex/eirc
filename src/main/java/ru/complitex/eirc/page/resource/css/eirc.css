@@ -1,7 +1,85 @@
-.form-control:focus{
-    -webkit-box-shadow: none;
+.login{
+    max-width: 250px;
+    margin: auto;
 }
 
-.login{
+.main{
+    position: fixed;
+    height: 100%;
+}
 
+.main > .row{
+    height: 100%;
+}
+
+.sidebar {
+    min-width: 250px;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+.sidebar ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar .menu {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.sidebar .menu > li {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    position: relative;
+}
+.sidebar .menu a {
+    position: relative;
+    display: block;
+    padding: 13px 15px;
+    outline-width: 0;
+    transition: all .3s ease-out;
+}
+
+.sidebar .menu ul a {
+    padding: 0px 15px 00px 30px;
+}
+
+.sidebar .menu ul ul a {
+    padding: 0px 15px 0px 45px;
+}
+
+.sidebar .menu a:hover,
+.sidebar .menu a:focus,
+.sidebar .menu a:active,
+.sidebar .menu .mm-active > a {
+    text-decoration: none;
+}
+
+
+.domain-id-column{
+    width: 60px
+}
+
+.domain-action-column{
+    width: 60px;
+    display: table-cell;
+}
+
+td p{
+    margin: 0;
+}
+
+td .btn{
+    padding: 0;
 }

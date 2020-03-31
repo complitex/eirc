@@ -30,7 +30,6 @@ import ru.complitex.eirc.page.BasePage;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,68 +58,44 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
 
     private FilterDataTable<T> table;
 
-    private Label titleLabel;
-
     private AbstractDomainEditModal<T> domainEditModal;
 
-    @SuppressWarnings("unchecked")
     public DomainListModalPage(Class<T> domainClass) {
         this.domainClass = domainClass;
 
-        T domainObject = Domains.newObject(domainClass);
-
-        Entity entity = entityService.getEntity(domainObject.getEntityName());
-
-        String title = entity.getValue() != null ? entity.getValue().getText() : "[" + domainObject.getEntityName() + "]";
+        add(new Label("title", getTitleModel()));
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
-        add(titleLabel = new Label("title", title));
-
-        container.add(new Label("header", title).setVisible(false));
-
         feedback = new NotificationPanel("feedback");
         feedback.setOutputMarkupId(true);
         container.add(feedback);
 
-        filterWrapper = newFilterWrapper(domainObject);
+
+        filterWrapper = newFilterWrapper();
 
         DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
-            public Iterator<? extends T> iterator(long first, long count) {
-                FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
-
-                if (getSort() != null){
-                    filterWrapper.setSortProperty(getSort().getProperty());
-                    filterWrapper.setAscending(getSort().isAscending());
-                }else{
-                    filterWrapper.setSortProperty(new SortProperty("id"));
-                    filterWrapper.setAscending(false);
-                }
-
-                List<T> list = getDomains(filterWrapper);
-
-                onDataLoad(list);
-
-                return list.iterator();
+            protected List<T> data() {
+                return getDomains(getFilterState());
             }
 
             @Override
             public long size() {
                 return getDomainsCount(getFilterState());
             }
-
         };
 
         FilterDataForm<FilterWrapper<T>> form = new FilterDataForm<>("form", dataProvider);
-        form.setOutputMarkupId(true);
         container.add(form);
+
 
         List<IColumn<T, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
+
 
         if (getParentAttribute() != null){
             Attribute parentAttribute = getParentAttribute();
@@ -137,10 +112,9 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
             });
         }
 
-        getEntityAttributes(entityService.getEntity(domainObject.getEntityName()))
-                .forEach(a -> columns.add(newDomainColumn(a)));
 
-        onInitColumns(columns);
+        getListEntityAttributes().forEach(a -> columns.add(newDomainColumn(a)));
+
 
         if (isEditEnabled()) {
             columns.add(new DomainEditActionsColumn<T>() {
@@ -150,46 +124,47 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
                 }
 
                 @Override
-                protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel) {
-                    DomainListModalPage.this.onCreateAction(repeatingView, rowModel);
+                protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel) {
+                    DomainListModalPage.this.onNewAction(repeatingView, rowModel);
                 }
             });
         }
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + entity.getName()){
+
+        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
 
                 onRowItem(item);
 
-                if (item.getModelObject().getStatus().equals(Status.ARCHIVE)){
-                    item.add(new CssClassNameAppender("danger"));
-                }
-
                 return item;
             }
         };
+
         table.setCurrentPage((Long) Optional.ofNullable(getSession().getAttribute(getClass().getName() +
                 CURRENT_PAGE_ATTRIBUTE)).orElse(0L));
+
         form.add(table);
+
 
         container.add(new AjaxLink<Void>("add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                onCreate(target);
+                onAdd(target);
             }
 
             @Override
             public boolean isVisible() {
-                return isCreateEnabled();
+                return isAddEnabled();
             }
         });
+
 
         Form<T> editForm = new Form<>("editForm");
         container.add(editForm);
 
-        if (isEditEnabled() && isDomainModalEditEnabled()) {
+        if (isEditEnabled()) {
             domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
 
             editForm.add(domainEditModal);
@@ -198,14 +173,16 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         }
     }
 
-    protected FilterWrapper<T> newFilterWrapper(T domainObject) {
-        return FilterWrapper.of(domainObject);
+    protected IModel<String> getTitleModel() {
+        return Model.of(entityService.getEntity(domainClass).getValue().getText());
+    }
+
+    protected FilterWrapper<T> newFilterWrapper() {
+        return FilterWrapper.of(Domains.newObject(domainClass));
     }
 
     protected AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
-        return new DomainEditModal<T>(componentId, domainClass,
-                getEditEntityAttributes(entityService.getEntity(Domains.getEntityName(domainClass))),
-                t -> t.add(feedback, table)){
+        return new DomainEditModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(feedback, table)){
             @Override
             protected boolean validate(Domain<T> domain) {
                 return DomainListModalPage.this.validate(domain);
@@ -235,7 +212,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected void onCreate(AjaxRequestTarget target) {
+    protected void onAdd(AjaxRequestTarget target) {
         domainEditModal.edit(newDomain(), target);
     }
 
@@ -276,18 +253,12 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         return domainService.getDomainsCount(filterWrapper);
     }
 
-    protected List<EntityAttribute> getEntityAttributes(Entity entity){
-        return entity.getAttributes();
+    protected List<EntityAttribute> getListEntityAttributes(){
+        return entityService.getEntity(domainClass).getAttributes();
     }
 
-    protected List<EntityAttribute> getEditEntityAttributes(Entity entity){
-        return getEntityAttributes(entity);
-    }
-
-    protected void onDataLoad(List<T> list){
-    }
-
-    protected void onInitColumns(List<IColumn<T, SortProperty>> columns){
+    protected List<EntityAttribute> getEditEntityAttributes(){
+        return getListEntityAttributes();
     }
 
     public FilterWrapper<T> getFilterWrapper() {
@@ -306,23 +277,15 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         return table;
     }
 
-    protected void title(IModel<String> titleModel){
-        titleLabel.setDefaultModel(titleModel);
-    }
-
     protected boolean isEditEnabled(){
         return true;
     }
 
-    protected boolean isDomainModalEditEnabled(){
+    protected boolean isAddEnabled(){
         return true;
     }
 
-    protected boolean isCreateEnabled(){
-        return true;
-    }
-
-    protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel){
 
     }
 

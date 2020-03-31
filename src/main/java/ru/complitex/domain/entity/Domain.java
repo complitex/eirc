@@ -24,6 +24,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
     private Long permissionId;
     private Long userId;
 
+    private Long entityId;
     private String entityName;
 
     private List<Attribute> attributes = new ArrayList<>();
@@ -39,9 +40,10 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.entityName = entityName;
     }
 
-    public Domain(String entityName, Long objectId) {
+
+    public Domain(Long entityId, String entityName) {
+        this.entityId = entityId;
         this.entityName = entityName;
-        this.objectId = objectId;
     }
 
     public void copy(Domain<?> domain){
@@ -304,6 +306,14 @@ public class Domain<T extends Domain<T>> implements Serializable{
 
     public void setPermissionId(Long permissionId) {
         this.permissionId = permissionId;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 
     public String getEntityName() {

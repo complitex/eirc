@@ -4,32 +4,48 @@
 <head>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand navbar-light bg-light border-bottom">
     <a class="navbar-brand" href="#">ЕИРЦ</a>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="address" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Адресный справочник
-                </a>
-                <div wicket:id="address" class="dropdown-menu" aria-labelledby="address">
-                    <a wicket:id="counties" class="dropdown-item" href="#">Страны</a>
-                    <a wicket:id="regions" class="dropdown-item" href="#">Регионы</a>
-                    <a wicket:id="cityTypes" class="dropdown-item" href="#">Типы населенных пунктов</a>
-                    <a wicket:id="cities" class="dropdown-item" href="#">Населенные пункты</a>
-                    <a wicket:id="districts" class="dropdown-item" href="#">Районы</a>
-                    <a wicket:id="streetTypes" class="dropdown-item" href="#">Типы улиц</a>
-                    <a wicket:id="streets" class="dropdown-item" href="#">Улицы</a>
-                    <a wicket:id="buildings" class="dropdown-item" href="#">Дома</a>
-                    <a wicket:id="apartments" class="dropdown-item" href="#">Квартиры</a>
-                </div>
-            </li>
         </ul>
+        <div class="navbar-nav">
+            <a class="nav-link" href="#">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </div>
     </div>
-</nav>
-<div class="container-fluid">
 
+</nav>
+
+<div class="container-fluid main">
+    <div class="row row-cols-1">
+        <nav class="col-1 sidebar border-right">
+            <ul id="menu" class="menu">
+                <li class="mm-active">
+                    <a href="#" class="has-arrow" aria-expanded="true">Адресный справочник</a>
+
+                    <ul wicket:id="address">
+                        <li><a wicket:id="counties" href="#">Страны</a></li>
+                        <li><a wicket:id="regions" href="#">Регионы</a></li>
+                        <li><a wicket:id="cityTypes" href="#">Типы населенных пунктов</a></li>
+                        <li><a wicket:id="cities" href="#">Населенные пункты</a></li>
+                        <li><a wicket:id="districts" href="#">Районы</a></li>
+                        <li><a wicket:id="streetTypes" href="#">Типы улиц</a></li>
+                        <li><a wicket:id="streets" href="#">Улицы</a></li>
+                        <li><a wicket:id="buildings" href="#">Дома</a></li>
+                        <li><a wicket:id="apartments" href="#">Квартиры</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="col">
+            <div style="padding-top: 15px">
+                <wicket:child/>
+            </div>
+        </div>
+    </div>
 </div>
 
 </body>

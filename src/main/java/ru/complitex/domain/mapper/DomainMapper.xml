@@ -69,9 +69,9 @@
 
     <sql id="selectDomainSelect">
         a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
-        a.number a_number, <if test="useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
         a.user_id a_user_id, '${entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
-        v.locale_id v_locale_id, v.text v_text <if test="useNumberValue">, v.number v_number</if>
+        v.locale_id v_locale_id, v.text v_text, v.number v_number
     </sql>
 
     <!--suppress SqlResolve -->
@@ -262,10 +262,7 @@
                                </when>
                                <otherwise>
                                    and (
-                                       a${i}.number = #{a.number}
-                                       <if test="object.useNumberValue">
-                                           or v${i}.number = #{a.number}
-                                       </if>
+                                       a${i}.number = #{a.number} or v${i}.number = #{a.number}
                                     )
                                </otherwise>
                            </choose>
@@ -418,9 +415,9 @@
 
     <sql id="selectDomainsSelect">
         a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
-        a.number a_number, <if test="object.useDateAttribute">a.date a_date,</if> a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
+        a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
         a.user_id a_user_id, '${object.entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
-        v.locale_id v_locale_id, v.text v_text <if test="object.useNumberValue">, v.number v_number</if>
+        v.locale_id v_locale_id, v.text v_text, v.number v_number
     </sql>
 
     <!--suppress SqlResolve -->

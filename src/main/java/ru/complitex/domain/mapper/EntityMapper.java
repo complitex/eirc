@@ -5,10 +5,13 @@ import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
 
+import javax.enterprise.context.RequestScoped;
+
 /**
  * @author Anatoly A. Ivanov
  * 29.11.2017 17:54
  */
+@RequestScoped
 public class EntityMapper extends BaseMapper {
     public Entity getEntity(Long id){
         return sqlSession().selectOne("selectEntity", id);

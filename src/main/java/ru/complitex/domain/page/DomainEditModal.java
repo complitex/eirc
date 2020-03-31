@@ -184,7 +184,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         listView.setReuseItems(true);
         container.add(listView);
 
-        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Primary) {
+        addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 DomainEditModal.this.save(target);
@@ -196,7 +196,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             }
         }.setLabel(new ResourceModel("save")));
 
-        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Default) {
+        addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Secondary) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DomainEditModal.this.cancel(target);

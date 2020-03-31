@@ -7,6 +7,7 @@ import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Status;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 30.11.2017 16:17
  */
+@RequestScoped
 public class AttributeMapper extends BaseMapper {
     @Inject
     private ValueMapper valueMapper;

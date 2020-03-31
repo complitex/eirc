@@ -1,6 +1,6 @@
 package ru.complitex.domain.component.datatable;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeIconType;
 import org.apache.wicket.Component;
@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import ru.complitex.common.wicket.component.LinkPanel;
 import ru.complitex.common.wicket.datatable.FilterDataForm;
 import ru.complitex.domain.entity.Domain;
@@ -24,9 +25,13 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
         protected String getSpanClass() {
-            return super.getSpanClass() + " btn-sm";
+            return super.getSpanClass();
         }
     };
+
+    public DomainEditActionsColumn() {
+        super(Model.of(""));
+    }
 
     @Override
     public Component getHeader(String componentId) {
@@ -35,9 +40,9 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
 
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
-        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+        return new LinkPanel(componentId, new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            public void onClick(AjaxRequestTarget target) {
                 target.add(form);
             }
         }.setIconType(FontAwesomeIconType.search));
@@ -48,9 +53,9 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
         RepeatingView repeatingView = new RepeatingView(componentId);
         cellItem.add(repeatingView);
 
-        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
+        repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target) {
+            public void onClick(AjaxRequestTarget target) {
                 DomainEditActionsColumn.this.onAction(rowModel, target);
             }
 
@@ -62,21 +67,21 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
             }
         }.setIconType(FontAwesomeIconType.edit)));
 
-        onCreateAction(repeatingView, rowModel);
+        onNewAction(repeatingView, rowModel);
     }
 
     protected abstract void onAction(IModel<T> rowModel, AjaxRequestTarget target);
 
     @Override
     public String getCssClass() {
-        return "domain-id-column domain-action";
+        return "domain-action-column";
     }
 
     public AjaxIndicatorAppender getAjaxIndicatorAppender() {
         return ajaxIndicatorAppender;
     }
 
-    protected void onCreateAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel){
 
     }
 }

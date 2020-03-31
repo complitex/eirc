@@ -6,6 +6,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.mapper.EntityMapper;
 import ru.complitex.domain.util.Domains;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 16.05.2018 14:01
  */
+@RequestScoped
 public class EntityService implements Serializable {
     @Inject
     private EntityMapper entityMapper;
@@ -40,16 +42,12 @@ public class EntityService implements Serializable {
     }
 
     public void loadReference(EntityAttribute entityAttribute){
-        if (entityAttribute != null && entityAttribute.getReferenceEntityAttributes() != null) {
+        if (entityAttribute.getReferenceEntityAttributes() != null) {
             entityAttribute.getReferenceEntityAttributes().forEach(ea -> {
                 if (ea.getId() == null){
                     ea.copy(getEntityAttribute(ea.getEntityName(), ea.getEntityAttributeId()));
                 }
             });
-
-            if (entityAttribute.getPrefixEntityAttribute() != null){
-                loadReference(entityAttribute.getPrefixEntityAttribute());
-            }
         }
     }
 }
