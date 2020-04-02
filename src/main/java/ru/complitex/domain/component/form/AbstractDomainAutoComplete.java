@@ -196,7 +196,11 @@ public abstract class AbstractDomainAutoComplete extends FormComponentPanel<Long
     protected List<? extends Domain> getDomains(String input) {
         Domain<?> domain = getFilterObject(input);
 
-        domain.getAttributes().forEach(a -> entityService.loadReference(a.getEntityAttribute()));
+        domain.getAttributes().forEach(a -> {
+            if (a.getEntityAttribute() != null) {
+                entityService.loadReference(a.getEntityAttribute());
+            }
+        });
 
         return domainMapper.getDomains(FilterWrapper.of(domain).setFilter("search").limit(0L, 10L));
     }

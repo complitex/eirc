@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import ru.complitex.eirc.page.address.CountryListPage;
+import ru.complitex.eirc.page.address.RegionListPage;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
@@ -22,11 +23,13 @@ import ru.complitex.eirc.security.EircRoles;
 @AuthorizeInstantiation(EircRoles.AUTHORIZED)
 public class BasePage extends WebPage {
     public BasePage() {
+        add(new BookmarkablePageLink<>("brand", HomePage.class));
+
         WebMarkupContainer address = new WebMarkupContainer("address");
         add(address);
 
         address.add(new BookmarkablePageLink("counties", CountryListPage.class));
-        address.add(new BookmarkablePageLink("regions", HomePage.class));
+        address.add(new BookmarkablePageLink("regions", RegionListPage.class));
         address.add(new BookmarkablePageLink("cityTypes", HomePage.class));
         address.add(new BookmarkablePageLink("cities", HomePage.class));
         address.add(new BookmarkablePageLink("districts", HomePage.class));

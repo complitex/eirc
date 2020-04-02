@@ -249,7 +249,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             Attribute parentAttribute = getParentAttribute();
 
             if (parentAttribute != null){
-                domain.setParentEntityId(entityService.getEntity(parentAttribute.getEntityName()).getId());
+                domain.setParentEntityId(parentAttribute.getEntityId());
             }
 
             domainService.save(domain);

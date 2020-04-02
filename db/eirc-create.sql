@@ -341,28 +341,28 @@ CALL createDomainEntity(4,'city', 'Населенный пункт', 'Насел
 CALL createEntityAttribute(4, 1, 8, 'Название', 'Назва');
 CALL createEntityAttributeReference(4, 4, 3, 'Тип нас. пункта', 'Тип нас. пункту');
 
-CALL createDomainEntity(6,'district', 'Район', 'Район');
+CALL createDomainEntity(5,'district', 'Район', 'Район');
+CALL createEntityAttribute(5, 1, 8, 'Название', 'Назва');
+CALL createEntityAttribute(5, 5, 4, 'Код района', 'Код району');
+
+CALL createDomainEntity(6, 'street_type', 'Тип улицы', 'Тип улицы');
 CALL createEntityAttribute(6, 1, 8, 'Название', 'Назва');
-CALL createEntityAttribute(6, 5, 4, 'Код района', 'Код району');
+CALL createEntityAttribute(6, 2, 8, 'Краткое название', 'Коротка назва');
 
-CALL createDomainEntity(7, 'street_type', 'Тип улицы', 'Тип улицы');
+CALL createDomainEntity(7,'street', 'Улица', 'Вулиця');
 CALL createEntityAttribute(7, 1, 8, 'Название', 'Назва');
-CALL createEntityAttribute(7, 2, 8, 'Краткое название', 'Коротка назва');
+CALL createEntityAttributeReference(7, 4, 7, 'Тип улицы', 'Тип вулиці');
+CALL createEntityAttribute(7, 5, 4, 'Код улицы', 'Код вулиці');
 
-CALL createDomainEntity(8,'street', 'Улица', 'Вулиця');
-CALL createEntityAttribute(8, 1, 8, 'Название', 'Назва');
-CALL createEntityAttributeReference(8, 4, 7, 'Тип улицы', 'Тип вулиці');
-CALL createEntityAttribute(8, 5, 4, 'Код улицы', 'Код вулиці');
+CALL createDomainEntity(8,'building', 'Дом', 'Будинок');
+CALL createEntityAttribute(8, 1, 8, 'Номер дома', 'Номер будинку');
+CALL createEntityAttribute(8, 2, 8, 'Корпус', 'Корпус');
+CALL createEntityAttribute(8, 3, 8, 'Строение', 'Строение');
+CALL createEntityAttributeReference(8, 4, 6, 'Район', 'Район');
+CALL createEntityAttribute(8, 5, 8, 'Коды дома', 'Коди будинку');
 
-CALL createDomainEntity(9,'building', 'Дом', 'Будинок');
-CALL createEntityAttribute(9, 1, 8, 'Номер дома', 'Номер будинку');
-CALL createEntityAttribute(9, 2, 8, 'Корпус', 'Корпус');
-CALL createEntityAttribute(9, 3, 8, 'Строение', 'Строение');
-CALL createEntityAttributeReference(9, 4, 6, 'Район', 'Район');
-CALL createEntityAttribute(9, 5, 8, 'Коды дома', 'Коди будинку');
-
-CALL createDomainEntity(10,'apartment', 'Квартира', 'Квартира');
-CALL createEntityAttribute(10, 1, 8, 'Номер квартиры', 'Номер квартири');
+CALL createDomainEntity(9,'apartment', 'Квартира', 'Квартира');
+CALL createEntityAttribute(9, 1, 8, 'Номер квартиры', 'Номер квартири');
 
 
 

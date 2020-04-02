@@ -28,6 +28,7 @@ public class Attribute implements Serializable {
     private Status status;
     private Long userId;
 
+    private Long entityId;
     private String entityName;
 
     private List<Value> values = new ArrayList<>();
@@ -49,8 +50,9 @@ public class Attribute implements Serializable {
         this.entityName = entityName;
     }
 
-    public Attribute(String entityName, Long entityAttributeId){
-        this.entityName = entityName;
+    public Attribute(Domain<?> domain, Long entityAttributeId){
+        this.entityId = domain.getEntityId();
+        this.entityName = domain.getEntityName();
         this.entityAttributeId = entityAttributeId;
     }
 
@@ -243,6 +245,14 @@ public class Attribute implements Serializable {
         this.status = status;
     }
 
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
+    }
+
     public String getEntityName() {
         return entityName;
     }
@@ -296,6 +306,7 @@ public class Attribute implements Serializable {
                 .add("endDate", endDate)
                 .add("status", status)
                 .add("userId", userId)
+                .add("entityId", entityId)
                 .add("entityName", entityName)
                 .add("values", values)
                 .add("entityAttribute", entityAttribute)

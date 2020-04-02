@@ -5,7 +5,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand navbar-light bg-light border-bottom">
-    <a class="navbar-brand" href="#">ЕИРЦ</a>
+    <a class="navbar-brand" wicket:id="brand">ЕИРЦ</a>
 
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav mr-auto">
@@ -40,10 +40,8 @@
                 </li>
             </ul>
         </nav>
-        <div class="col">
-            <div style="padding-top: 15px">
-                <wicket:child/>
-            </div>
+        <div class="col content">
+            <wicket:child/>
         </div>
     </div>
 </div>

@@ -12,6 +12,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
 import ru.complitex.eirc.page.address.CountryListPage;
+import ru.complitex.eirc.page.address.RegionListPage;
 import ru.complitex.eirc.page.login.LoginPage;
 
 /**
@@ -46,5 +47,6 @@ public class EircWebApplication extends WebApplication {
     private void configureMountPage() {
         mountPage("login", LoginPage.class);
         mountPage("counties", CountryListPage.class);
+        mountPage("regions", RegionListPage.class);
     }
 }

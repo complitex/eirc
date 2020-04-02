@@ -84,8 +84,7 @@ public class DomainMapper extends BaseMapper {
                 if (!update){
                     if (a.getValues() != null){
                         if (dbAttribute.getValues() != null) {
-                            boolean count = a.getValues().stream().filter(v -> v.getLocaleId() == null).count() ==
-                                    dbAttribute.getValues().stream().filter(v -> v.getLocaleId() == null).count();
+                            boolean count = a.getValues().size() == dbAttribute.getValues().size();
 
                             update =  !count ||
                                     a.getValues().stream().anyMatch(v -> {
