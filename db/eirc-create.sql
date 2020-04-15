@@ -81,20 +81,25 @@ CREATE TABLE `entity_attribute` (
   `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
   `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
-  `reference_id` BIGINT(20) COMMENT  'Внешний ключ',
+  `reference_entity_id` BIGINT(20) COMMENT  'Ссылка на сущность',
+  `reference_entity_attribute_id` BIGINT(20) COMMENT  'Ссылка на атрибут',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`entity_attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),
   KEY `key_value_type_id` (`value_type_id`),
-  CONSTRAINT `fk_attribute_type__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
-  CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип атрибута сущности';
+  KEY `key_reference_entity_id` (`reference_entity_id`),
+  KEY `key_reference_entity_attribute_id` (`reference_entity_attribute_id`),
+  CONSTRAINT `fk_entity_attribute__entity` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_attribute__entity_value_type` FOREIGN KEY (`value_type_id`) REFERENCES entity_value_type (`id`),
+  CONSTRAINT `fk_entity_attribute__entity__ref` FOREIGN KEY (`reference_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_entity_attribute__entity_attribute__ref` FOREIGN KEY (`reference_entity_attribute_id`) REFERENCES `entity_attribute` (`entity_attribute_id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибут';
 
 DROP TABLE IF EXISTS `entity_value`;
 CREATE TABLE `entity_value` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа аттрибута',
-  `entity_attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор типа аттрибута',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `entity_attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор атрибута',
   `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
   `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
@@ -107,7 +112,7 @@ CREATE TABLE `entity_value` (
   CONSTRAINT `fk_entity_value__entity_attribute` FOREIGN KEY (`entity_attribute_id`, `entity_id`)
     REFERENCES `entity_attribute` (`entity_attribute_id`, `entity_id`),
   CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения';
 
 DROP TABLE IF EXISTS entity_value_type;
 CREATE TABLE `entity_value_type` (
@@ -122,10 +127,10 @@ INSERT INTO entity_value_type (id, value_type) VALUE (2, 'number');
 INSERT INTO entity_value_type (id, value_type) VALUE (3, 'decimal');
 INSERT INTO entity_value_type (id, value_type) VALUE (4, 'text');
 INSERT INTO entity_value_type (id, value_type) VALUE (5, 'date');
-INSERT INTO entity_value_type (id, value_type) VALUE (6, 'entity');
+INSERT INTO entity_value_type (id, value_type) VALUE (6, 'reference');
 INSERT INTO entity_value_type (id, value_type) VALUE (7, 'number_list');
 INSERT INTO entity_value_type (id, value_type) VALUE (8, 'text_list');
-INSERT INTO entity_value_type (id, value_type) VALUE (9, 'entity_list');
+INSERT INTO entity_value_type (id, value_type) VALUE (9, 'reference_list');
 
 -- ------------------------------
 -- Permission
@@ -162,23 +167,18 @@ BEGIN
         (
             `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
             `object_id`        BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
-            `parent_id`        BIGINT(20) COMMENT ''Идентификатор родительского объекта'',
-            `parent_entity_id` BIGINT(20) COMMENT ''Идентификатор сущности родительского объекта'',
             `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия объекта'',
             `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия объекта'',
             `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
-            `permission_id`    BIGINT(20) NULL COMMENT ''Ключ прав доступа к объекту'',
+            `permission_id`    BIGINT(20) NULL COMMENT ''Права доступа к объекту'',
             `user_id`          BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
             PRIMARY KEY (`id`),
             UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
             KEY `key_object_id` (`object_id`),
-            KEY `key_parent_id` (`parent_id`),
-            KEY `key_parent_entity_id` (`parent_entity_id`),
             KEY `key_start_date` (`start_date`),
             KEY `key_end_date` (`end_date`),
             KEY `key_status` (`status`),
             KEY `key_permission_id` (`permission_id`),
-            CONSTRAINT `fk_', entityName, '__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
             CONSTRAINT `fk_', entityName, '__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`),
             CONSTRAINT `fk_', entityName, '__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
         ) ENGINE = InnoDB
@@ -256,8 +256,8 @@ BEGIN
     PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
-DROP PROCEDURE IF EXISTS createEntityAttribute;
-CREATE PROCEDURE createEntityAttribute(IN entityId BIGINT,
+DROP PROCEDURE IF EXISTS createAttribute;
+CREATE PROCEDURE createAttribute(IN entityId BIGINT,
                                        IN entityAttributeId BIGINT, IN valueTypeId BIGINT,
                                        IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
                                        IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
@@ -274,15 +274,17 @@ BEGIN
     PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
-DROP PROCEDURE IF EXISTS createEntityAttributeReference;
-CREATE PROCEDURE createEntityAttributeReference(IN entityId BIGINT,
+DROP PROCEDURE IF EXISTS createReference;
+CREATE PROCEDURE createReference(IN entityId BIGINT,
                                                     IN entityAttributeId BIGINT,
-                                                    IN referenceId BIGINT,
+                                                    IN referenceEntityId BIGINT,
+                                                    IN referenceEntityAttributeId BIGINT,
                                                     IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
                                                     IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
 BEGIN
-    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, `reference_id`) VALUES (',
-                                  entityId, ', ', entityAttributeId, ', 9',  ', ', referenceId, ');');
+    SET @insertAttribute = CONCAT('INSERT INTO `entity_attribute`(`entity_id`, `entity_attribute_id`, `value_type_id`, ',
+                                  '`reference_entity_id`, `reference_entity_attribute_id`) VALUES (', entityId, ', ',
+                                  entityAttributeId, ', 6', ', ', referenceEntityId, ', ', referenceEntityAttributeId, ');');
 
     PREPARE QUERY FROM @insertAttribute; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 
@@ -293,8 +295,8 @@ BEGIN
     PREPARE QUERY FROM @insertEntityValue; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
-DROP PROCEDURE IF EXISTS createDomainEntity;
-CREATE PROCEDURE createDomainEntity(IN entityId BIGINT,
+DROP PROCEDURE IF EXISTS createDomain;
+CREATE PROCEDURE createDomain(IN entityId BIGINT,
                                     IN entityName VARCHAR(64) CHARSET utf8,
                                     IN entityDescriptionRU VARCHAR(128) CHARSET utf8,
                                     IN entityDescriptionUA VARCHAR(128) CHARSET utf8)
@@ -319,51 +321,56 @@ DELIMITER ;
 -- Setting
 -- ---------------------------
 
-CALL createDomainEntity(0,'setting', 'Настройки', 'Налаштування');
-CALL createEntityAttribute(0, 1, 4, 'Значение', 'Значення');
+CALL createDomain(0,'setting', 'Настройки', 'Налаштування');
+CALL createAttribute(0, 1, 4, 'Значение', 'Значення');
 
 
 -- ---------------------------
 -- Address
 -- ---------------------------
 
-CALL createDomainEntity(1,'country', 'Страна', 'Країна');
-CALL createEntityAttribute(1, 1, 8, 'Название', 'Назва');
+CALL createDomain(1,'country', 'Страна', 'Країна');
+CALL createAttribute(1, 1, 8, 'Название', 'Назва');
 
-CALL createDomainEntity(2,'region', 'Регион', 'Регіон');
-CALL createEntityAttribute(2, 1, 8, 'Название', 'Назва');
+CALL createDomain(2,'region', 'Регион', 'Регіон');
+CALL createReference(2, 1, 1, 1, 'Страна', 'Країна');
+CALL createAttribute(2, 2, 8, 'Название', 'Назва');
 
-CALL createDomainEntity(3, 'city_type', 'Тип населенного пункта', 'Тип населеного пункту');
-CALL createEntityAttribute(3, 1, 8, 'Название', 'Назва');
-CALL createEntityAttribute(3, 2, 8, 'Краткое название', 'Коротка назва');
+CALL createDomain(3, 'city_type', 'Тип населённого пункта', 'Тип населеного пункту');
+CALL createAttribute(3, 1, 8, 'Название', 'Назва');
+CALL createAttribute(3, 2, 8, 'Краткое название', 'Коротка назва');
 
-CALL createDomainEntity(4,'city', 'Населенный пункт', 'Населений пункт');
-CALL createEntityAttribute(4, 1, 8, 'Название', 'Назва');
-CALL createEntityAttributeReference(4, 4, 3, 'Тип нас. пункта', 'Тип нас. пункту');
+CALL createDomain(4,'city', 'Населённый пункт', 'Населений пункт');
+CALL createReference(4, 1, 2, 2, 'Регион', 'Регіон');
+CALL createReference(4, 2, 3, 1, 'Тип насённого пункта', 'Тип населеного пункту');
+CALL createAttribute(4, 3, 8, 'Название', 'Назва');
 
-CALL createDomainEntity(5,'district', 'Район', 'Район');
-CALL createEntityAttribute(5, 1, 8, 'Название', 'Назва');
-CALL createEntityAttribute(5, 5, 4, 'Код района', 'Код району');
+CALL createDomain(5,'district', 'Район', 'Район');
+CALL createReference(5, 1, 4, 3, 'Населённый пункт', 'Населений пункт');
+CALL createAttribute(5, 2, 8, 'Название', 'Назва');
+CALL createAttribute(5, 3, 4, 'Код района', 'Код району');
 
-CALL createDomainEntity(6, 'street_type', 'Тип улицы', 'Тип улицы');
-CALL createEntityAttribute(6, 1, 8, 'Название', 'Назва');
-CALL createEntityAttribute(6, 2, 8, 'Краткое название', 'Коротка назва');
+CALL createDomain(6, 'street_type', 'Тип улицы', 'Тип улицы');
+CALL createAttribute(6, 1, 8, 'Название', 'Назва');
+CALL createAttribute(6, 2, 8, 'Краткое название', 'Коротка назва');
 
-CALL createDomainEntity(7,'street', 'Улица', 'Вулиця');
-CALL createEntityAttribute(7, 1, 8, 'Название', 'Назва');
-CALL createEntityAttributeReference(7, 4, 7, 'Тип улицы', 'Тип вулиці');
-CALL createEntityAttribute(7, 5, 4, 'Код улицы', 'Код вулиці');
+CALL createDomain(7,'street', 'Улица', 'Вулиця');
+CALL createReference(7, 1, 4, 3, 'Населённый пункт', 'Населений пункт');
+CALL createReference(7, 2, 6, 1, 'Тип улицы', 'Тип вулиці');
+CALL createAttribute(7, 3, 8, 'Название', 'Назва');
+CALL createAttribute(7, 4, 4, 'Код улицы', 'Код вулиці');
 
-CALL createDomainEntity(8,'building', 'Дом', 'Будинок');
-CALL createEntityAttribute(8, 1, 8, 'Номер дома', 'Номер будинку');
-CALL createEntityAttribute(8, 2, 8, 'Корпус', 'Корпус');
-CALL createEntityAttribute(8, 3, 8, 'Строение', 'Строение');
-CALL createEntityAttributeReference(8, 4, 6, 'Район', 'Район');
-CALL createEntityAttribute(8, 5, 8, 'Коды дома', 'Коди будинку');
+CALL createDomain(8,'building', 'Дом', 'Будинок');
+CALL createReference(8, 1, 5, 2, 'Район', 'Район');
+CALL createReference(8, 2, 7, 3, 'Улица', 'Вулиця');
+CALL createAttribute(8, 3, 8, 'Номер дома', 'Номер будинку');
+CALL createAttribute(8, 4, 8, 'Корпус', 'Корпус');
+CALL createAttribute(8, 5, 8, 'Строение', 'Будова');
+CALL createAttribute(8, 6, 4, 'Код дома', 'Код будинку');
 
-CALL createDomainEntity(9,'apartment', 'Квартира', 'Квартира');
-CALL createEntityAttribute(9, 1, 8, 'Номер квартиры', 'Номер квартири');
-
+CALL createDomain(9,'apartment', 'Квартира', 'Квартира');
+CALL createReference(9, 1, 8, 3, 'Дом', 'Будинок');
+CALL createAttribute(9, 2, 8, 'Номер квартиры', 'Номер квартири');
 
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;

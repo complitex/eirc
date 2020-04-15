@@ -33,10 +33,10 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
         super(Model.of(""));
     }
 
-    @Override
-    public Component getHeader(String componentId) {
-        return super.getHeader(componentId).add(ajaxIndicatorAppender);
-    }
+//    @Override
+//    public Component getHeader(String componentId) {
+//        return super.getHeader(componentId).add(ajaxIndicatorAppender);
+//    }
 
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {

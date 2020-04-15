@@ -12,8 +12,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <wicket.version>9.0.0-M4</wicket.version>
-        <wicket-bootstrap.version>5.0.0-M1</wicket-bootstrap.version>
+        <wicket.version>9.0.0-M5</wicket.version>
+        <wicket-bootstrap.version>5.0.0-M2</wicket-bootstrap.version>
     </properties>
 
     <dependencies>
@@ -27,6 +27,12 @@
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-core</artifactId>
+            <version>${wicket.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-extensions</artifactId>
             <version>${wicket.version}</version>
         </dependency>
 
@@ -51,12 +57,6 @@
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-auth-roles</artifactId>
-            <version>${wicket.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-cdi</artifactId>
             <version>${wicket.version}</version>
         </dependency>
 

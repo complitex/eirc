@@ -50,9 +50,9 @@ public class Attribute implements Serializable {
         this.entityName = entityName;
     }
 
-    public Attribute(Domain<?> domain, Long entityAttributeId){
-        this.entityId = domain.getEntityId();
-        this.entityName = domain.getEntityName();
+    public Attribute(Long entityId, String entityName, Long entityAttributeId){
+        this.entityId = entityId;
+        this.entityName = entityName;
         this.entityAttributeId = entityAttributeId;
     }
 

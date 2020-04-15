@@ -8,7 +8,8 @@
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="value_type_id" property="valueType"/>
-        <result column="reference_id" property="referenceId"/>
+        <result column="reference_entity_id" property="referenceEntityId"/>
+        <result column="reference_entity_attribute_id" property="referenceEntityAttributeId"/>
         <result column="entity_name" property="entityName"/>
         <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="values"
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>

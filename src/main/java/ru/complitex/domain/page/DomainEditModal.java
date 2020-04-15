@@ -86,19 +86,6 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 .setOutputMarkupId(true);
         container.add(feedback);
 
-        Attribute parentAttribute = getParentAttribute();
-
-        if (parentAttribute != null) {
-            Entity parentEntity = entityService.getEntity(parentAttribute.getEntityName());
-
-            FormGroupBorder parentGroup = new FormGroupBorder("parentGroup", Model.of(parentEntity.getValue().getText()));
-            container.add(parentGroup);
-
-            parentGroup.add(newParentComponent("parent"));
-        }else{
-            container.add(new EmptyPanel("parentGroup").setVisible(false));
-        }
-
         listView = new ListView<>("attributes",
                 entityAttributes != null ? entityAttributes : entity.getAttributes()) {
             @Override
@@ -109,7 +96,6 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
                 onAttribute(attribute);
-                entityService.loadReference(attribute.getEntityAttribute());
 
                 FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText())){
                     @Override
@@ -137,8 +123,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                                     new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
                         case ENTITY:
-                            EntityAttribute referenceEntityAttribute = attribute.getEntityAttribute()
-                                    .getReferenceEntityAttributes().get(0);
+                            EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
 
                             component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
@@ -204,22 +189,11 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected Component newParentComponent(String componentId) {
-        Attribute parentAttribute = getParentAttribute();
-
-        return new DomainAutoComplete(componentId, parentAttribute.getEntityName(), parentAttribute.getEntityAttributeId(),
-                new PropertyModel<>(getModel(), "parentId"));
-    }
-
     protected void onAttribute(Attribute attribute){
 
     }
 
     protected Component getComponent(String componentId, Attribute attribute){
-        return null;
-    }
-
-    protected Attribute getParentAttribute(){
         return null;
     }
 
@@ -245,12 +219,6 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             }
 
 //            domain.setUserId(getCurrentUserId());
-
-            Attribute parentAttribute = getParentAttribute();
-
-            if (parentAttribute != null){
-                domain.setParentEntityId(parentAttribute.getEntityId());
-            }
 
             domainService.save(domain);
 

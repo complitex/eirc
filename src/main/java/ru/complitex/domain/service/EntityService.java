@@ -31,23 +31,15 @@ public class EntityService implements Serializable {
         return entityMapper.getEntity(Domains.getEntityName(domainClass));
     }
 
+    public EntityAttribute getEntityAttribute(Long entityId, Long entityAttributeId){
+        return getEntity(entityId).getEntityAttribute(entityAttributeId);
+    }
+
     public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){
         return getEntity(entityName).getEntityAttribute(entityAttributeId);
     }
 
-    public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId,
-                                              String referenceEntityName, Long referenceEntityAttributeId){
-        return getEntity(entityName).getEntityAttribute(entityAttributeId)
-                .addReferenceEntityAttribute(getEntityAttribute(referenceEntityName, referenceEntityAttributeId));
-    }
-
-    public void loadReference(EntityAttribute entityAttribute){
-        if (entityAttribute.getReferenceEntityAttributes() != null) {
-            entityAttribute.getReferenceEntityAttributes().forEach(ea -> {
-                if (ea.getId() == null){
-                    ea.copy(getEntityAttribute(ea.getEntityName(), ea.getEntityAttributeId()));
-                }
-            });
-        }
+    public EntityAttribute getReferenceEntityAttribute(EntityAttribute entityAttribute){
+        return getEntityAttribute(entityAttribute.getReferenceEntityId(), entityAttribute.getReferenceEntityAttributeId());
     }
 }

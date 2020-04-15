@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 public class Domain<T extends Domain<T>> implements Serializable{
     private Long id;
     private Long objectId;
-    private Long parentId;
-    private Long parentEntityId;
     private Date startDate;
     private Date endDate;
     private Status status;
@@ -30,8 +28,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
     private List<Attribute> attributes = new ArrayList<>();
 
     private Map<String, Object> map = new HashMap<>();
-
-    private EntityAttribute parentEntityAttribute;
 
     public Domain() {
     }
@@ -49,8 +45,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
     public void copy(Domain<?> domain){
         id = domain.id;
         objectId = domain.objectId;
-        parentId = domain.parentId;
-        parentEntityId = domain.parentEntityId;
         startDate = domain.startDate;
         endDate = domain.endDate;
         status = domain.status;
@@ -254,25 +248,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return (T) this;
     }
 
-    public Long getParentId() {
-        return parentId;
-    }
-
-    @SuppressWarnings("unchecked")
-    public T setParentId(Long parentId) {
-        this.parentId = parentId;
-
-        return (T) this;
-    }
-
-    public Long getParentEntityId() {
-        return parentEntityId;
-    }
-
-    public void setParentEntityId(Long parentEntityId) {
-        this.parentEntityId = parentEntityId;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
@@ -355,14 +330,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.userId = userId;
     }
 
-    public EntityAttribute getParentEntityAttribute() {
-        return parentEntityAttribute;
-    }
-
-    public void setParentEntityAttribute(EntityAttribute parentEntityAttribute) {
-        this.parentEntityAttribute = parentEntityAttribute;
-    }
-
     @SuppressWarnings("unchecked")
     public T setFilter(Long entityAttributeId, String filter){
         getOrCreateAttribute(entityAttributeId).setFilter(filter);
@@ -375,8 +342,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return MoreObjects.toStringHelper(this).omitNullValues()
                 .add("id", id)
                 .add("objectId", objectId)
-                .add("parentId", parentId)
-                .add("parentEntityId", parentEntityId)
                 .add("startDate", startDate)
                 .add("endDate", endDate)
                 .add("status", status)
@@ -385,7 +350,6 @@ public class Domain<T extends Domain<T>> implements Serializable{
                 .add("entityName", entityName)
                 .add("attributes", attributes)
                 .add("map", map)
-                .add("parentEntityAttribute", parentEntityAttribute)
                 .toString();
     }
 }

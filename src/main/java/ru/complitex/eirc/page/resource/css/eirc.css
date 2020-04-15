@@ -1,6 +1,10 @@
 .login{
-    max-width: 255px;
+    max-width: 250px;
     margin: auto;
+}
+
+.main-login{
+    top: 0;
 }
 
 .main{
@@ -52,11 +56,11 @@
 }
 
 .sidebar .menu ul a {
-    padding: 0px 15px 00px 30px;
+    padding: 0 15px 00px 30px;
 }
 
 .sidebar .menu ul ul a {
-    padding: 0px 15px 0px 45px;
+    padding: 0 15px 0 45px;
 }
 
 .sidebar .menu a:hover,
@@ -93,7 +97,7 @@ td .btn{
 }
 
 .alert{
-    display: inline-block;
+    display: table;
 }
 
 .wicket-aa-container{
@@ -127,4 +131,12 @@ td .btn{
 
 .wicket-aa ul li.selected {
     background-color: rgb(238, 238, 238);
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+.input-list{
+    margin-top: 3px;
 }

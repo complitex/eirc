@@ -26,7 +26,6 @@ import ru.complitex.domain.util.Attributes;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +48,6 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
         super(entityAttribute);
 
         this.entityAttribute = entityAttribute;
-
-        getEntityService().loadReference(entityAttribute);
     }
 
     public EntityService getEntityService() {
@@ -144,8 +141,8 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                 break;
 
             case ENTITY_LIST:
-                if (attribute.getValues() != null && entityAttribute.hasReferenceEntityAttributes()){
-                    EntityAttribute referenceEntityAttribute = entityAttribute.getReferenceEntityAttributes().get(0);
+                if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null){
+                    EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
                     if (referenceEntityAttribute != null){
                         List<Long> list = attribute.getValues().stream()
@@ -183,38 +180,32 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
     }
 
     protected String displayEntity(EntityAttribute entityAttribute, Long objectId){
-        if (entityAttribute.getReferenceId() != null) {
-            Domain<?> refDomain = getDomainService().getDomainRef(entityAttribute.getReferenceId(), objectId);
+        if (entityAttribute.getReferenceEntityId() != null) {
+            Domain<?> refDomain = getDomainService().getDomainRef(entityAttribute.getReferenceEntityId(), objectId);
 
             if (refDomain != null){
-                if (entityAttribute.hasReferenceEntityAttributes()) {
-                    List<String> list = new ArrayList<>();
+                EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
-                    for (EntityAttribute ea : entityAttribute.getReferenceEntityAttributes()){
-                        String text;
+                String text;
 
-                        switch (ea.getValueType()){
-                            case ENTITY:
-                                text = displayEntity(ea, refDomain.getNumber(ea.getEntityAttributeId()));
-                                break;
-                            case TEXT_LIST:
-                                text = refDomain.getTextValue(ea.getEntityAttributeId());
-                                break;
-                            case TEXT:
-                                text = refDomain.getText(ea.getEntityAttributeId());
-                                break;
-                            case NUMBER:
-                                text = refDomain.getNumber(ea.getEntityAttributeId()) + "";
-                                break;
-                            default:
-                                text = "[" + ea.getEntityAttributeId() + "]";
-                        }
-
-                        list.add(Attributes.displayText(ea, text));
-                    }
-
-                    return String.join(", ", list);
+                switch (referenceEntityAttribute.getValueType()){
+                    case ENTITY:
+                        text = displayEntity(referenceEntityAttribute, refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()));
+                        break;
+                    case TEXT_LIST:
+                        text = refDomain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
+                        break;
+                    case TEXT:
+                        text = refDomain.getText(referenceEntityAttribute.getEntityAttributeId());
+                        break;
+                    case NUMBER:
+                        text = refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()) + "";
+                        break;
+                    default:
+                        text = "[" + referenceEntityAttribute.getEntityAttributeId() + "]";
                 }
+
+                return Attributes.displayText(referenceEntityAttribute, text);
             }
         }
 

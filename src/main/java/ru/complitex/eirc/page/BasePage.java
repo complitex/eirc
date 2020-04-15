@@ -9,8 +9,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import ru.complitex.eirc.page.address.CountryListPage;
-import ru.complitex.eirc.page.address.RegionListPage;
+import ru.complitex.eirc.page.address.*;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
@@ -28,15 +27,15 @@ public class BasePage extends WebPage {
         WebMarkupContainer address = new WebMarkupContainer("address");
         add(address);
 
-        address.add(new BookmarkablePageLink("counties", CountryListPage.class));
-        address.add(new BookmarkablePageLink("regions", RegionListPage.class));
-        address.add(new BookmarkablePageLink("cityTypes", HomePage.class));
-        address.add(new BookmarkablePageLink("cities", HomePage.class));
-        address.add(new BookmarkablePageLink("districts", HomePage.class));
-        address.add(new BookmarkablePageLink("streetTypes", HomePage.class));
-        address.add(new BookmarkablePageLink("streets", HomePage.class));
-        address.add(new BookmarkablePageLink("buildings", HomePage.class));
-        address.add(new BookmarkablePageLink("apartments", HomePage.class));
+        address.add(new BookmarkablePageLink<>("counties", CountryListPage.class));
+        address.add(new BookmarkablePageLink<>("regions", RegionListPage.class));
+        address.add(new BookmarkablePageLink<>("cityTypes", CityTypeListPage.class));
+        address.add(new BookmarkablePageLink<>("cities", CityListPage.class));
+        address.add(new BookmarkablePageLink<>("districts", DistrictListPage.class));
+        address.add(new BookmarkablePageLink<>("streetTypes", StreetTypeListPage.class));
+        address.add(new BookmarkablePageLink<>("streets", StreetListPage.class));
+        address.add(new BookmarkablePageLink<>("buildings", BuildingListPage.class));
+        address.add(new BookmarkablePageLink<>("apartments", HomePage.class));
     }
 
     @Override

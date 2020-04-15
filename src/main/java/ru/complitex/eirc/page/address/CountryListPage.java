@@ -13,6 +13,5 @@ import ru.complitex.eirc.security.EircRoles;
 public class CountryListPage extends DomainListModalPage<Country> {
     public CountryListPage() {
         super(Country.class);
-
     }
 }

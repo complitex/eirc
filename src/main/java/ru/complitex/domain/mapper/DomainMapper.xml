@@ -7,8 +7,6 @@
     <resultMap id="domainResultMap" type="ru.complitex.domain.entity.Domain">
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
-        <result column="parent_id" property="parentId"/>
-        <result column="parent_entity_id" property="parentEntityId"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
@@ -23,8 +21,6 @@
     <resultMap id="domainResultMapJoin" type="ru.complitex.domain.entity.Domain">
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
-        <result column="parent_id" property="parentId"/>
-        <result column="parent_entity_id" property="parentEntityId"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="status" property="status"/>
@@ -56,10 +52,9 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="true" keyProperty="id">
-        insert into `${entityName}` (object_id, parent_id, parent_entity_id, start_date, end_date, `status`, permission_id,
+        insert into `${entityName}` (object_id, start_date, end_date, `status`, permission_id,
           user_id)
-        value (#{objectId}, #{parentId}, #{parentEntityId}, #{startDate}, #{endDate}, #{status}, #{permissionId},
-          #{userId})
+        value (#{objectId}, #{startDate}, #{endDate}, #{status}, #{permissionId}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
@@ -98,8 +93,6 @@
         </if>
 
         <where>
-            <if test="parentId != null">and d.parent_id = #{parentId} and d.`status` > 0</if>
-            <if test="parentEntityId != null">and d.parent_entity_id = #{parentEntityId}</if>
             <if test="objectId != null">and d.object_id = #{objectId} and d.`status` > 0</if>
             <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
@@ -142,12 +135,6 @@
     </sql>
 
     <sql id="selectDomainsFromFilter">
-        <if test="object.parentEntityAttribute != null and map.parentName != null">
-            left join `${object.parentEntityAttribute.entityName}` p_d on p_d.object_id = d.parent_id
-            left join `${object.parentEntityAttribute.entityName}_attribute` p_a on p_a.domain_id = p_d.id and p_a.status = 1
-            left join `${object.parentEntityAttribute.entityName}_value` p_v on p_v.attribute_id = p_a.id
-        </if>
-
         <foreach collection="object.attributes" index="i" item="a">
             <if test="a.text != null or a.number != null or a.date != null">
                 left join `${object.entityName}_attribute` a${i} on (a${i}.domain_id = d.id
@@ -155,7 +142,7 @@
                 left join `${object.entityName}_value` v${i} on (v${i}.attribute_id = a${i}.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
 
-                <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
+               <!-- <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
                     <if test="a.entityAttribute.referenceEntityAttributes != null">
                         <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
                             left join `${ra.entityName}` d${i}_${j}_ref
@@ -173,7 +160,7 @@
                             left join `${ra.entityName}_value` v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
                         </foreach>
                     </if>
-                </if>
+                </if>-->
             </if>
         </foreach>
         <if test="object.map.attributes != null">
@@ -209,13 +196,6 @@
 
             </if>
 
-            <if test="object.parentId != null"> and d.parent_id = #{object.parentId}</if>
-            <if test="object.parentEntityId != null">and d.parent_entity_id = #{object.parentEntityId}</if>
-
-            <if test="object.parentEntityAttribute != null and map.parentName != null">
-                and (p_a.text like concat('%', #{map.parentName}, '%') or p_v.text like concat('%', #{map.parentName}, '%'))
-            </if>
-
             and (
 
             <choose>
@@ -224,8 +204,8 @@
             </choose>
 
             <foreach collection="object.attributes" index="i" item="a">
-                <choose>
-                    <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttributes != null and a.text != null">
+                <!--<choose>-->
+                    <!--<when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttributes != null and a.text != null">
                         <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
                             <choose>
                                 <when test="filter == 'search'"> or </when>
@@ -234,8 +214,8 @@
 
                             (a${i}_${j}_ref.text like concat('%', #{a.text}, '%') or v${i}_${j}_ref.text like concat('%', #{a.text}, '%'))
                         </foreach>
-                    </when>
-                    <otherwise>
+                    </when>-->
+                    <!--<otherwise>-->
                         <if test="a.text != null">
                             <choose>
                                 <when test="filter == 'equal'">
@@ -288,8 +268,8 @@
                             </choose>
 
                         </if>
-                    </otherwise>
-                </choose>
+                    <!--</otherwise>-->
+                <!--</choose>-->
             </foreach>
             )
 
@@ -350,16 +330,6 @@
 
     <sql id="selectDomainsFromSort">
         <if test="sortProperty != null">
-            <if test="sortProperty.key == 'parent' and sortProperty.value != null">
-                left join `${sortProperty.value.entityName}` sort_p on sort_p.object_id = d.parent_id
-                left join `${sortProperty.value.entityName}_attribute` sort_pa
-                  on sort_pa.domain_id = sort_p.id
-                    and sort_pa.entity_attribute_id = #{sortProperty.value.entityAttributeId}
-                    and sort_pa.status = 1
-                left join `${sortProperty.value.entityName}_value` sort_rv
-                  on sort_rv.attribute_id = sort_pa.id
-            </if>
-
             <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity', 'entity_value'}">
                 left join `${object.entityName}_attribute` sort_a
                   on sort_a.domain_id = d.id
@@ -401,9 +371,6 @@
                 <when test="sortProperty.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
                 <when test="sortProperty.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
                 <when test="sortProperty.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
-                <when test="sortProperty.key == 'parent' and sortProperty.value != null">
-                    order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
-                </when>
                 <!--
                 <when test="sortProperty.key in {'entity', 'entity_value'} and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
@@ -464,10 +431,6 @@
 
     <!--suppress SqlResolve -->
     <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
-        update `${entityName}` set `parent_id` = #{parentId}, `parent_entity_id` = #{parentEntityId}, `status` = #{status},
-               end_date = #{endDate}
-          where id = #{id}
+        update `${entityName}` set  `status` = #{status}, end_date = #{endDate} where id = #{id}
     </update>
-
-
 </mapper>

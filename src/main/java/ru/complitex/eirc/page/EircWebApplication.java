@@ -11,8 +11,7 @@ import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.protocol.http.WebApplication;
 import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
 import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
-import ru.complitex.eirc.page.address.CountryListPage;
-import ru.complitex.eirc.page.address.RegionListPage;
+import ru.complitex.eirc.page.address.*;
 import ru.complitex.eirc.page.login.LoginPage;
 
 /**
@@ -35,6 +34,8 @@ public class EircWebApplication extends WebApplication {
 
         configureBootstrap();
         configureMountPage();
+
+        getCspSettings().blocking().disabled();
     }
 
     private void configureBootstrap() {
@@ -48,5 +49,11 @@ public class EircWebApplication extends WebApplication {
         mountPage("login", LoginPage.class);
         mountPage("counties", CountryListPage.class);
         mountPage("regions", RegionListPage.class);
+        mountPage("city-types", CityTypeListPage.class);
+        mountPage("cities", CityListPage.class);
+        mountPage("districts", DistrictListPage.class);
+        mountPage("street-types", StreetTypeListPage.class);
+        mountPage("streets", StreetListPage.class);
+        mountPage("buildings", BuildingListPage.class);
     }
 }

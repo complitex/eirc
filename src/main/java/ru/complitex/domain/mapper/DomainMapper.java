@@ -147,14 +147,6 @@ public class DomainMapper extends BaseMapper {
         return getDomain(entityName, objectId, false, false);
     }
 
-    public Domain getDomainByParentId(String entityName, Long parentId){
-        Domain domain = new Domain();
-        domain.setEntityName(entityName);
-        domain.setParentId(parentId);
-
-        return getDomain(domain);
-    }
-
     public Domain getDomain(String entityName, Long entityAttributeId, String text){
         Domain domain = new Domain();
         domain.setEntityName(entityName);

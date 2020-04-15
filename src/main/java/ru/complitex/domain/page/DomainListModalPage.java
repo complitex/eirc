@@ -37,7 +37,7 @@ import java.util.Optional;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-public class DomainListModalPage<T extends Domain<T>> extends BasePage {
+public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage {
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
     public static final String DOMAIN_EDIT_MODAL_ID = "edit";
@@ -49,6 +49,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
     private DomainService domainService;
 
     private Class<T> domainClass;
+
+    private Entity entity;
 
     private FilterWrapper<T> filterWrapper;
 
@@ -62,6 +64,8 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
 
     public DomainListModalPage(Class<T> domainClass) {
         this.domainClass = domainClass;
+
+        this.entity = entityService.getEntity(domainClass);
 
         add(new Label("title", getTitleModel()));
 
@@ -95,23 +99,6 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         List<IColumn<T, SortProperty>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
-
-
-        if (getParentAttribute() != null){
-            Attribute parentAttribute = getParentAttribute();
-
-            Entity parentEntity = entityService.getEntity(parentAttribute.getEntityName());
-
-            //noinspection rawtypes
-            columns.add(new DomainParentColumn(Model.of(parentEntity.getValue().getText()),
-                    parentEntity.getEntityAttribute(parentAttribute.getEntityAttributeId())) {
-                @Override
-                protected Domain getDomain(Long objectId) {
-                    return domainService.getDomain(parentAttribute.getEntityName(), objectId);
-                }
-            });
-        }
-
 
         getListEntityAttributes().forEach(a -> columns.add(newDomainColumn(a)));
 
@@ -173,8 +160,12 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
         }
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
+
     protected IModel<String> getTitleModel() {
-        return Model.of(entityService.getEntity(domainClass).getValue().getText());
+        return Model.of(getEntity().getValue().getText());
     }
 
     protected FilterWrapper<T> newFilterWrapper() {
@@ -192,16 +183,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
             protected Component getComponent(String componentId, Attribute attribute) {
                 return DomainListModalPage.this.getEditComponent(componentId, attribute);
             }
-
-            @Override
-            protected Attribute getParentAttribute() {
-                return DomainListModalPage.this.getParentAttribute();
-            }
         };
-    }
-
-    protected Attribute getParentAttribute(){
-        return null;
     }
 
     protected Component getEditComponent(String componentId, Attribute attribute) {
@@ -254,7 +236,7 @@ public class DomainListModalPage<T extends Domain<T>> extends BasePage {
     }
 
     protected List<EntityAttribute> getListEntityAttributes(){
-        return entityService.getEntity(domainClass).getAttributes();
+        return getEntity().getAttributes();
     }
 
     protected List<EntityAttribute> getEditEntityAttributes(){

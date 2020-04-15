@@ -3,7 +3,6 @@ package ru.complitex.domain.entity;
 import ru.complitex.domain.util.Locales;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,13 +17,12 @@ public class EntityAttribute implements Serializable {
     private Date startDate;
     private Date endDate;
     private ValueType valueType;
-    private Long referenceId;
+    private Long referenceEntityId;
+    private Long referenceEntityAttributeId;
 
     private List<EntityValue> values;
 
     private String entityName;
-
-    private List<EntityAttribute> referenceEntityAttributes;
 
     private StringType stringType = StringType.CAPITALIZE;
 
@@ -45,7 +43,8 @@ public class EntityAttribute implements Serializable {
         this.startDate = entityAttribute.getStartDate();
         this.endDate = entityAttribute.getEndDate();
         this.valueType = entityAttribute.getValueType();
-        this.referenceId = entityAttribute.getReferenceId();
+        this.referenceEntityId = entityAttribute.getReferenceEntityId();
+        this.referenceEntityAttributeId = entityAttribute.getReferenceEntityAttributeId();
         this.values = entityAttribute.getValues();
         this.entityName = entityAttribute.getEntityName();
     }
@@ -112,12 +111,20 @@ public class EntityAttribute implements Serializable {
         this.valueType = valueType;
     }
 
-    public Long getReferenceId() {
-        return referenceId;
+    public Long getReferenceEntityId() {
+        return referenceEntityId;
     }
 
-    public void setReferenceId(Long referenceId) {
-        this.referenceId = referenceId;
+    public void setReferenceEntityId(Long referenceEntityId) {
+        this.referenceEntityId = referenceEntityId;
+    }
+
+    public Long getReferenceEntityAttributeId() {
+        return referenceEntityAttributeId;
+    }
+
+    public void setReferenceEntityAttributeId(Long referenceEntityAttributeId) {
+        this.referenceEntityAttributeId = referenceEntityAttributeId;
     }
 
     public List<EntityValue> getValues() {
@@ -134,40 +141,6 @@ public class EntityAttribute implements Serializable {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
-    }
-
-    public EntityAttribute addReferenceEntityAttribute(EntityAttribute entityAttribute){
-        if (referenceEntityAttributes == null){
-            referenceEntityAttributes = new ArrayList<>();
-        }
-
-        referenceEntityAttributes.add(entityAttribute);
-
-        return this;
-    }
-
-    public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId,
-                                                                    StringType stringType){
-        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId)
-                .setStringType(stringType));
-    }
-
-    public EntityAttribute withReference(String referenceEntityName, Long referenceEntityAttributeId){
-        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId));
-    }
-
-    public EntityAttribute withReferences(String referenceEntityName, Long referenceEntityAttributeId1,
-                                                                     Long referenceEntityAttributeId2){
-        return addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId1))
-                .addReferenceEntityAttribute(new EntityAttribute(referenceEntityName, referenceEntityAttributeId2));
-    }
-
-    public List<EntityAttribute> getReferenceEntityAttributes() {
-        return referenceEntityAttributes;
-    }
-
-    public boolean hasReferenceEntityAttributes(){
-        return referenceEntityAttributes != null && !referenceEntityAttributes.isEmpty();
     }
 
     public StringType getStringType() {

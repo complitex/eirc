@@ -13,7 +13,7 @@
     <a class="navbar-brand" href="#">ЕИРЦ</a>
 </nav>
 
-<div class="container-fluid main" style="top: 0">
+<div class="container-fluid main main-login">
     <div class="row">
         <div class="col align-self-center">
             <form class="login" method="post" action="j_security_check">
@@ -21,14 +21,14 @@
 
                 <div class="form-group">
                     <label for="j_username" class="sr-only">Логин</label>
-                    <input type="text" class="form-control" id="j_username" name="j_username" placeholder="Логин" required autofocus>
+                    <input type="text" class="form-control" id="j_username" name="j_username" placeholder="Логин" autocomplete="current-login" required autofocus>
                 </div>
                 <div class="form-group">
                     <label for="j_password" class="sr-only">Пароль</label>
-                    <input type="password" class="form-control" id="j_password" name="j_password" placeholder="Пароль" required>
+                    <input type="password" class="form-control" id="j_password" name="j_password" placeholder="Пароль" autocomplete="current-password" required>
                 </div>
 
-                <button type="submit" class="btn btn-outline-primary btn-block" style="cursor: pointer">Войти</button>
+                <button type="submit" class="btn btn-outline-primary btn-block">Войти</button>
             </form>
         </div>
     </div>
