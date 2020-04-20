@@ -114,7 +114,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
                             break;
                         case TEXT:
-                        case ENTITY_LIST:
+                        case REFERENCE_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;
                         case DATE:
@@ -122,7 +122,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                                     new PropertyModel<>(attribute, "date"),
                                     new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
-                        case ENTITY:
+                        case REFERENCE:
                             EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
 
                             component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),

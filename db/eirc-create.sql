@@ -372,5 +372,63 @@ CALL createDomain(9,'apartment', 'Квартира', 'Квартира');
 CALL createReference(9, 1, 8, 3, 'Дом', 'Будинок');
 CALL createAttribute(9, 2, 8, 'Номер квартиры', 'Номер квартири');
 
+-- ---------------------------
+-- Matching
+-- ---------------------------
+
+DROP PROCEDURE IF EXISTS createMatching;
+
+DELIMITER //
+
+CREATE PROCEDURE createMatching(IN entityName VARCHAR(64) CHARSET utf8,
+                                  IN entityDescription VARCHAR(256) CHARSET utf8)
+BEGIN
+    SET @dropMatching = CONCAT('DROP TABLE IF EXISTS `', entityName, '_matching`;');
+    PREPARE QUERY FROM @dropMatching; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+
+    SET @createMatching = CONCAT('
+        CREATE TABLE `', entityName, '_matching` (
+          `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор соответствия'',
+          `object_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+          `parent_id` BIGINT(20) COMMENT ''Идентификатор родителя'',
+          `additional_parent_id` BIGINT(20) COMMENT ''Дополнительный идентификатор родителя'',
+          `external_id` BIGINT(20) COMMENT ''Внешний идентификатор'',
+          `additional_external_id` BIGINT(20) COMMENT ''Дополнительный внешний идентификатор'',
+          `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
+          `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительная соответствие'',
+          `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала'',
+          `end_date` DATETIME COMMENT ''Дата окончания'',
+          `organization_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор организации'',
+          `user_organization_id` BIGINT(20) COMMENT ''Идентификатор организации пользователя'',
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `unique_external_id` (`external_id`, `additional_external_id`, `organization_id`, `user_organization_id`),
+          KEY `key_object_id` (`object_id`),
+          KEY `key_parent_id` (`parent_id`),
+          KEY `key_additional_parent_id` (`additional_parent_id`),
+          KEY `key_external_id` (`external_id`),
+          KEY `key_additional_external_id` (`additional_external_id`),
+          KEY `key_name` (`name`),
+          KEY `key_additional_name` (`additional_name`),
+          KEY `key_start_date` (`start_date`),
+          KEY `key_end_date` (`end_date`),
+          KEY `key_organization_id` (`organization_id`),
+          KEY `key_user_organization_id` (`user_organization_id`),
+          CONSTRAINT `fk_', entityName, '_matching__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`)
+        ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT ''', entityDescription, ''';');
+
+    PREPARE QUERY FROM @createMatching; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
+END //
+
+DELIMITER ;
+
+CALL createMatching('country', 'Соответствия стран');
+CALL createMatching('region', 'Соответствия регионов');
+CALL createMatching('city_type', 'Соответствия типов населённых пунктов');
+CALL createMatching('city', 'Соответствия населённых пунктов');
+CALL createMatching('district', 'Соответствия районов');
+CALL createMatching('street_type', 'Соответствия типов улиц');
+CALL createMatching('street', 'Соответствия улиц');
+CALL createMatching('building', 'Соответствия домов');
+CALL createMatching('apartment', 'Соответствия квартир');
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;

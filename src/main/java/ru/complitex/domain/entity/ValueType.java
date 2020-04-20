@@ -11,10 +11,10 @@ public enum ValueType implements IdEnum {
     DECIMAL(3L, "decimal"),
     TEXT(4L, "text"),
     DATE(5L, "date"),
-    ENTITY(6L, "reference"),
+    REFERENCE(6L, "reference"),
     NUMBER_LIST(7L, "number_list"),
     TEXT_LIST(8L, "text_list"),
-    ENTITY_LIST(9L, "reference_list");
+    REFERENCE_LIST(9L, "reference_list");
 
     private Long id;
     private String key;

@@ -120,7 +120,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                 }
 
                 break;
-            case ENTITY:
+            case REFERENCE:
                 if (attribute.getNumber() != null) {
                     text = displayEntity(entityAttribute, attribute.getNumber());
                 }
@@ -140,7 +140,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
                 break;
 
-            case ENTITY_LIST:
+            case REFERENCE_LIST:
                 if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null){
                     EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
@@ -189,7 +189,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                 String text;
 
                 switch (referenceEntityAttribute.getValueType()){
-                    case ENTITY:
+                    case REFERENCE:
                         text = displayEntity(referenceEntityAttribute, refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()));
                         break;
                     case TEXT_LIST:
