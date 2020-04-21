@@ -395,9 +395,9 @@ BEGIN
           `external_id` BIGINT(20) COMMENT ''Внешний идентификатор'',
           `additional_external_id` BIGINT(20) COMMENT ''Дополнительный внешний идентификатор'',
           `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
-          `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительная соответствие'',
-          `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала'',
-          `end_date` DATETIME COMMENT ''Дата окончания'',
+          `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительное соответствие'',
+          `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
+          `end_date` DATETIME COMMENT ''Дата окончания актуальности'',
           `organization_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор организации'',
           `user_organization_id` BIGINT(20) COMMENT ''Идентификатор организации пользователя'',
           PRIMARY KEY (`id`),
@@ -414,21 +414,21 @@ BEGIN
           KEY `key_organization_id` (`organization_id`),
           KEY `key_user_organization_id` (`user_organization_id`),
           CONSTRAINT `fk_', entityName, '_matching__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`)
-        ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT ''', entityDescription, ''';');
+        ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT ''', entityDescription, ' - Соответствия'';');
 
     PREPARE QUERY FROM @createMatching; EXECUTE QUERY; DEALLOCATE PREPARE QUERY;
 END //
 
 DELIMITER ;
 
-CALL createMatching('country', 'Соответствия стран');
-CALL createMatching('region', 'Соответствия регионов');
-CALL createMatching('city_type', 'Соответствия типов населённых пунктов');
-CALL createMatching('city', 'Соответствия населённых пунктов');
-CALL createMatching('district', 'Соответствия районов');
-CALL createMatching('street_type', 'Соответствия типов улиц');
-CALL createMatching('street', 'Соответствия улиц');
-CALL createMatching('building', 'Соответствия домов');
-CALL createMatching('apartment', 'Соответствия квартир');
+CALL createMatching('country', 'Страны');
+CALL createMatching('region', 'Регионы');
+CALL createMatching('city_type', 'Тип населённого пункта');
+CALL createMatching('city', 'Населённые пункты');
+CALL createMatching('district', 'Районы');
+CALL createMatching('street_type', 'Типы улиц');
+CALL createMatching('street', 'Улица');
+CALL createMatching('building', 'Дом');
+CALL createMatching('apartment', 'Квартира');
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
