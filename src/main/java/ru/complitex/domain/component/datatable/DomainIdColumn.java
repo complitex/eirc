@@ -8,8 +8,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
-import ru.complitex.common.wicket.datatable.TextDataFilter;
+import ru.complitex.common.ui.datatable.FilterDataForm;
+import ru.complitex.common.ui.datatable.TextDataFilter;
 import ru.complitex.domain.entity.Domain;
 
 /**

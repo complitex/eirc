@@ -165,6 +165,13 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return attribute != null ? attribute.getValue(locale) : null;
     }
 
+    public String getTextValue(Long entityAttributeId, Long localeId){
+        return Optional.ofNullable(getAttribute(entityAttributeId))
+                .map(a -> a.getValue(localeId))
+                .map(Value::getText)
+                .orElse(null);
+    }
+
     public String getTextValue(Long entityAttributeId, Locale locale){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(a -> a.getValue(locale))
@@ -176,12 +183,12 @@ public class Domain<T extends Domain<T>> implements Serializable{
         return getTextValue(entityAttributeId, Locales.getSystemLocale());
     }
 
-    public void setTextValue(Long entityAttributeId, String value, Locale locale){
-        getOrCreateAttribute(entityAttributeId).setTextValue(value, Locales.getLocaleId(locale));
+    public void setTextValue(Long entityAttributeId, String value, Long localeId){
+        getOrCreateAttribute(entityAttributeId).setTextValue(value, localeId);
     }
 
     public void setTextValue(Long entityAttributeId, String value){
-        setTextValue(entityAttributeId, value, Locales.getSystemLocale());
+        setTextValue(entityAttributeId, value, Locales.getSystemLocaleId());
     }
 
     public void addTextValue(Long entityAttributeId, String text){

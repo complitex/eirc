@@ -136,7 +136,7 @@
 
     <sql id="selectDomainsFromFilter">
         <foreach collection="object.attributes" index="i" item="a">
-            <if test="a.text != null or a.number != null or a.date != null">
+            <if test="a.text != null or a.number != null or a.date != null or (a.values != null and !a.values.empty)">
                 left join `${object.entityName}_attribute` a${i} on (a${i}.domain_id = d.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
                 left join `${object.entityName}_value` v${i} on (v${i}.attribute_id = a${i}.id
@@ -204,72 +204,65 @@
             </choose>
 
             <foreach collection="object.attributes" index="i" item="a">
-                <!--<choose>-->
-                    <!--<when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttributes != null and a.text != null">
-                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
+                <if test="a.text != null">
+                    <choose>
+                        <when test="filter == 'equal'">
+                            and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                        </when>
+                        <otherwise>
                             <choose>
                                 <when test="filter == 'search'"> or </when>
                                 <otherwise> and </otherwise>
                             </choose>
 
-                            (a${i}_${j}_ref.text like concat('%', #{a.text}, '%') or v${i}_${j}_ref.text like concat('%', #{a.text}, '%'))
-                        </foreach>
-                    </when>-->
-                    <!--<otherwise>-->
-                        <if test="a.text != null">
-                            <choose>
-                                <when test="filter == 'equal'">
-                                    and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
-                                </when>
-                                <otherwise>
-                                    <choose>
-                                        <when test="filter == 'search'"> or </when>
-                                        <otherwise> and </otherwise>
-                                    </choose>
+                            (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%'))
+                        </otherwise>
+                    </choose>
+                </if>
 
-                                    (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%'))
-                                </otherwise>
-                            </choose>
+                <if test="a.number != null">
+                   <choose>
+                       <when test="a.number == -1">
+                           and a${i}.number is null
+                       </when>
+                       <when test="a.number == -2">
+                           and a${i}.number is not null
+                       </when>
+                       <otherwise>
+                           and (
+                               a${i}.number = #{a.number} or v${i}.number = #{a.number}
+                            )
+                       </otherwise>
+                   </choose>
+                </if>
+
+                <if test="a.date != null">
+                    <choose>
+                        <when test="a.filter == 'same_day'">
+                            and (date(a${i}.date) = date(#{a.date}))
+                        </when>
+
+                        <when test="a.filter == 'same_month'">
+                            and (year(a${i}.date) = year(#{a.date}) and month(a${i}.date) = month(#{a.date}))
+                        </when>
+
+                        <when test="a.filter == 'before_or_equal_date'">
+                            and (#{a.date} >= a${i}.date)
+                        </when>
+
+                        <otherwise>
+                            and (a${i}.date = #{a.date})
+                        </otherwise>
+                    </choose>
+                </if>
+
+                <if test="a.values != null and !a.values.empty">
+                    <foreach collection="a.values" item="v">
+                        <if test="a.filter = 'equal' and v.text != null and v.localeId != null">
+                            and v${i} = #{v.text} and v${i}.locale_id = #{v.localeId}
                         </if>
-
-                        <if test="a.number != null">
-                           <choose>
-                               <when test="a.number == -1">
-                                   and a${i}.number is null
-                               </when>
-                               <when test="a.number == -2">
-                                   and a${i}.number is not null
-                               </when>
-                               <otherwise>
-                                   and (
-                                       a${i}.number = #{a.number} or v${i}.number = #{a.number}
-                                    )
-                               </otherwise>
-                           </choose>
-                        </if>
-
-                        <if test="a.date != null">
-                            <choose>
-                                <when test="a.filter == 'same_day'">
-                                    and (date(a${i}.date) = date(#{a.date}))
-                                </when>
-
-                                <when test="a.filter == 'same_month'">
-                                    and (year(a${i}.date) = year(#{a.date}) and month(a${i}.date) = month(#{a.date}))
-                                </when>
-
-                                <when test="a.filter == 'before_or_equal_date'">
-                                    and (#{a.date} >= a${i}.date)
-                                </when>
-
-                                <otherwise>
-                                    and (a${i}.date = #{a.date})
-                                </otherwise>
-                            </choose>
-
-                        </if>
-                    <!--</otherwise>-->
-                <!--</choose>-->
+                    </foreach>
+                </if>
             </foreach>
             )
 

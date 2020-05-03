@@ -10,8 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Locales {
     private Long systemLocaleId;
-
     private Locale systemLocale;
+
+    private Long altLocaleId;
 
     private Map<Locale, Long> map = new ConcurrentHashMap<>();
     private Map<Long, Locale> mapId = new ConcurrentHashMap<>();
@@ -35,6 +36,8 @@ public class Locales {
 
         systemLocale = RU;
         systemLocaleId = RU_ID;
+
+        altLocaleId = UA_ID;
     }
 
     public static Locale getSystemLocale() {
@@ -43,6 +46,10 @@ public class Locales {
 
     public static Long getSystemLocaleId() {
         return instance.systemLocaleId;
+    }
+
+    public static Long getAltLocaleId() {
+        return instance.altLocaleId;
     }
 
     public static Long getLocaleId(Locale locale){

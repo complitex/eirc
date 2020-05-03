@@ -1,0 +1,129 @@
+package ru.complitex.sync.handler;
+
+import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.CityType;
+import ru.complitex.address.entity.Region;
+import ru.complitex.common.entity.Cursor;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.util.Locales;
+import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.matching.entity.Matching;
+import ru.complitex.matching.mapper.MatchingMapper;
+import ru.complitex.sync.entity.Sync;
+import ru.complitex.sync.entity.SyncStatus;
+import ru.complitex.sync.exception.SyncException;
+import ru.complitex.sync.mapper.SyncMapper;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import static ru.complitex.common.util.Strings.equalsIgnoreCase;
+
+/**
+ * @author Anatoly A. Ivanov
+ * 19.01.2018 17:17
+ */
+@RequestScoped
+public class CitySyncHandler implements ISyncHandler<City> {
+    @Inject
+    private DomainService domainService;
+
+    @Inject
+    private SyncMapper syncMapper;
+
+    @Inject
+    private MatchingMapper matchingMapper;
+
+    @Inject
+    private SyncAdapter syncAdapter;
+
+    @Override
+    public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
+        return syncAdapter.getCitySyncs(parentSync.getName(), date);
+    }
+
+    @Override
+    public List<Sync> getParentSyncs() {
+        return syncMapper.getSyncs(FilterWrapper.of(new Sync(Region.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+    }
+
+    private Long getParentId(Sync sync, Long organizationId){
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Region.ENTITY_NAME,
+                sync.getParentId(), organizationId);
+
+        if (matchingList.isEmpty()){
+            throw new RuntimeException("region correction not found " + sync);
+        }
+
+        return matchingList.get(0).getObjectId();
+    }
+
+    private Long getAdditionalParentId(Sync sync, Long organizationId){
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(CityType.ENTITY_NAME,
+                Long.valueOf(sync.getAdditionalParentId()), organizationId);
+
+        if (matchingList.isEmpty()){
+            throw new RuntimeException("city type matching not found " + sync);
+        }
+
+        return matchingList.get(0).getObjectId();
+    }
+
+     @Override
+    public boolean isMatch(City city, Sync sync, Long organizationId) {
+        return Objects.equals(city.getRegionId(), getParentId(sync, organizationId)) &&
+                Objects.equals(city.getCityTypeId(), getAdditionalParentId(sync, organizationId)) &&
+                equalsIgnoreCase(city.getName(), sync.getName()) &&
+                equalsIgnoreCase(city.getName(Locales.getAltLocaleId()), sync.getAltName());
+    }
+
+    @Override
+    public boolean isMatch(Matching matching, Sync sync, Long organizationId) {
+        return Objects.equals(matching.getParentId(), getParentId(sync, organizationId)) &&
+                equalsIgnoreCase(matching.getName(), sync.getName());
+    }
+
+    @Override
+    public boolean isMatch(Matching matching1, Matching matching2) {
+        return Objects.equals(matching1.getParentId(), matching2.getParentId()) &&
+                equalsIgnoreCase(matching1.getName(), matching2.getName());
+    }
+
+    @Override
+    public List<City> getDomains(Sync sync, Long organizationId) {
+        City city = new City();
+
+        city.setRegionId(getParentId(sync, organizationId));
+        city.setCityTypeId(getAdditionalParentId(sync, organizationId));
+        city.setName(sync.getName());
+        city.setName(sync.getAltName(), Locales.getAltLocaleId());
+
+        return domainService.getDomains(City.class, FilterWrapper.of(city).setFilter(FilterWrapper.FILTER_EQUAL));
+    }
+
+    @Override
+    public Matching insertMatching(City city, Sync sync, Long organizationId) {
+        return matchingMapper.insert(new Matching(City.ENTITY_NAME, city.getObjectId(), city.getRegionId(),
+                sync.getExternalId(), sync.getName(), organizationId));
+    }
+
+    @Override
+    public void updateMatching(Matching matching, Sync sync, Long organizationId) {
+        matching.setParentId(getParentId(sync, organizationId));
+        matching.setName(sync.getName());
+
+        matchingMapper.update(matching);
+    }
+
+    @Override
+    public void updateNames(City city, Sync sync, Long organizationId) {
+        city.setRegionId(getParentId(sync, organizationId));
+        city.setCityTypeId(getAdditionalParentId(sync, organizationId));
+        city.setName(sync.getName());
+        city.setName(sync.getAltName(), Locales.getAltLocaleId());
+    }
+}

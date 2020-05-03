@@ -2,7 +2,7 @@ package ru.complitex.domain.mapper;
 
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;

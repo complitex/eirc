@@ -12,8 +12,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import ru.complitex.common.wicket.component.LinkPanel;
-import ru.complitex.common.wicket.datatable.FilterDataForm;
+import ru.complitex.common.ui.component.LinkPanel;
+import ru.complitex.common.ui.datatable.FilterDataForm;
 import ru.complitex.domain.entity.Domain;
 
 /**

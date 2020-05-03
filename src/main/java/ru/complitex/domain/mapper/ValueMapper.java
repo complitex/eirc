@@ -1,7 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import org.mybatis.cdi.Transactional;
-import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.domain.entity.Value;
 
 import javax.enterprise.context.RequestScoped;

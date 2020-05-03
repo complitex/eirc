@@ -9,9 +9,9 @@ import org.apache.wicket.Page;
 import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.protocol.http.WebApplication;
-import ru.complitex.common.wicket.application.ServletAuthorizationStrategy;
-import ru.complitex.common.wicket.application.ServletUnauthorizedListener;
-import ru.complitex.eirc.page.address.*;
+import ru.complitex.address.page.*;
+import ru.complitex.common.ui.application.ServletAuthorizationStrategy;
+import ru.complitex.common.ui.application.ServletUnauthorizedListener;
 import ru.complitex.eirc.page.login.LoginPage;
 
 /**

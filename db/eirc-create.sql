@@ -391,9 +391,9 @@ BEGIN
           `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор соответствия'',
           `object_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
           `parent_id` BIGINT(20) COMMENT ''Идентификатор родителя'',
-          `additional_parent_id` BIGINT(20) COMMENT ''Дополнительный идентификатор родителя'',
+          `additional_parent_id` VARCHAR(64) COMMENT ''Дополнительный идентификатор родителя'',
           `external_id` BIGINT(20) COMMENT ''Внешний идентификатор'',
-          `additional_external_id` BIGINT(20) COMMENT ''Дополнительный внешний идентификатор'',
+          `additional_external_id` VARCHAR(64) COMMENT ''Дополнительный внешний идентификатор'',
           `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
           `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительное соответствие'',
           `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
@@ -430,5 +430,42 @@ CALL createMatching('street_type', 'Типы улиц');
 CALL createMatching('street', 'Улица');
 CALL createMatching('building', 'Дом');
 CALL createMatching('apartment', 'Квартира');
+
+
+-- ------------------------------
+--  Sync
+-- ------------------------------
+
+DROP TABLE IF EXISTS `sync`;
+CREATE TABLE `sync`(
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор синхронизации',
+  `parent_id` BIGINT(20) COMMENT 'Идентификатор родителя',
+  `additional_parent_id` VARCHAR(64) COMMENT 'Дополнительный идентификатор родителя',
+  `external_id` BIGINT(20) NOT NULL COMMENT 'Внешний идентификатор',
+  `additional_external_id` VARCHAR(64) COMMENT 'Дополнительный внешний идентификатор',
+  `name` VARCHAR(250) NOT NULL COMMENT 'Название',
+  `additional_name` VARCHAR(50) COMMENT 'Дополнительное название',
+  `alt_name` VARCHAR(250) COMMENT 'Название в альтернативной локали',
+  `alt_additional_name` VARCHAR(50) COMMENT 'Дополнительное название в альтернативной локали',
+  `servicing_organization` BIGINT(20) COMMENT 'Обслуживающая организация',
+  `balance_holder` BIGINT(20) COMMENT 'Балансодержатель',
+  `date` DATETIME NOT NULL COMMENT 'Дата актуальности',
+  `status` INTEGER NOT NULL COMMENT 'Статус синхронизации',
+  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  PRIMARY KEY (`id`),
+  KEY `key_parent_id` (`parent_id`),
+  KEY `key_additional_parent_id` (`additional_parent_id`),
+  KEY `key_external_id` (`external_id`),
+  KEY `key_additional_external_id` (`additional_external_id`),
+  KEY `key_name` (`name`),
+  KEY `key_additional_name` (`additional_name`),
+  KEY `key_servicing_organization` (`servicing_organization`),
+  KEY `key_balance_holder` (`balance_holder`),
+  KEY `key_date` (`date`),
+  KEY `key_status` (`status`),
+  KEY `key_entity_id` (`entity_id`),
+  CONSTRAINT `fk_sync__entity_id` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Синхронизация';
+
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;

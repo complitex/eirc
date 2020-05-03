@@ -9,7 +9,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import ru.complitex.eirc.page.address.*;
+import ru.complitex.address.page.*;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;

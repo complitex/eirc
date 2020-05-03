@@ -1,6 +1,6 @@
 package ru.complitex.domain.mapper;
 
-import ru.complitex.common.mybatis.BaseMapper;
+import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Entity;
