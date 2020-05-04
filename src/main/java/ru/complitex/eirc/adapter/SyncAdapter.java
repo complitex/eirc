@@ -6,6 +6,7 @@ import ru.complitex.common.entity.Cursor;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
 
+import javax.enterprise.context.RequestScoped;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import static ru.complitex.common.util.Maps.of;
  * @author Anatoly Ivanov
  * 21.04.2020 6:22 PM
  */
+@RequestScoped
 public class SyncAdapter extends BaseAdapter {
     private final Logger log = LoggerFactory.getLogger(SyncAdapter.class);
 
@@ -74,7 +76,7 @@ public class SyncAdapter extends BaseAdapter {
                 "streetTypeName", streetTypeName));
     }
 
-    public Cursor<Sync> getOrganizationSyncs(Date date) throws SyncException {
-        return getSyncCursor("selectOrganizationSyncs", date);
+    public Cursor<Sync> getCompanySyncs(Date date) throws SyncException {
+        return getSyncCursor("selectCompanySyncs", date);
     }
 }

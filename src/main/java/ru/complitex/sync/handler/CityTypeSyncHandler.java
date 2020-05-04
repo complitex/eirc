@@ -4,7 +4,6 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.domain.util.Locales;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
@@ -48,13 +47,13 @@ public class CityTypeSyncHandler implements ISyncHandler<CityType> {
     }
 
     @Override
-    public boolean isMatch(CityType cityType, Sync sync, Long organizationId) {
+    public boolean isMatch(CityType cityType, Sync sync, Long companyId) {
         return equalsIgnoreCase(cityType.getName(), sync.getName()) && //todo short name
-                equalsIgnoreCase(cityType.getName(Locales.getAltLocaleId()), sync.getAltName());
+                equalsIgnoreCase(cityType.getAltName(), sync.getAltName());
     }
 
     @Override
-    public boolean isMatch(Matching matching, Sync sync, Long organizationId) {
+    public boolean isMatch(Matching matching, Sync sync, Long companyId) {
         return equalsIgnoreCase(matching.getName(), sync.getName());
     }
 
@@ -64,31 +63,32 @@ public class CityTypeSyncHandler implements ISyncHandler<CityType> {
     }
 
     @Override
-    public List<CityType> getDomains(Sync sync, Long organizationId) {
+    public List<CityType> getDomains(Sync sync, Long companyId) {
         CityType cityType = new CityType();
 
         cityType.setName(sync.getName());
-        cityType.setName(sync.getAltName(), Locales.getAltLocaleId());
+        cityType.setAltName(sync.getAltName());
 
         return domainService.getDomains(CityType.class, FilterWrapper.of(cityType).setFilter(FilterWrapper.FILTER_EQUAL));
     }
 
     @Override
-    public Matching insertMatching(CityType cityType, Sync sync, Long organizationId) {
+    public Matching insertMatching(CityType cityType, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(CityType.ENTITY_NAME, cityType.getObjectId(), sync.getExternalId(),
-                sync.getName(), organizationId));
+                sync.getName(), sync.getAdditionalName(), companyId));
     }
 
     @Override
-    public void updateMatching(Matching matching, Sync sync, Long organizationId) {
+    public void updateMatching(Matching matching, Sync sync, Long companyId) {
         matching.setName(sync.getName());
+        matching.setAdditionalName(sync.getAdditionalName());
 
         matchingMapper.update(matching);
     }
 
     @Override
-    public void updateNames(CityType cityType, Sync sync, Long organizationId) {
+    public void updateNames(CityType cityType, Sync sync, Long companyId) {
         cityType.setName(sync.getName());
-        cityType.setName(sync.getAltName(), Locales.getAltLocaleId());
+        cityType.setAltName(sync.getAltName());
     }
 }

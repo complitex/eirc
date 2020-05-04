@@ -4,12 +4,14 @@ import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.matching.entity.Matching;
 
+import javax.enterprise.context.RequestScoped;
 import java.util.List;
 
 /**
  * @author Anatoly Ivanov
  * 29.04.2020 00:21
  */
+@RequestScoped
 public class MatchingMapper extends BaseMapper {
     public List<Matching> getMatchingList(FilterWrapper<Matching> filterWrapper){
         return sqlSession().selectList("selectMatchingList", filterWrapper);
@@ -20,7 +22,7 @@ public class MatchingMapper extends BaseMapper {
 
         matching.setEntityName(entityName);
         matching.setExternalId(externalId);
-        matching.setOrganizationId(organizationId);
+        matching.setCompanyId(organizationId);
 
         return getMatchingList(FilterWrapper.of(matching));
     }

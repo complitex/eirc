@@ -1,110 +1,100 @@
 package ru.complitex.sync.handler;
 
-import org.complitex.address.entity.AddressEntity;
-import org.complitex.address.exception.RemoteCallException;
-import org.complitex.address.strategy.street_type.StreetTypeStrategy;
-import org.complitex.common.entity.Cursor;
-import org.complitex.common.entity.DomainObject;
-import org.complitex.common.entity.DomainObjectFilter;
-import org.complitex.common.strategy.IStrategy;
-import org.complitex.common.util.Locales;
-import org.complitex.common.util.StringUtil;
-import org.complitex.common.web.component.ShowMode;
-import org.complitex.correction.entity.Correction;
-import org.complitex.correction.service.CorrectionBean;
-import org.complitex.sync.entity.DomainSync;
-import org.complitex.sync.service.DomainSyncAdapter;
+import ru.complitex.address.entity.StreetType;
+import ru.complitex.common.entity.Cursor;
+import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.matching.entity.Matching;
+import ru.complitex.matching.mapper.MatchingMapper;
+import ru.complitex.sync.entity.Sync;
+import ru.complitex.sync.exception.SyncException;
+import ru.complitex.sync.mapper.SyncMapper;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 
-import static org.complitex.common.util.StringUtil.isEqualIgnoreCase;
+import static ru.complitex.common.util.Strings.equalsIgnoreCase;
 
 /**
  * @author Anatoly Ivanov
- *         Date: 23.07.2014 22:57
+ * Date: 23.07.2014 22:57
  */
-@Stateless
-public class StreetTypeSyncHandler implements ISyncHandler {
-    @EJB
-    private StreetTypeStrategy streetTypeStrategy;
+@RequestScoped
+public class StreetTypeSyncHandler implements ISyncHandler<StreetType> {
+    @Inject
+    private DomainService domainService;
 
-    @EJB
-    private DomainSyncAdapter addressSyncAdapter;
+    @Inject
+    private SyncMapper syncMapper;
 
-    @EJB
-    private CorrectionBean correctionBean;
+    @Inject
+    private MatchingMapper matchingMapper;
+
+    @Inject
+    private SyncAdapter syncAdapter;
 
     @Override
-    public Cursor<DomainSync> getCursorDomainSyncs(DomainSync parentDomainSync, Date date) throws RemoteCallException {
-        return addressSyncAdapter.getStreetTypeSyncs(date);
+    public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
+        return syncAdapter.getStreetTypeSyncs(date);
     }
 
     @Override
-    public List<DomainSync> getParentDomainSyncs() {
+    public List<Sync> getParentSyncs() {
         return null;
     }
 
     @Override
-    public boolean isCorresponds(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        return isEqualIgnoreCase(domainSync.getName(), streetTypeStrategy.getName(domainObject)) //todo get
-                && isEqualIgnoreCase(domainSync.getAdditionalName(), streetTypeStrategy.getShortName(domainObject))
-                && isEqualIgnoreCase(domainSync.getAltName(), streetTypeStrategy.getName(domainObject, Locales.getAlternativeLocale()))
-                && isEqualIgnoreCase(domainSync.getAltAdditionalName(), streetTypeStrategy.getShortName(domainObject, Locales.getAlternativeLocale()));
+    public boolean isMatch(StreetType streetType, Sync sync, Long companyId) {
+        return equalsIgnoreCase(streetType.getName(), sync.getName()) &&
+                equalsIgnoreCase(streetType.getAltName(), sync.getAltName()) &&
+                equalsIgnoreCase(streetType.getShortName(), sync.getAdditionalName()) &&
+                equalsIgnoreCase(streetType.getAltShortName(), sync.getAltAdditionalName());
     }
 
     @Override
-    public boolean isCorresponds(Correction correction, DomainSync domainSync, Long organizationId) {
-        return StringUtil.isEqualIgnoreCase(correction.getCorrection(), domainSync.getName());
+    public boolean isMatch(Matching matching, Sync sync, Long companyId) {
+        return equalsIgnoreCase(matching.getName(), sync.getName());
     }
 
     @Override
-    public boolean isCorresponds(Correction correction1, Correction correction2) {
-        return StringUtil.isEqualIgnoreCase(correction1.getCorrection(), correction2.getCorrection());
+    public boolean isMatch(Matching matching1, Matching matching2) {
+        return equalsIgnoreCase(matching1.getName(), matching2.getName());
     }
 
     @Override
-    public List<? extends DomainObject> getDomainObjects(DomainSync domainSync, Long organizationId) {
-        return streetTypeStrategy.getList(
-                new DomainObjectFilter()
-                        .setStatus(ShowMode.ACTIVE.name())
-                        .setComparisonType(DomainObjectFilter.ComparisonType.EQUALITY.name())
-                        .addAttribute(StreetTypeStrategy.NAME, domainSync.getName())
-                        .addAttribute(StreetTypeStrategy.NAME, domainSync.getAltName(), Locales.getAlternativeLocaleId())
-                        .addAttribute(StreetTypeStrategy.SHORT_NAME, domainSync.getAdditionalName())
-                        .addAttribute(StreetTypeStrategy.SHORT_NAME, domainSync.getAltAdditionalName(), Locales.getAlternativeLocaleId()));
+    public List<StreetType> getDomains(Sync sync, Long companyId) {
+        StreetType streetType = new StreetType();
+
+        streetType.setName(sync.getName());
+        streetType.setAltName(sync.getAltName());
+        streetType.setShortName(sync.getAdditionalName());
+        streetType.setAltShortName(sync.getAltAdditionalName());
+
+        return domainService.getDomains(StreetType.class, FilterWrapper.of(streetType).setFilter(FilterWrapper.FILTER_EQUAL));
     }
 
     @Override
-    public Correction insertCorrection(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        Correction streetTypeCorrection = new Correction(AddressEntity.STREET_TYPE.getEntityName(),
-                domainSync.getExternalId(), domainObject.getObjectId(), domainSync.getName(), organizationId,
-                null);
-
-        correctionBean.save(streetTypeCorrection);
-
-        return streetTypeCorrection;
+    public Matching insertMatching(StreetType streetType, Sync sync, Long companyId) {
+        return matchingMapper.insert(new Matching(StreetType.ENTITY_NAME, streetType.getObjectId(),
+                sync.getExternalId(), sync.getName(), sync.getAdditionalName(), companyId));
     }
 
     @Override
-    public void updateCorrection(Correction correction, DomainSync domainSync, Long organizationId) {
-        correction.setCorrection(domainSync.getName());
+    public void updateMatching(Matching matching, Sync sync, Long companyId) {
+        matching.setName(sync.getName());
+        matching.setAdditionalName(sync.getAdditionalName());
 
-        correctionBean.save(correction);
+        matchingMapper.update(matching);
     }
 
     @Override
-    public IStrategy getStrategy() {
-        return streetTypeStrategy;
-    }
-
-    @Override
-    public void updateValues(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        domainObject.setStringValue(StreetTypeStrategy.NAME, domainSync.getName());
-        domainObject.setStringValue(StreetTypeStrategy.NAME, domainSync.getAltName(), Locales.getAlternativeLocale());
-        domainObject.setStringValue(StreetTypeStrategy.SHORT_NAME, domainSync.getAdditionalName());
-        domainObject.setStringValue(StreetTypeStrategy.SHORT_NAME, domainSync.getAltAdditionalName(), Locales.getAlternativeLocale());
+    public void updateNames(StreetType streetType, Sync sync, Long companyId) {
+        streetType.setName(sync.getName());
+        streetType.setAltName(sync.getAltName());
+        streetType.setShortName(sync.getAdditionalName());
+        streetType.setAltShortName(sync.getAltAdditionalName());
     }
 }

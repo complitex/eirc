@@ -372,6 +372,21 @@ CALL createDomain(9,'apartment', 'Квартира', 'Квартира');
 CALL createReference(9, 1, 8, 3, 'Дом', 'Будинок');
 CALL createAttribute(9, 2, 8, 'Номер квартиры', 'Номер квартири');
 
+CALL createDomain(10,'room', 'Комната', 'Кімната');
+CALL createReference(10, 1, 8, 3, 'Дом', 'Будинок');
+CALL createAttribute(10, 2, 8, 'Номер комнаты', 'Номер кімнати');
+
+-- ------------------------------
+--  Company
+-- ------------------------------
+
+CALL createDomain(11, 'company', 'Компания', 'Компанія');
+CALL createReference(11, 1, 11, 2, 'Родительская компания', 'Батьківська компанія');
+CALL createAttribute(11, 2, 8, 'Название', 'Назва');
+CALL createAttribute(11, 3, 8, 'Краткое название', 'Коротка назва');
+CALL createAttribute(11, 4, 4, 'ЕДРПОУ', 'ЄДРПОУ');
+CALL createAttribute(11, 5, 4, 'Код компании', 'Код компанії');
+
 -- ---------------------------
 -- Matching
 -- ---------------------------
@@ -398,10 +413,10 @@ BEGIN
           `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительное соответствие'',
           `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
           `end_date` DATETIME COMMENT ''Дата окончания актуальности'',
-          `organization_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор организации'',
-          `user_organization_id` BIGINT(20) COMMENT ''Идентификатор организации пользователя'',
+          `company_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор компании'',
+          `user_company_id` BIGINT(20) COMMENT ''Идентификатор компании пользователя'',
           PRIMARY KEY (`id`),
-          UNIQUE KEY `unique_external_id` (`external_id`, `additional_external_id`, `organization_id`, `user_organization_id`),
+          UNIQUE KEY `unique_external_id` (`external_id`, `additional_external_id`, `company_id`, `user_company_id`),
           KEY `key_object_id` (`object_id`),
           KEY `key_parent_id` (`parent_id`),
           KEY `key_additional_parent_id` (`additional_parent_id`),
@@ -411,8 +426,8 @@ BEGIN
           KEY `key_additional_name` (`additional_name`),
           KEY `key_start_date` (`start_date`),
           KEY `key_end_date` (`end_date`),
-          KEY `key_organization_id` (`organization_id`),
-          KEY `key_user_organization_id` (`user_organization_id`),
+          KEY `key_company_id` (`company_id`),
+          KEY `key_user_company_id` (`user_company_id`),
           CONSTRAINT `fk_', entityName, '_matching__', entityName, '` FOREIGN KEY (`object_id`) REFERENCES `', entityName, '` (`object_id`)
         ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT ''', entityDescription, ' - Соответствия'';');
 

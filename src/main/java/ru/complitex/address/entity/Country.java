@@ -1,10 +1,12 @@
 package ru.complitex.address.entity;
 
+import ru.complitex.domain.entity.NameDomain;
+
 /**
  * @author Anatoly A. Ivanov
  * 17.03.2020 11:36 PM
  */
-public class Country extends Address<Country> {
+public class Country extends NameDomain<Country> {
     public final static Long ENTITY_ID = 1L;
     public final static String ENTITY_NAME = "country";
 

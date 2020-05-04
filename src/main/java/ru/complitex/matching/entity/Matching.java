@@ -11,38 +11,73 @@ public class Matching implements Serializable {
     private Long id;
     private Long objectId;
     private Long parentId;
-    private String additionalParentId;
+    private Long additionalParentId;
     private Long externalId;
     private String additionalExternalId;
     private String name;
     private String additionalName;
     private Date startDate;
     private Date endDate;
-    private Long organizationId;
-    private Long userOrganizationId;
+    private Long companyId;
+    private Long userCompanyId;
 
     private String entityName;
 
     public Matching() {
     }
 
-    public Matching(String entityName, Long objectId, Long externalId, String name, Long organizationId) {
+    public Matching(String entityName, Long objectId, Long externalId, String name, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.externalId = externalId;
         this.name = name;
-        this.organizationId = organizationId;
+        this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long externalId, String name, Long organizationId) {
+    public Matching(String entityName, Long objectId, Long externalId, String name, String additionalName,
+                    Long companyId) {
+        this.entityName = entityName;
+
+        this.objectId = objectId;
+        this.externalId = externalId;
+        this.name = name;
+        this.additionalName = additionalName;
+        this.companyId = companyId;
+    }
+
+    public Matching(String entityName, Long objectId, Long parentId, Long externalId, String name, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
         this.externalId = externalId;
         this.name = name;
-        this.organizationId = organizationId;
+        this.companyId = companyId;
+    }
+
+    public Matching(String entityName, Long objectId, Long parentId, Long externalId, String name, String additionalName,
+                    Long companyId) {
+        this.entityName = entityName;
+
+        this.objectId = objectId;
+        this.parentId = parentId;
+        this.externalId = externalId;
+        this.name = name;
+        this.additionalName = additionalName;
+        this.companyId = companyId;
+    }
+
+    public Matching(String entityName, Long objectId, Long parentId, Long additionalParentId, Long externalId,
+                    String name, Long companyId) {
+        this.entityName = entityName;
+
+        this.objectId = objectId;
+        this.parentId = parentId;
+        this.additionalParentId = additionalParentId;
+        this.externalId = externalId;
+        this.name = name;
+        this.companyId = companyId;
     }
 
     public Long getId() {
@@ -69,11 +104,11 @@ public class Matching implements Serializable {
         this.parentId = parentId;
     }
 
-    public String getAdditionalParentId() {
+    public Long getAdditionalParentId() {
         return additionalParentId;
     }
 
-    public void setAdditionalParentId(String additionalParentId) {
+    public void setAdditionalParentId(Long additionalParentId) {
         this.additionalParentId = additionalParentId;
     }
 
@@ -125,20 +160,20 @@ public class Matching implements Serializable {
         this.endDate = endDate;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
+    public Long getCompanyId() {
+        return companyId;
     }
 
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
-    public Long getUserOrganizationId() {
-        return userOrganizationId;
+    public Long getUserCompanyId() {
+        return userCompanyId;
     }
 
-    public void setUserOrganizationId(Long userOrganizationId) {
-        this.userOrganizationId = userOrganizationId;
+    public void setUserCompanyId(Long userCompanyId) {
+        this.userCompanyId = userCompanyId;
     }
 
     public String getEntityName() {

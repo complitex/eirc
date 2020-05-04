@@ -3,12 +3,10 @@ package ru.complitex.sync.service;
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.service.BroadcastService;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
-import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.handler.*;
 import ru.complitex.sync.mapper.SyncMapper;
 
@@ -41,7 +39,7 @@ public class SyncService {
 
     private AtomicBoolean cancelSync = new AtomicBoolean(false);
 
-    private IDomainSyncHandler getHandler(SyncEntity syncEntity){
+    private ISyncHandler getHandler(SyncEntity syncEntity){
         switch (syncEntity){
             case COUNTRY:
                 return EjbBeanLocator.getBean(CountrySyncHandler.class);
@@ -60,7 +58,7 @@ public class SyncService {
             case BUILDING:
                 return EjbBeanLocator.getBean(BuildingSyncHandler.class);
             case ORGANIZATION:
-                return EjbBeanLocator.getBean(OrganizationSyncHandler.class);
+                return EjbBeanLocator.getBean(CompanySyncHandler.class);
 
             default:
                 throw new IllegalArgumentException();

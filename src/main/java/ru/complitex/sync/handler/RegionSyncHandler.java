@@ -5,7 +5,6 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.domain.util.Locales;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
@@ -62,15 +61,15 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
     }
 
     @Override
-    public boolean isMatch(Region region, Sync sync, Long organizationId) {
-        return Objects.equals(region.getCountryId(), getParentId(sync, organizationId)) &&
+    public boolean isMatch(Region region, Sync sync, Long companyId) {
+        return Objects.equals(region.getCountryId(), getParentId(sync, companyId)) &&
                 equalsIgnoreCase(region.getName(), sync.getName()) &&
-                equalsIgnoreCase(region.getName(Locales.getAltLocaleId()), sync.getAltName());
+                equalsIgnoreCase(region.getAltName(), sync.getAltName());
     }
 
     @Override
-    public boolean isMatch(Matching matching, Sync sync, Long organizationId) {
-        return Objects.equals(matching.getParentId(), getParentId(sync, organizationId)) &&
+    public boolean isMatch(Matching matching, Sync sync, Long companyId) {
+        return Objects.equals(matching.getParentId(), getParentId(sync, companyId)) &&
                 equalsIgnoreCase(matching.getName(), sync.getName());
     }
 
@@ -81,35 +80,34 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
     }
 
     @Override
-    public List<Region> getDomains(Sync sync, Long organizationId) {
+    public List<Region> getDomains(Sync sync, Long companyId) {
         Region region = new Region();
 
-        region.setCountryId(getParentId(sync, organizationId));
+        region.setCountryId(getParentId(sync, companyId));
         region.setName(sync.getName());
-        region.setName(sync.getAltName(), Locales.getAltLocaleId());
+        region.setAltName(sync.getAltName());
 
         return domainService.getDomains(Region.class, FilterWrapper.of(region).setFilter(FilterWrapper.FILTER_EQUAL));
     }
 
     @Override
-    public Matching insertMatching(Region region, Sync sync, Long organizationId) {
+    public Matching insertMatching(Region region, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(Region.ENTITY_NAME, region.getObjectId(), region.getCountryId(),
-                sync.getExternalId(), sync.getName(), organizationId));
+                sync.getExternalId(), sync.getName(), companyId));
     }
 
     @Override
-    public void updateMatching(Matching matching, Sync sync, Long organizationId) {
-        matching.setParentId(getParentId(sync, organizationId));
-
+    public void updateMatching(Matching matching, Sync sync, Long companyId) {
+        matching.setParentId(getParentId(sync, companyId));
         matching.setName(sync.getName());
 
         matchingMapper.update(matching);
     }
 
     @Override
-    public void updateNames(Region region, Sync sync, Long organizationId) {
-        region.setCountryId(getParentId(sync, organizationId));
+    public void updateNames(Region region, Sync sync, Long companyId) {
+        region.setCountryId(getParentId(sync, companyId));
         region.setName(sync.getName());
-        region.setName(sync.getAltName(), Locales.getAltLocaleId());
+        region.setAltName(sync.getAltName());
     }
 }

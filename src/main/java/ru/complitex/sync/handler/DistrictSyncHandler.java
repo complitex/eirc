@@ -1,22 +1,13 @@
 package ru.complitex.sync.handler;
 
-import org.complitex.address.entity.AddressEntity;
-import org.complitex.address.exception.RemoteCallException;
-import org.complitex.address.strategy.district.DistrictStrategy;
-import org.complitex.common.entity.DomainObject;
-import org.complitex.common.entity.DomainObjectFilter;
-import org.complitex.common.strategy.IStrategy;
-import org.complitex.common.util.Locales;
-import org.complitex.common.util.StringUtil;
-import org.complitex.common.web.component.ShowMode;
-import org.complitex.correction.entity.Correction;
-import org.complitex.sync.entity.DomainSync;
-import org.complitex.sync.entity.SyncEntity;
+import ru.complitex.address.entity.City;
+import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.District;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.entity.SyncStatus;
@@ -29,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static org.complitex.common.util.StringUtil.isEqualIgnoreCase;
+import static ru.complitex.common.util.Strings.equalsIgnoreCase;
 
 /**
  * @author Anatoly Ivanov
@@ -51,15 +42,14 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeDomainSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(SyncEntity.CITY_TYPE,
-                Long.valueOf(parentDomainSync.getAdditionalParentId()))));
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(CityType.ENTITY_ID,
+                Long.valueOf(parentSync.getAdditionalParentId()))));
 
-        if (cityTypeDomainSyncs.isEmpty()){
-            throw new CorrectionNotFoundException("city type matching not found " + cityTypeDomainSyncs);
+        if (cityTypeSyncs.isEmpty()){
+            throw new RuntimeException("city type matching not found " + cityTypeSyncs);
         }
 
-        return addressSyncAdapter.getDistrictSyncs(cityTypeDomainSyncs.get(0).getAdditionalName(),
-                parentDomainSync.getName(), date);
+        return syncAdapter.getDistrictSyncs(cityTypeSyncs.get(0).getAdditionalName(), parentSync.getName(), date);
     }
 
     @Override
@@ -67,76 +57,66 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
         return syncMapper.getSyncs(FilterWrapper.of(new Sync(District.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
     }
 
-    private Long getParentObjectId(DomainSync domainSync, Long organizationId){
-        List<Correction> cityCorrections = correctionBean.getCorrectionsByExternalId(AddressEntity.CITY,
-                domainSync.getParentId(), organizationId, null);
+    private Long getParentId(Sync domainSync, Long organizationId){
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(City.ENTITY_NAME,
+                domainSync.getParentId(), organizationId);
 
-        if (cityCorrections.isEmpty()){
-            throw new CorrectionNotFoundException("city correction not found " + cityCorrections);
+        if (matchingList.isEmpty()){
+            throw new RuntimeException("city mathing not found " + matchingList);
         }
 
-        return cityCorrections.get(0).getObjectId();
+        return matchingList.get(0).getObjectId();
     }
 
     @Override
-    public boolean isCorresponds(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        return Objects.equals(domainObject.getParentId(), getParentObjectId(domainSync, organizationId)) &&
-                isEqualIgnoreCase(domainSync.getName(), domainObject.getStringValue(DistrictStrategy.NAME)) &&
-                isEqualIgnoreCase(domainSync.getAltName(), domainObject.getStringValue(DistrictStrategy.NAME, Locales.getAlternativeLocale()));
+    public boolean isMatch(District district, Sync sync, Long companyId) {
+        return Objects.equals(district.getCityId(), getParentId(sync, companyId)) &&
+                equalsIgnoreCase(district.getName(), sync.getName()) &&
+                equalsIgnoreCase(district.getAltName(), sync.getAltName());
     }
 
     @Override
-    public boolean isCorresponds(Correction correction, DomainSync domainSync, Long organizationId) {
-        return Objects.equals(correction.getParentId(), getParentObjectId(domainSync, organizationId)) &&
-                StringUtil.isEqualIgnoreCase(correction.getCorrection(), domainSync.getName());
+    public boolean isMatch(Matching matching, Sync sync, Long companyId) {
+        return Objects.equals(matching.getParentId(), getParentId(sync, companyId)) &&
+                equalsIgnoreCase(matching.getName(), sync.getName());
     }
 
     @Override
-    public boolean isCorresponds(Correction correction1, Correction correction2) {
-        return correction1.getParentId().equals(correction2.getParentId()) &&
-                StringUtil.isEqualIgnoreCase(correction1.getCorrection(), correction2.getCorrection());
+    public boolean isMatch(Matching matching1, Matching matching2) {
+        return Objects.equals(matching1.getParentId(), matching2.getParentId()) &&
+                equalsIgnoreCase(matching1.getName(), matching2.getName());
     }
 
     @Override
-    public void updateValues(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        domainObject.setParentEntityId(DistrictStrategy.PARENT_ENTITY_ID);
-        domainObject.setParentId(getParentObjectId(domainSync, organizationId));
-        domainObject.setStringValue(DistrictStrategy.CODE, domainSync.getAdditionalExternalId());
-        domainObject.setStringValue(DistrictStrategy.NAME, domainSync.getName());
-        domainObject.setStringValue(DistrictStrategy.NAME, domainSync.getAltName(), Locales.getAlternativeLocale());
+    public List<District> getDomains(Sync sync, Long companyId) {
+        District district = new District();
+
+        district.setCityId(getParentId(sync, companyId));
+        district.setName(sync.getName());
+        district.setAltName(sync.getAltName());
+
+        return domainService.getDomains(District.class, FilterWrapper.of(district).setFilter(FilterWrapper.FILTER_EQUAL));
     }
 
     @Override
-    public List<? extends DomainObject> getDomainObjects(DomainSync domainSync, Long organizationId) {
-        return districtStrategy.getList(
-                new DomainObjectFilter()
-                        .setStatus(ShowMode.ACTIVE.name())
-                        .setComparisonType(DomainObjectFilter.ComparisonType.EQUALITY.name())
-                        .setParentEntity("city")
-                        .setParentId(getParentObjectId(domainSync, organizationId))
-                        .addAttribute(DistrictStrategy.NAME, domainSync.getName())
-                        .addAttribute(DistrictStrategy.NAME, domainSync.getAltName(), Locales.getAlternativeLocaleId()));
+    public Matching insertMatching(District district, Sync sync, Long companyId) {
+        return matchingMapper.insert(new Matching(District.ENTITY_NAME, district.getObjectId(), district.getCityId(),
+                sync.getExternalId(), sync.getName(), companyId));
     }
 
     @Override
-    public Correction insertCorrection(DomainObject domainObject, DomainSync domainSync, Long organizationId) {
-        Correction districtCorrection = new Correction(AddressEntity.DISTRICT.getEntityName(), domainObject.getParentId(),
-                domainSync.getExternalId(), domainObject.getObjectId(), domainSync.getName(), organizationId, null);
+    public void updateMatching(Matching matching, Sync sync, Long companyId) {
+        matching.setParentId(getParentId(sync, companyId));
+        matching.setName(sync.getName());
 
-        correctionBean.save(districtCorrection);
-
-        return districtCorrection;
+        matchingMapper.update(matching);
     }
 
     @Override
-    public void updateCorrection(Correction correction, DomainSync domainSync, Long organizationId) {
-        correction.setCorrection(domainSync.getName());
-
-        correctionBean.save(correction);
-    }
-
-    @Override
-    public IStrategy getStrategy() {
-        return districtStrategy;
+    public void updateNames(District district, Sync sync, Long companyId) {
+        district.setCityId(getParentId(sync, companyId));
+        district.setName(sync.getName());
+        district.setAltName(sync.getAltName());
+        district.setCode(sync.getAdditionalExternalId());
     }
 }

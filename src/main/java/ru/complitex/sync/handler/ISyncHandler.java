@@ -18,17 +18,17 @@ public interface ISyncHandler<T extends Domain<T>> {
 
     List<Sync> getParentSyncs();
 
-    boolean isMatch(T domain, Sync sync, Long organizationId);
+    boolean isMatch(T domain, Sync sync, Long companyId);
 
-    boolean isMatch(Matching matching, Sync sync, Long organizationId);
+    boolean isMatch(Matching matching, Sync sync, Long companyId);
 
     boolean isMatch(Matching matching1, Matching matching2);
 
-    List<T> getDomains(Sync sync, Long organizationId);
+    List<T> getDomains(Sync sync, Long companyId);
 
-    Matching insertMatching(T domain, Sync sync, Long organizationId);
+    Matching insertMatching(T domain, Sync sync, Long companyId);
 
-    void updateMatching(Matching matching, Sync sync, Long organizationId);
+    void updateMatching(Matching matching, Sync sync, Long companyId);
 
-    void updateNames(T domain, Sync sync, Long organizationId);
+    void updateNames(T domain, Sync sync, Long companyId);
 }
