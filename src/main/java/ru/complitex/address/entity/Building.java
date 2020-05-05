@@ -8,15 +8,15 @@ import ru.complitex.domain.util.Locales;
  * 02.04.2020 9:44 PM
  */
 public class Building extends NameDomain<Building> {
-    public final static Long ENTITY_ID = 8L;
+    public final static int ENTITY_ID = 8;
     public final static String ENTITY_NAME = "building";
 
-    public final static Long DISTRICT = 1L;
-    public final static Long STREET = 2L;
-    public final static Long NAME = 3L;
-    public final static Long CORPS = 4L;
-    public final static Long STRUCTURE = 5L;
-    public final static Long CODE = 6L;
+    public final static int DISTRICT = 1;
+    public final static int STREET = 2;
+    public final static int NAME = 3;
+    public final static int CORPS = 4;
+    public final static int STRUCTURE = 5;
+    public final static int CODE = 6;
 
     public Building() {
         super(ENTITY_ID, ENTITY_NAME, NAME);
@@ -46,11 +46,11 @@ public class Building extends NameDomain<Building> {
         setTextValue(CORPS, shortName);
     }
 
-    public String getCorps(Long localeId){
+    public String getCorps(Integer localeId){
         return getTextValue(CORPS, localeId);
     }
 
-    public void setCorps(String shortName, Long localeId){
+    public void setCorps(String shortName, Integer localeId){
         setTextValue(CORPS, shortName, localeId);
     }
 

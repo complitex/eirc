@@ -7,11 +7,11 @@ import ru.complitex.domain.entity.NameDomain;
  * 01.04.2020 12:04 PM
  */
 public class Region extends NameDomain<Region> {
-    public final static Long ENTITY_ID = 2L;
+    public final static int ENTITY_ID = 2;
     public final static String ENTITY_NAME = "region";
 
-    public static final Long COUNTRY = 1L;
-    public static final Long NAME = 2L;
+    public static final int COUNTRY = 1;
+    public static final int NAME = 2;
 
     public Region() {
         super(ENTITY_ID, ENTITY_NAME, NAME);

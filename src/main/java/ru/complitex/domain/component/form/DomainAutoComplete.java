@@ -6,6 +6,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.ValueType;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
@@ -33,7 +34,7 @@ public class DomainAutoComplete extends AbstractDomainAutoComplete {
         this(id, entityName, entityAttribute,  model, null);
     }
 
-    public DomainAutoComplete(String id, String entityName, Long entityAttributeId, IModel<Long> model) {
+    public DomainAutoComplete(String id, String entityName, int entityAttributeId, IModel<Long> model) {
         super(id, entityName, model, null);
 
         this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
@@ -49,14 +50,14 @@ public class DomainAutoComplete extends AbstractDomainAutoComplete {
     protected String getTextValue(Domain domain) {
         Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
-        switch (entityAttribute.getValueType()){
-            case TEXT_LIST:
+        switch (entityAttribute.getValueTypeId()){
+            case ValueType.TEXT_LIST:
                 String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
 
                 return Attributes.displayText(entityAttribute, textValue);
-            case TEXT:
+            case ValueType.TEXT:
                 return attribute.getText();
-            case NUMBER:
+            case ValueType.NUMBER:
                 return attribute.getNumber() + "";
         }
 

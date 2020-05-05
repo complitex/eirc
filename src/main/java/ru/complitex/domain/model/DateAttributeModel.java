@@ -11,16 +11,16 @@ import java.util.Date;
  */
 public class DateAttributeModel implements IModel<Date> {
     private Domain domain;
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
     private IModel<? extends Domain> domainModel;
 
-    public DateAttributeModel(Domain domain, Long entityAttributeId) {
+    public DateAttributeModel(Domain domain, int entityAttributeId) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
     }
 
-    public DateAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+    public DateAttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
         this.domainModel = domainModel;
     }
@@ -43,7 +43,7 @@ public class DateAttributeModel implements IModel<Date> {
         }
     }
 
-    public static DateAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
+    public static DateAttributeModel of(IModel<? extends Domain> domainModel, int entityAttributeId){
         return new DateAttributeModel(domainModel, entityAttributeId);
     }
 }

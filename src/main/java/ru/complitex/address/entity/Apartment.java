@@ -7,11 +7,11 @@ import ru.complitex.domain.entity.Domain;
  * 02.04.2020 9:47 PM
  */
 public class Apartment extends Domain<Apartment> {
-    public final static Long ENTITY_ID = 9L;
+    public final static Integer ENTITY_ID = 9;
     public final static String ENTITY_NAME = "apartment";
 
-    public final static Long BUILDING = 1L;
-    public final static Long NAME = 2L;
+    public final static Integer BUILDING = 1;
+    public final static Integer NAME = 2;
 
     public Apartment() {
         super(ENTITY_ID, ENTITY_NAME);

@@ -21,15 +21,21 @@ public class Sync implements Serializable {
     private String servicingOrganization;
     private String balanceHolder;
     private Date date;
-    private Long status;
-    private Long entityId;
+    private int status;
+    private int entityId;
 
     public Sync() {
     }
 
-    public Sync(Long entityId, Long status) {
-        this.status = status;
+    public Sync(int entityId, int status) {
         this.entityId = entityId;
+        this.status = status;
+    }
+
+    public Sync(int entityId, int status, Long externalId) {
+        this.entityId = entityId;
+        this.status = status;
+        this.externalId = externalId;
     }
 
     public Long getId() {
@@ -128,19 +134,19 @@ public class Sync implements Serializable {
         this.date = date;
     }
 
-    public Long getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Long status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public Long getEntityId() {
+    public int getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) {
+    public void setEntityId(int entityId) {
         this.entityId = entityId;
     }
 

@@ -14,16 +14,16 @@ public class DecimalAttributeModel implements IModel<BigDecimal> {
     private Domain domain;
     private IModel<? extends Domain> domainModel;
 
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
     private Attribute attribute;
 
-    public DecimalAttributeModel(Domain domain, Long entityAttributeId) {
+    public DecimalAttributeModel(Domain domain, int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
         this.domain = domain;
     }
 
-    public DecimalAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+    public DecimalAttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
         this.domainModel = domainModel;
     }
@@ -56,7 +56,7 @@ public class DecimalAttributeModel implements IModel<BigDecimal> {
         }
     }
 
-    public static DecimalAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
+    public static DecimalAttributeModel of(IModel<? extends Domain> domainModel, int entityAttributeId){
         return new DecimalAttributeModel(domainModel, entityAttributeId);
     }
 

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Value implements Serializable {
     private Long id;
     private Long attributeId;
-    private Long localeId;
+    private int localeId;
     private String text;
     private Long number;
 
@@ -20,13 +20,8 @@ public class Value implements Serializable {
     public Value() {
     }
 
-    public Value(Long localeId) {
+    public Value(int localeId) {
         this.localeId = localeId;
-    }
-
-    public Value(Long localeId, String text) {
-        this.localeId = localeId;
-        this.text = text;
     }
 
     public Value(Value value){
@@ -59,11 +54,11 @@ public class Value implements Serializable {
         this.attributeId = attributeId;
     }
 
-    public Long getLocaleId() {
+    public int getLocaleId() {
         return localeId;
     }
 
-    public void setLocaleId(Long localeId) {
+    public void setLocaleId(int localeId) {
         this.localeId = localeId;
     }
 

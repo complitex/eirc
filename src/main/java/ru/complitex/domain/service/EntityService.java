@@ -19,7 +19,7 @@ public class EntityService implements Serializable {
     @Inject
     private EntityMapper entityMapper;
 
-    public Entity getEntity(Long id){
+    public Entity getEntity(int id){
         return entityMapper.getEntity(id);
     }
 
@@ -31,11 +31,11 @@ public class EntityService implements Serializable {
         return entityMapper.getEntity(Domains.getEntityName(domainClass));
     }
 
-    public EntityAttribute getEntityAttribute(Long entityId, Long entityAttributeId){
+    public EntityAttribute getEntityAttribute(int entityId, int entityAttributeId){
         return getEntity(entityId).getEntityAttribute(entityAttributeId);
     }
 
-    public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){
+    public EntityAttribute getEntityAttribute(String entityName, int entityAttributeId){
         return getEntity(entityName).getEntityAttribute(entityAttributeId);
     }
 

@@ -19,16 +19,16 @@ public class Attribute implements Serializable {
 
     private Long id;
     private Long domainId;
-    private Long entityAttributeId;
+    private int entityAttributeId;
     private String text;
     private Long number;
     private Date date;
     private Date startDate;
     private Date endDate;
-    private Status status;
+    private int status;
     private Long userId;
 
-    private Long entityId;
+    private int entityId;
     private String entityName;
 
     private List<Value> values = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Attribute implements Serializable {
     public Attribute() {
     }
 
-    public Attribute(Long entityAttributeId) {
+    public Attribute(int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
     }
 
@@ -50,7 +50,7 @@ public class Attribute implements Serializable {
         this.entityName = entityName;
     }
 
-    public Attribute(Long entityId, String entityName, Long entityAttributeId){
+    public Attribute(int entityId, String entityName, int entityAttributeId){
         this.entityId = entityId;
         this.entityName = entityName;
         this.entityAttributeId = entityAttributeId;
@@ -80,9 +80,9 @@ public class Attribute implements Serializable {
         objectId = attribute.objectId;
     }
 
-    public Value getValue(Long localeId){
+    public Value getValue(int localeId){
         if (values != null){
-            return values.stream().filter(sc -> localeId.equals(sc.getLocaleId()))
+            return values.stream().filter(sc -> localeId == sc.getLocaleId())
                     .findFirst()
                     .orElse(null);
         }
@@ -90,7 +90,7 @@ public class Attribute implements Serializable {
         return null;
     }
 
-    public Value getOrCreateValue(Long localeId){
+    public Value getOrCreateValue(int localeId){
         Value value = getValue(localeId);
 
         if (value == null){
@@ -103,22 +103,22 @@ public class Attribute implements Serializable {
 
 
     public Value getValue(Locale locale){
-        Long localeId = Locales.getLocaleId(locale);
+        Integer localeId = Locales.getLocaleId(locale);
 
         Value value = localeId != null ? getValue(localeId) : null;
 
         return value != null || Locales.getSystemLocaleId().equals(localeId) ? value : getValue(Locales.getSystemLocaleId());
     }
 
-    public String getTextValue(Long entityAttributeId, Locale locale){
+    public String getTextValue(int entityAttributeId, Locale locale){
         return Optional.ofNullable(getValue(locale)).map(Value::getText).orElse(null);
     }
 
-    public String getTextValue(Long entityAttributeId){
+    public String getTextValue(int entityAttributeId){
         return Optional.ofNullable(getValue(Locales.getSystemLocale())).map(Value::getText).orElse(null);
     }
 
-    public void setTextValue(String text, Long localeId){
+    public void setTextValue(String text, Integer localeId){
         getOrCreateValue(localeId).setText(text);
     }
 
@@ -179,11 +179,11 @@ public class Attribute implements Serializable {
         this.domainId = domainId;
     }
 
-    public Long getEntityAttributeId() {
+    public int getEntityAttributeId() {
         return entityAttributeId;
     }
 
-    public void setEntityAttributeId(Long entityAttributeId) {
+    public void setEntityAttributeId(int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
     }
 
@@ -237,19 +237,19 @@ public class Attribute implements Serializable {
         this.endDate = endDate;
     }
 
-    public Status getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public Long getEntityId() {
+    public Integer getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) {
+    public void setEntityId(Integer entityId) {
         this.entityId = entityId;
     }
 

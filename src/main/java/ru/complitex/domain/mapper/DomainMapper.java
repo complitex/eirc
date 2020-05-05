@@ -27,7 +27,7 @@ public class DomainMapper extends BaseMapper {
     private static AtomicLong tmpId = new AtomicLong(-1);
 
     @Transactional
-    public void insertDomain(Domain<?> domain){
+    public void insert(Domain<?> domain){
         domain.setId(null);
 
         if (domain.getObjectId() == null){
@@ -38,7 +38,7 @@ public class DomainMapper extends BaseMapper {
             domain.setStartDate(new Date());
         }
 
-        if (domain.getStatus() == null){
+        if (domain.getStatus() == 0){
             domain.setStatus(Status.ACTIVE);
         }
 
@@ -62,7 +62,7 @@ public class DomainMapper extends BaseMapper {
     }
 
     @Transactional
-    public void updateDomain(Domain<?> domain){
+    public void update(Domain<?> domain){
         Date date = new Date();
 
         Domain<?> dbDomain = getDomain(domain.getEntityName(), domain.getObjectId());
@@ -88,7 +88,7 @@ public class DomainMapper extends BaseMapper {
 
                             update =  !count ||
                                     a.getValues().stream().anyMatch(v -> {
-                                        if (v.getLocaleId() != null) {
+                                        if (v.getLocaleId() != 0) {
                                             Value dbValue = dbAttribute.getValue(v.getLocaleId());
 
                                             return !Objects.equals(v.getText(), dbValue != null ? dbValue.getText() : null);
@@ -123,7 +123,7 @@ public class DomainMapper extends BaseMapper {
         sqlSession().update("updateDomain", domain);
     }
 
-    public Boolean hasDomain(String entityName, Long entityAttributeId, String text){
+    public Boolean hasDomain(String entityName, int entityAttributeId, String text){
         Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
@@ -147,7 +147,7 @@ public class DomainMapper extends BaseMapper {
         return getDomain(entityName, objectId, false, false);
     }
 
-    public Domain getDomain(String entityName, Long entityAttributeId, String text){
+    public Domain getDomain(String entityName, int entityAttributeId, String text){
         Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
@@ -155,7 +155,7 @@ public class DomainMapper extends BaseMapper {
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, Long entityAttributeId, Long number){
+    public Domain getDomain(String entityName, int entityAttributeId, Long number){
         Domain domain = new Domain();
         domain.setEntityName(entityName);
         domain.setNumber(entityAttributeId, number);

@@ -1,16 +1,31 @@
 package ru.complitex.sync.service;
 
-import org.apache.ibatis.reflection.ExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.complitex.address.entity.*;
+import ru.complitex.common.entity.Cursor;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.service.BroadcastService;
+import ru.complitex.common.util.Dates;
+import ru.complitex.common.util.Exceptions;
+import ru.complitex.company.entity.Company;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.Status;
+import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.EntityService;
+import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
+import ru.complitex.matching.mapper.MatchingMapper;
+import ru.complitex.sync.entity.Sync;
+import ru.complitex.sync.entity.SyncMessage;
+import ru.complitex.sync.entity.SyncStatus;
+import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.handler.*;
 import ru.complitex.sync.mapper.SyncMapper;
 
-import javax.ejb.Asynchronous;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,8 +35,15 @@ import java.util.stream.Collectors;
  * @author Anatoly Ivanov
  * 21.04.2020 23:38
  */
+@ApplicationScoped
 public class SyncService {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private Logger log = LoggerFactory.getLogger(SyncService.class);
+
+    @Inject
+    private EntityService entityService;
+
+    @Inject
+    private DomainService domainService;
 
     @Inject
     private SyncMapper syncMapper;
@@ -33,41 +55,66 @@ public class SyncService {
     private SyncAdapter syncAdapter;
 
     @Inject
-    private Matching correctionBean;
+    private MatchingMapper matchingMapper;
+
+    @Inject
+    private CountrySyncHandler countrySyncHandler;
+
+    @Inject
+    private RegionSyncHandler regionSyncHandler;
+
+    @Inject
+    private CityTypeSyncHandler cityTypeSyncHandler;
+
+    @Inject
+    private CitySyncHandler citySyncHandler;
+
+    @Inject
+    private DistrictSyncHandler districtSyncHandler;
+
+    @Inject
+    private StreetTypeSyncHandler streetTypeSyncHandler;
+
+    @Inject
+    private StreetSyncHandler streetSyncHandler;
+
+    @Inject
+    private BuildingSyncHandler buildingSyncHandler;
+
+    @Inject
+    private CompanySyncHandler companySyncHandler;
 
     private AtomicBoolean processing = new AtomicBoolean(false);
 
     private AtomicBoolean cancelSync = new AtomicBoolean(false);
 
-    private ISyncHandler getHandler(SyncEntity syncEntity){
-        switch (syncEntity){
-            case COUNTRY:
-                return EjbBeanLocator.getBean(CountrySyncHandler.class);
-            case REGION:
-                return EjbBeanLocator.getBean(RegionSyncHandler.class);
-            case CITY_TYPE:
-                return EjbBeanLocator.getBean(CityTypeSyncHandler.class);
-            case CITY:
-                return EjbBeanLocator.getBean(CitySyncHandler.class);
-            case DISTRICT:
-                return EjbBeanLocator.getBean(DistrictSyncHandler.class);
-            case STREET_TYPE:
-                return EjbBeanLocator.getBean(StreetTypeSyncHandler.class);
-            case STREET:
-                return EjbBeanLocator.getBean(StreetSyncHandler.class);
-            case BUILDING:
-                return EjbBeanLocator.getBean(BuildingSyncHandler.class);
-            case ORGANIZATION:
-                return EjbBeanLocator.getBean(CompanySyncHandler.class);
+    private ISyncHandler getHandler(int entityId){
+        switch (entityId){
+            case Country.ENTITY_ID:
+                return countrySyncHandler;
+            case Region.ENTITY_ID:
+                return regionSyncHandler;
+            case CityType.ENTITY_ID:
+                return cityTypeSyncHandler;
+            case City.ENTITY_ID:
+                return citySyncHandler;
+            case District.ENTITY_ID:
+                return districtSyncHandler;
+            case StreetType.ENTITY_ID:
+                return streetTypeSyncHandler;
+            case Street.ENTITY_ID:
+                return streetSyncHandler;
+            case Building.ENTITY_ID:
+                return buildingSyncHandler;
+            case Company.ENTITY_ID:
+                return companySyncHandler;
 
             default:
                 throw new IllegalArgumentException();
         }
     }
 
-
-    @Asynchronous
-    public void load(SyncEntity syncEntity){
+    public void load(int entityId){
         if (processing.get()){
             return;
         }
@@ -78,75 +125,74 @@ public class SyncService {
             cancelSync.set(false);
 
             //clear
-            domainSyncBean.delete(syncEntity);
+            syncMapper.deleteAll(entityId);
 
-            Date date = DateUtil.getCurrentDate();
+            Date date = Dates.getCurrentDate();
 
-            List<DomainSync> parentDomainSyncs = getHandler(syncEntity).getParentDomainSyncs();
+            List<Sync> parentSyncs = getHandler(entityId).getParentSyncs();
 
-            if (parentDomainSyncs != null){
-                for (DomainSync ds : parentDomainSyncs) {
-                    load(syncEntity, ds, date);
+            if (parentSyncs != null){
+                for (Sync s : parentSyncs) {
+                    load(entityId, s, date);
                 }
             }else{
-                load(syncEntity, null, date);
+                load(entityId, null, date);
             }
         } catch (Exception e) {
             log.error("Ошибка синхронизации", e);
 
-            String message = ExceptionUtil.getCauseMessage(e, true);
+            String message = Exceptions.getCauseMessage(e, true);
 
             broadcastService.broadcast(getClass(), "error", message != null ? message : e.getMessage());
         } finally {
             //unlock sync
             processing.set(false);
 
-            broadcastService.broadcast(getClass(), "done", syncEntity.name());
+            broadcastService.broadcast(getClass(), "done", entityId);
         }
     }
 
-    private void load(SyncEntity syncEntity, DomainSync parentDomainSync, Date date)
-            throws RemoteCallException{
+    private void load(int entityId, Sync parentSync, Date date) throws SyncException {
         if (cancelSync.get()){
             return;
         }
 
-        Cursor<DomainSync> cursor = getHandler(syncEntity).getCursorDomainSyncs(parentDomainSync, date);
+        Cursor<Sync> cursor = getHandler(entityId).getCursorSyncs(parentSync, date);
 
-        SyncBeginMessage message = new SyncBeginMessage();
-        message.setSyncEntity(syncEntity);
+        SyncMessage message = new SyncMessage();
+        message.setEntityId(entityId);
         message.setCount(cursor.getData() != null ? cursor.getData().size() : 0L);
-        if (parentDomainSync != null){
-            message.setParentName(parentDomainSync.getName());
+        if (parentSync != null){
+            message.setParentName(parentSync.getName());
         }
 
         broadcastService.broadcast(getClass(), "begin", message);
 
         if (cursor.getData() != null) {
             cursor.getData().forEach(s -> {
-                s.setStatus(LOADED);
-                s.setType(syncEntity);
+                s.setStatus(SyncStatus.LOADED);
+                s.setEntityId(entityId);
                 s.setDate(date);
 
-                domainSyncBean.insert(s);
+                syncMapper.insert(s);
 
                 broadcastService.broadcast(getClass(), "processed", s);
             });
         }
     }
 
-    private List<DomainSync> getDomainSyncs(SyncEntity syncEntity, DomainSyncStatus syncStatus, Long externalId) {
-        List<DomainSync> domainSyncs = domainSyncBean.getList(of(new DomainSync(syncEntity, syncStatus, externalId)));
+    private List<Sync> getSyncs(int entityId, int syncStatusId, Long externalId) {
+        List<Sync> syncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(entityId, syncStatusId, externalId)));
 
-        if (syncEntity.equals(SyncEntity.ORGANIZATION)) {
-            Map<Long, DomainSync> map = domainSyncs.stream().collect(Collectors.toMap(DomainSync::getExternalId, ds -> ds));
+        if (entityId == Company.ENTITY_ID) {
+            Map<Long, Sync> map = syncs.stream().collect(Collectors.toMap(Sync::getExternalId, s -> s));
 
             Map<Long, Integer> levelMap = new HashMap<>();
 
-            domainSyncs.forEach(ds -> {
+            syncs.forEach(s -> {
                 int level = 0;
 
-                DomainSync p = ds;
+                Sync p = s;
 
                 while (p != null && p.getParentId() != null && level < 100){
                     p = map.get(p.getParentId());
@@ -154,17 +200,16 @@ public class SyncService {
                     level++;
                 }
 
-                levelMap.put(ds.getExternalId(), level);
+                levelMap.put(s.getExternalId(), level);
             });
 
-            domainSyncs.sort(Comparator.comparingInt(ds -> levelMap.get(ds.getExternalId())));
+            syncs.sort(Comparator.comparingInt(ds -> levelMap.get(ds.getExternalId())));
         }
 
-        return domainSyncs;
+        return syncs;
     }
 
-    @Asynchronous
-    public void sync(SyncEntity syncEntity){
+    public <T extends Domain<T>> void sync(Class<T> domainClass){
         processing.set(true);
         cancelSync.set(false);
 
@@ -172,166 +217,172 @@ public class SyncService {
             broadcastService.broadcast(getClass(), "info", "Начата синхронизация");
             log.info("sync: begin");
 
-            Long organizationId = syncAdapter.getOrganization().getObjectId();
+            Entity entity = entityService.getEntity(domainClass);
 
-            IDomainSyncHandler handler = getHandler(syncEntity);
+            Long companyId = syncAdapter.getCompany().getObjectId();
+
+            ISyncHandler<T> handler = getHandler(entity.getId());
 
             //sync
-            getDomainSyncs(syncEntity, null, null).forEach(ds -> {
+            getSyncs(entity.getId(), 0, null).forEach(s -> { //todo sync status id
                 try {
                     if (cancelSync.get()){
                         return;
                     }
 
-                    List<? extends Matching> corrections = correctionBean.getCorrectionsByExternalId(syncEntity,
-                            ds.getExternalId(), organizationId, null);
+                    List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(entity.getName(),
+                            s.getExternalId(), companyId);
 
-                    if (!corrections.isEmpty()){
-                        if (corrections.size() > 1){
-                            log.warn("sync: corrections > 1 {}", corrections); //todo
+                    if (!matchingList.isEmpty()){
+                        if (matchingList.size() > 1){
+                            log.warn("sync: matchingList > 1 {}", matchingList); //todo
                         }
 
-                        Matching correction = corrections.get(0);
+                        Matching matching = matchingList.get(0);
 
-                        if (!handler.isCorresponds(correction, ds, organizationId)){
-                            handler.updateCorrection(correction, ds, organizationId);
+                        if (!handler.isMatch(matching, s, companyId)){
+                            handler.updateMatching(matching, s, companyId);
 
-                            log.info("sync: update correction name {}", correction);
+                            log.info("sync: update matching name {}", matching);
                         }
 
-                        DomainObject domainObject = handler.getStrategy().getDomainObject(correction.getObjectId());
+                        T domain = domainService.getDomain(domainClass, matching.getObjectId());
 
-                        if (handler.isCorresponds(domainObject, ds, organizationId)){
-                            if (!domainObject.getStatus().equals(Status.ACTIVE)){
-                                handler.getStrategy().enable(domainObject);
+                        if (handler.isMatch(domain, s, companyId)){
+                            if (domain.getStatus() != Status.ACTIVE){
+                                domainService.enable(domain);
 
-                                log.info("sync: enable domain object {}", correction);
+                                log.info("sync: enable domain object {}", matching);
                             }
 
-                            ds.setStatus(SYNCHRONIZED);
-                            domainSyncBean.updateStatus(ds);
+                            s.setStatus(SyncStatus.SYNCHRONIZED);
+                            syncMapper.updateStatus(s);
                         }else{
-                            List<? extends Matching> objectCorrections = correctionBean.getCorrectionsByObjectId(syncEntity,
-                                    domainObject.getObjectId(),  organizationId, null);
+                            List<Matching> objectMatchingList = matchingMapper.getMatchingListByObjectId(entity.getName(),
+                                    domain.getObjectId(),  companyId);
 
-                            if (objectCorrections.size() == 1 && objectCorrections.get(0).getId().equals(correction.getId())){
-                                handler.updateValues(domainObject, ds, organizationId);
-                                handler.getStrategy().update(domainObject);
+                            if (objectMatchingList.size() == 1 && objectMatchingList.get(0).getId().equals(matching.getId())){
+                                handler.updateNames(domain, s, companyId);
+                                domainService.update(domain);
 
-                                log.info("sync: update domain object {}", domainObject);
+                                log.info("sync: update domain object {}", domain);
 
-                                ds.setStatus(SYNCHRONIZED);
-                                domainSyncBean.updateStatus(ds);
+                                s.setStatus(SyncStatus.SYNCHRONIZED);
                             }else {
-                                ds.setStatus(DEFERRED);
-                                domainSyncBean.updateStatus(ds);
+                                s.setStatus(SyncStatus.DELAYED);
+
+                                log.info("sync: delay domain object {}", domain);
                             }
+
+                            syncMapper.updateStatus(s);
                         }
                     }else {
-                        List<? extends DomainObject> domainObjects = handler.getDomainObjects(ds, organizationId);
+                        T domain;
 
-                        DomainObject domainObject;
+                        List<T> domains = handler.getDomains(s, companyId);
 
-                        if (!domainObjects.isEmpty()){
-                            domainObject = domainObjects.get(0);
+                        if (!domains.isEmpty()){
+                            domain = domains.get(0);
 
-                            for (int i = 1; i < domainObjects.size(); ++i){
-                                handler.getStrategy().disable(domainObjects.get(i));
+                            domains.forEach(d -> {
+                                domainService.disable(d);
 
-                                log.info("sync: disable domain object {}", domainObjects.get(i));
-                            }
+                                log.info("sync: disable domain object {}", d);
+                            });
                         }else{
-                            domainObject = handler.getStrategy().newInstance();
-                            handler.updateValues(domainObject, ds, organizationId);
-                            handler.getStrategy().insert(domainObject, ds.getDate());
+                            domain = Domains.newObject(domainClass);
 
-                            log.info("sync: add domain object {}", domainObject);
+                            handler.updateNames(domain, s, companyId);
+
+                            domainService.insert(domain, s.getDate());
+
+                            log.info("sync: add domain object {}", domain);
                         }
 
-                        Matching correction = handler.insertCorrection(domainObject, ds, organizationId);
+                        Matching matching = handler.insertMatching(domain, s, companyId);
 
-                        log.info("sync: add correction {}", correction);
+                        log.info("sync: add matching {}", matching);
 
-                        ds.setStatus(SYNCHRONIZED);
-                        domainSyncBean.updateStatus(ds);
+                        s.setStatus(SyncStatus.SYNCHRONIZED);
+                        syncMapper.updateStatus(s);
                     }
-                } catch (CorrectionNotFoundException e) {
-                    ds.setStatus(ERROR);
-                    domainSyncBean.updateStatus(ds);
+                } catch (Exception e) {
+                    s.setStatus(SyncStatus.ERROR);
+                    syncMapper.updateStatus(s);
 
                     log.warn("sync: warn sync {}", e.getMessage());
-                } catch (Exception e){
-                    log.error("sync: error sync {}", ds);
-
-                    throw e;
                 }
 
-                broadcastService.broadcast(getClass(), "processed", ds);
+                broadcastService.broadcast(getClass(), "processed", s);
             });
 
             //clear
-            correctionBean.getCorrections(syncEntity, null, organizationId, null).forEach(c -> {
-                if (getDomainSyncs(syncEntity, null, c.getExternalId()).isEmpty()){
-                    correctionBean.delete(c);
+            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(c -> {
+                if (getSyncs(entity.getId(), 0, c.getExternalId()).isEmpty()){
+                    matchingMapper.delete(c);
 
-                    log.info("sync: delete correction {}", c);
+                    log.info("sync: delete matching {}", c);
                 }
             });
 
-            //deferred
-            getDomainSyncs(syncEntity, DEFERRED, null).forEach(ds -> {
-                if (domainSyncBean.getObject(ds.getId()).getStatus().equals(DEFERRED)) {
-                    List<? extends Matching> corrections = correctionBean.getCorrectionsByExternalId(syncEntity,
-                            ds.getExternalId(), organizationId, null);
+            //delayed
+            getSyncs(entity.getId(), SyncStatus.DELAYED, null).forEach(s -> {
+                if (syncMapper.getSync(s.getId()).getStatus() == SyncStatus.DELAYED) {
+                    List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(entity.getName(),
+                            s.getExternalId(), companyId);
 
-                    if (corrections.isEmpty()){
-                        throw new RuntimeException("sync: deferred correction nod found " + ds);
+                    if (matchingList.isEmpty()){
+                        throw new RuntimeException("sync: delayed matching not found " + s);
                     }
 
-                    Matching correction = corrections.get(0);
+                    Matching matching = matchingList.get(0);
 
-                    List<? extends Matching> objectCorrections = correctionBean.getCorrectionsByObjectId(syncEntity,
-                            correction.getObjectId(), organizationId, null);
+                    List<Matching> objectMatchingList = matchingMapper.getMatchingListByObjectId(entity.getName(),
+                            matching.getObjectId(), companyId);
 
-                    boolean corresponds = objectCorrections.stream()
-                            .allMatch(c -> c.getId().equals(correction.getId()) || handler.isCorresponds(c, correction));
+                    boolean corresponds = objectMatchingList.stream()
+                            .allMatch(c -> c.getId().equals(matching.getId()) || handler.isMatch(c, matching));
 
                     if (corresponds){
-                        DomainObject domainObject = handler.getStrategy().getDomainObject(correction.getObjectId());
+                        T domain = domainService.getDomain(domainClass, matching.getObjectId());
 
-                        handler.updateValues(domainObject, ds, organizationId);
-                        handler.getStrategy().update(domainObject);
+                        handler.updateNames(domain, s, companyId);
 
-                        log.info("sync: update deferred domain object {}", domainObject);
+                        domainService.update(domain);
 
-                        objectCorrections.forEach(c -> {
-                            if (!c.getId().equals(correction.getId())){
-                                DomainSync domainSync = getDomainSyncs(syncEntity, null, c.getExternalId()).get(0);
 
-                                domainSync.setStatus(SYNCHRONIZED);
-                                domainSyncBean.updateStatus(domainSync);
+                        log.info("sync: update deferred domain object {}", domain);
+
+                        objectMatchingList.forEach(c -> {
+                            if (!c.getId().equals(matching.getId())){
+                                Sync sync = getSyncs(entity.getId(), 0, c.getExternalId()).get(0);
+
+                                sync.setStatus(SyncStatus.SYNCHRONIZED);
+                                syncMapper.updateStatus(sync);
                             }
                         });
                     }else{
-                        List<? extends DomainObject> domainObjects = handler.getDomainObjects(ds, organizationId);
+                        List<T> domains = handler.getDomains(s, companyId);
 
-                        if (!domainObjects.isEmpty()){
-                            correction.setObjectId(domainObjects.get(0).getObjectId());
+                        if (!domains.isEmpty()){
+                            matching.setObjectId(domains.get(0).getObjectId());
 
-                            correctionBean.save(correction);
+                            matchingMapper.update(matching);
 
-                            log.info("sync: update deferred correction {}", correction);
+                            log.info("sync: update deferred matching {}", matching);
                         }else{
-                            DomainObject domainObject = handler.getStrategy().newInstance();
-                            handler.updateValues(domainObject, ds, organizationId);
-                            handler.getStrategy().insert(domainObject, ds.getDate());
+                            T domain = Domains.newObject(domainClass);
 
-                            log.info("sync: add deferred domain object {}", domainObject);
+                            handler.updateNames(domain, s, companyId);
+
+                            domainService.insert(domain, s.getDate());
+
+                            log.info("sync: add deferred domain object {}", domain);
                         }
                     }
 
-                    ds.setStatus(SYNCHRONIZED);
-                    domainSyncBean.updateStatus(ds);
+                    s.setStatus(SyncStatus.SYNCHRONIZED);
+                    syncMapper.updateStatus(s);
                 }
             });
 
@@ -340,7 +391,7 @@ public class SyncService {
         } catch (Exception e) {
             log.error("sync: error", e);
 
-            broadcastService.broadcast(getClass(), "error", ExceptionUtil.getCauseMessage(e));
+            broadcastService.broadcast(getClass(), "error", Exceptions.getCauseMessage(e));
         } finally {
             processing.set(false);
         }

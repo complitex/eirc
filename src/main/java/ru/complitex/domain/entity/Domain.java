@@ -18,11 +18,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
     private Long objectId;
     private Date startDate;
     private Date endDate;
-    private Status status;
+    private int status;
     private Long permissionId;
     private Long userId;
 
-    private Long entityId;
+    private int entityId;
     private String entityName;
 
     private List<Attribute> attributes = new ArrayList<>();
@@ -37,7 +37,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
     }
 
 
-    public Domain(Long entityId, String entityName) {
+    public Domain(int entityId, String entityName) {
         this.entityId = entityId;
         this.entityName = entityName;
     }
@@ -57,24 +57,24 @@ public class Domain<T extends Domain<T>> implements Serializable{
         map.putAll(domain.map);
     }
 
-    public List<Attribute> getAttributes(Long entityAttributeId) {
+    public List<Attribute> getAttributes(int entityAttributeId) {
         return attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
+                .filter(a -> a.getEntityAttributeId() == entityAttributeId)
                 .filter(a -> a.getEndDate() == null)
                 .collect(Collectors.toList());
     }
 
-    public Attribute getAttribute(Long entityAttributeId) {
+    public Attribute getAttribute(int entityAttributeId) {
         return attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
+                .filter(a -> a.getEntityAttributeId() == entityAttributeId)
                 .filter(a -> a.getEndDate() == null)
                 .findAny()
                 .orElse(null);
     }
 
-    public Attribute getOrCreateAttribute(Long entityAttributeId) {
+    public Attribute getOrCreateAttribute(int entityAttributeId) {
         return attributes.stream()
-                .filter(a -> a.getEntityAttributeId().equals(entityAttributeId))
+                .filter(a -> a.getEntityAttributeId() == entityAttributeId)
                 .filter(a -> a.getEndDate() == null)
                 .findAny()
                 .orElseGet(() -> {
@@ -85,144 +85,144 @@ public class Domain<T extends Domain<T>> implements Serializable{
                 });
     }
 
-    public void removeAttribute(Long entityAttributeId) {
-        attributes.removeIf(attribute -> attribute.getEntityAttributeId().equals(entityAttributeId));
+    public void removeAttribute(int entityAttributeId) {
+        attributes.removeIf(attribute -> attribute.getEntityAttributeId() == entityAttributeId);
     }
 
-    public String getText(Long entityAttributeId){
+    public String getText(int entityAttributeId){
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getText() : null;
     }
 
-    public Domain<T> setText(Long entityAttributeId, String text){
+    public Domain<T> setText(int entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).setText(text);
 
         return this;
     }
 
-    public Long getNumber(Long entityAttributeId){
+    public Long getNumber(int entityAttributeId){
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getNumber() : null;
     }
 
-    public Long getNumber(Long entityAttributeId, Long defaultNumber){
+    public Long getNumber(int entityAttributeId, Long defaultNumber){
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getNumber() != null ? attribute.getNumber() : defaultNumber : defaultNumber;
     }
 
     @SuppressWarnings("unchecked")
-    public T setNumber(Long entityAttributeId, Long number){
+    public T setNumber(int entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).setNumber(number);
 
         return (T) this;
     }
 
-    public void setBoolean(Long entityAttributeId, Boolean _boolean){
+    public void setBoolean(int entityAttributeId, Boolean _boolean){
         setNumber(entityAttributeId, _boolean != null ? _boolean ? 1L : 0 : null);
     }
 
-    public Boolean getBoolean(Long entityAttributeId){
+    public Boolean getBoolean(int entityAttributeId){
         Long number = getNumber(entityAttributeId);
 
         return number != null ? number.equals(1L) : null;
     }
 
-    public boolean isBoolean(Long entityAttributeId){
+    public boolean isBoolean(int entityAttributeId){
         Long number = getNumber(entityAttributeId);
 
         return number != null && number.equals(1L);
     }
 
-    public BigDecimal getDecimal(Long entityAttributeId){
+    public BigDecimal getDecimal(int entityAttributeId){
         String text = getOrCreateAttribute(entityAttributeId).getText();
 
         return text != null && !text.isEmpty()  ? new BigDecimal(text) : null;
     }
 
     @SuppressWarnings("unchecked")
-    public T setDecimal(Long entityAttributeId, BigDecimal decimal){
+    public T setDecimal(int entityAttributeId, BigDecimal decimal){
         setText(entityAttributeId, decimal != null ? decimal.toPlainString() : null);
 
         return (T) this;
     }
 
-    public Date getDate(Long entityAttributeId){
+    public Date getDate(int entityAttributeId){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(Attribute::getDate)
                 .orElse(null);
     }
 
-    public void setDate(Long entityAttributeId, Date date){
+    public void setDate(int entityAttributeId, Date date){
         getOrCreateAttribute(entityAttributeId).setDate(date);
     }
 
-    public Value getValue(Long entityAttributeId, Locale locale){
+    public Value getValue(int entityAttributeId, Locale locale){
         Attribute attribute = getAttribute(entityAttributeId);
 
         return attribute != null ? attribute.getValue(locale) : null;
     }
 
-    public String getTextValue(Long entityAttributeId, Long localeId){
+    public String getTextValue(int entityAttributeId, int localeId){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(a -> a.getValue(localeId))
                 .map(Value::getText)
                 .orElse(null);
     }
 
-    public String getTextValue(Long entityAttributeId, Locale locale){
+    public String getTextValue(int entityAttributeId, Locale locale){
         return Optional.ofNullable(getAttribute(entityAttributeId))
                 .map(a -> a.getValue(locale))
                 .map(Value::getText)
                 .orElse(null);
     }
 
-    public String getTextValue(Long entityAttributeId){
+    public String getTextValue(int entityAttributeId){
         return getTextValue(entityAttributeId, Locales.getSystemLocale());
     }
 
-    public void setTextValue(Long entityAttributeId, String value, Long localeId){
+    public void setTextValue(int entityAttributeId, String value, int localeId){
         getOrCreateAttribute(entityAttributeId).setTextValue(value, localeId);
     }
 
-    public void setTextValue(Long entityAttributeId, String value){
+    public void setTextValue(int entityAttributeId, String value){
         setTextValue(entityAttributeId, value, Locales.getSystemLocaleId());
     }
 
-    public void addTextValue(Long entityAttributeId, String text){
+    public void addTextValue(int entityAttributeId, String text){
         getOrCreateAttribute(entityAttributeId).addTextValue(text);
     }
 
-    public void addUpperTextValue(Long entityAttributeId, String text){
+    public void addUpperTextValue(int entityAttributeId, String text){
         if (text != null) {
             addTextValue(entityAttributeId, text.toUpperCase());
         }
     }
 
-    public void addNumberValue(Long entityAttributeId, Long number){
+    public void addNumberValue(int entityAttributeId, Long number){
         getOrCreateAttribute(entityAttributeId).addNumberValue(number);
     }
 
-    public List<Long> getNumberValues(Long entityAttributeId){
+    public List<Long> getNumberValues(int entityAttributeId){
         return getOrCreateAttribute(entityAttributeId).getNumberValues();
     }
 
-    public String getNumberValuesString(Long entityAttributeId){
+    public String getNumberValuesString(int entityAttributeId){
         return Strings.emptyToNull(getNumberValues(entityAttributeId).stream().map(Object::toString)
                 .collect(Collectors.joining(",")));
     }
 
-    public List<String> getTextValues(Long entityAttributeId){
+    public List<String> getTextValues(int entityAttributeId){
         return getOrCreateAttribute(entityAttributeId).getTextValues();
     }
 
-    public boolean hasValueText(Long entityAttributeId, String value){
+    public boolean hasValueText(int entityAttributeId, String value){
         return getAttribute(entityAttributeId).getValues().stream().anyMatch(v -> v.getText().equals(value));
     }
 
-    public Map<String, String> getStringMap(Long entityAttributeId){
+    public Map<String, String> getStringMap(int entityAttributeId){
         if (getAttribute(entityAttributeId) == null || getAttribute(entityAttributeId).getValues().isEmpty()){
             return null;
         }
@@ -232,7 +232,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
                 .collect(Collectors.toMap(s -> Locales.getLanguage(s.getLocaleId()), Value::getText));
     }
 
-    public void clearValues(Long entityAttributeId){
+    public void clearValues(int entityAttributeId){
         getOrCreateAttribute(entityAttributeId).clearValues();
     }
 
@@ -271,12 +271,12 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.endDate = endDate;
     }
 
-    public Status getStatus() {
+    public int getStatus() {
         return status;
     }
 
     @SuppressWarnings("unchecked")
-    public T setStatus(Status status) {
+    public T setStatus(int status) {
         this.status = status;
 
         return (T) this;
@@ -290,11 +290,11 @@ public class Domain<T extends Domain<T>> implements Serializable{
         this.permissionId = permissionId;
     }
 
-    public Long getEntityId() {
+    public int getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) {
+    public void setEntityId(int entityId) {
         this.entityId = entityId;
     }
 
@@ -338,7 +338,7 @@ public class Domain<T extends Domain<T>> implements Serializable{
     }
 
     @SuppressWarnings("unchecked")
-    public T setFilter(Long entityAttributeId, String filter){
+    public T setFilter(int entityAttributeId, String filter){
         getOrCreateAttribute(entityAttributeId).setFilter(filter);
 
         return (T) this;

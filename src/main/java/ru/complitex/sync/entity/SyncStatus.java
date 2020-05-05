@@ -5,7 +5,9 @@ package ru.complitex.sync.entity;
  * 26.04.2020 19:36
  */
 public class SyncStatus {
-    public final static Long LOADED = 1L;
-    public final static Long SYNCHRONIZED = 2L;
+    public final static int LOADED = 1;
+    public final static int SYNCHRONIZED = 2;
+    public final static int DELAYED = 3;
+    public final static int ERROR = 4;
 
 }

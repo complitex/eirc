@@ -3,6 +3,7 @@ package ru.complitex.eirc.adapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.Cursor;
+import ru.complitex.company.entity.Company;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
 
@@ -21,6 +22,10 @@ import static ru.complitex.common.util.Maps.of;
 @RequestScoped
 public class SyncAdapter extends BaseAdapter {
     private final Logger log = LoggerFactory.getLogger(SyncAdapter.class);
+
+    public Company getCompany(){
+        return null;
+    }
 
     @SuppressWarnings("unchecked")
     private Cursor<Sync> getSyncCursor(String statement, Date date, Map<String, Object> param) throws SyncException {

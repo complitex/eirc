@@ -8,9 +8,9 @@ import java.io.Serializable;
  */
 public class EntityValue implements Serializable {
     private Long id;
-    private Long entityId;
-    private Long entityAttributeId;
-    private Long localeId;
+    private int entityId;
+    private int entityAttributeId;
+    private int localeId;
     private String text;
 
     public Long getId() {
@@ -21,27 +21,27 @@ public class EntityValue implements Serializable {
         this.id = id;
     }
 
-    public Long getEntityId() {
+    public int getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) {
+    public void setEntityId(int entityId) {
         this.entityId = entityId;
     }
 
-    public Long getEntityAttributeId() {
+    public int getEntityAttributeId() {
         return entityAttributeId;
     }
 
-    public void setEntityAttributeId(Long entityAttributeId) {
+    public void setEntityAttributeId(int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
     }
 
-    public Long getLocaleId() {
+    public int getLocaleId() {
         return localeId;
     }
 
-    public void setLocaleId(Long localeId) {
+    public void setLocaleId(int localeId) {
         this.localeId = localeId;
     }
 

@@ -3,12 +3,6 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-
-    <typeHandlers>
-        <typeHandler handler="ru.complitex.common.db.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.Status"/>
-        <typeHandler handler="ru.complitex.common.db.IdEnumTypeHandler" javaType="ru.complitex.domain.entity.ValueType"/>
-    </typeHandlers>
-
     <environments default="eirc">
         <environment id="local">
             <transactionManager type="MANAGED"/>

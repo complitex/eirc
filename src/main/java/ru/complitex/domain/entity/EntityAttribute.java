@@ -12,13 +12,13 @@ import java.util.List;
  */
 public class EntityAttribute implements Serializable {
     private Long id;
-    private Long entityId;
-    private Long entityAttributeId;
+    private int entityId;
+    private int entityAttributeId;
     private Date startDate;
     private Date endDate;
-    private ValueType valueType;
-    private Long referenceEntityId;
-    private Long referenceEntityAttributeId;
+    private int valueTypeId;
+    private Integer referenceEntityId;
+    private Integer referenceEntityAttributeId;
 
     private List<EntityValue> values;
 
@@ -31,7 +31,7 @@ public class EntityAttribute implements Serializable {
     public EntityAttribute() {
     }
 
-    public EntityAttribute(String entityName, Long entityAttributeId) {
+    public EntityAttribute(String entityName, int entityAttributeId) {
         this.entityName = entityName;
         this.entityAttributeId = entityAttributeId;
     }
@@ -42,7 +42,7 @@ public class EntityAttribute implements Serializable {
         this.entityAttributeId = entityAttribute.getEntityAttributeId();
         this.startDate = entityAttribute.getStartDate();
         this.endDate = entityAttribute.getEndDate();
-        this.valueType = entityAttribute.getValueType();
+        this.valueTypeId = entityAttribute.getValueTypeId();
         this.referenceEntityId = entityAttribute.getReferenceEntityId();
         this.referenceEntityAttributeId = entityAttribute.getReferenceEntityAttributeId();
         this.values = entityAttribute.getValues();
@@ -50,7 +50,7 @@ public class EntityAttribute implements Serializable {
     }
 
     public EntityValue getValue(){
-        return values.stream().filter(v -> v.getLocaleId().equals(Locales.getSystemLocaleId())).findAny().orElse(null);
+        return values.stream().filter(v -> v.getLocaleId() == Locales.getSystemLocaleId()).findAny().orElse(null);
     }
 
     public String getValueText(){
@@ -71,19 +71,19 @@ public class EntityAttribute implements Serializable {
         this.id = id;
     }
 
-    public Long getEntityId() {
+    public int getEntityId() {
         return entityId;
     }
 
-    public void setEntityId(Long entityId) {
+    public void setEntityId(int entityId) {
         this.entityId = entityId;
     }
 
-    public Long getEntityAttributeId() {
+    public int getEntityAttributeId() {
         return entityAttributeId;
     }
 
-    public void setEntityAttributeId(Long entityAttributeId) {
+    public void setEntityAttributeId(int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
     }
 
@@ -103,27 +103,27 @@ public class EntityAttribute implements Serializable {
         this.endDate = endDate;
     }
 
-    public ValueType getValueType() {
-        return valueType;
+    public int getValueTypeId() {
+        return valueTypeId;
     }
 
-    public void setValueType(ValueType valueType) {
-        this.valueType = valueType;
+    public void setValueTypeId(int valueTypeId) {
+        this.valueTypeId = valueTypeId;
     }
 
-    public Long getReferenceEntityId() {
+    public Integer getReferenceEntityId() {
         return referenceEntityId;
     }
 
-    public void setReferenceEntityId(Long referenceEntityId) {
+    public void setReferenceEntityId(Integer referenceEntityId) {
         this.referenceEntityId = referenceEntityId;
     }
 
-    public Long getReferenceEntityAttributeId() {
+    public Integer getReferenceEntityAttributeId() {
         return referenceEntityAttributeId;
     }
 
-    public void setReferenceEntityAttributeId(Long referenceEntityAttributeId) {
+    public void setReferenceEntityAttributeId(Integer referenceEntityAttributeId) {
         this.referenceEntityAttributeId = referenceEntityAttributeId;
     }
 

@@ -9,19 +9,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * 30.11.2017 15:48
  */
 public class Locales {
-    private Long systemLocaleId;
+    private Integer systemLocaleId;
     private Locale systemLocale;
 
-    private Long altLocaleId;
+    private Integer altLocaleId;
 
-    private Map<Locale, Long> map = new ConcurrentHashMap<>();
-    private Map<Long, Locale> mapId = new ConcurrentHashMap<>();
+    private Map<Locale, Integer> map = new ConcurrentHashMap<>();
+    private Map<Integer, Locale> mapId = new ConcurrentHashMap<>();
 
     public static final Locale RU = new Locale("ru");
     public static final Locale UA = new Locale("uk");
 
-    public static final Long RU_ID = 1L;
-    public static final Long UA_ID = 2L;
+    public static final Integer RU_ID = 1;
+    public static final Integer UA_ID = 2;
 
     private static Locales instance = new Locales();
 
@@ -44,27 +44,27 @@ public class Locales {
         return instance.systemLocale;
     }
 
-    public static Long getSystemLocaleId() {
+    public static Integer getSystemLocaleId() {
         return instance.systemLocaleId;
     }
 
-    public static Long getAltLocaleId() {
+    public static Integer getAltLocaleId() {
         return instance.altLocaleId;
     }
 
-    public static Long getLocaleId(Locale locale){
+    public static Integer getLocaleId(Locale locale){
         return instance.map.get(locale);
     }
 
-    public static Collection<Long> getLocaleIds(){
+    public static Collection<Integer> getLocaleIds(){
         return instance.map.values();
     }
 
-    public static Locale getLocale(Long localeId){
+    public static Locale getLocale(Integer localeId){
         return instance.mapId.get(localeId);
     }
 
-    public static String getLanguage(Long localeId){
+    public static String getLanguage(Integer localeId){
         return instance.mapId.get(localeId).getLanguage();
     }
 

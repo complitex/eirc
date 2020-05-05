@@ -41,7 +41,7 @@ public class SyncMapper extends BaseMapper {
         sqlSession().delete(".deleteSync", id);
     }
 
-    public void deleteAll(Long entityId){
+    public void deleteAll(int entityId){
         sqlSession().delete(".deleteAllSyncs", entityId);
     }
 }

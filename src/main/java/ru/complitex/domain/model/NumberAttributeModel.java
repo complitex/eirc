@@ -10,18 +10,18 @@ import ru.complitex.domain.entity.Domain;
  */
 public class NumberAttributeModel implements IModel<Long> {
     private Domain<?> domain;
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
     private IModel<? extends Domain<?>> domainModel;
 
     private Attribute attribute;
 
-    public NumberAttributeModel(Domain<?> domain, Long entityAttributeId) {
+    public NumberAttributeModel(Domain<?> domain, int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
         this.domain = domain;
     }
 
-    public NumberAttributeModel(IModel<? extends Domain<?>> domainModel, Long entityAttributeId) {
+    public NumberAttributeModel(IModel<? extends Domain<?>> domainModel, int entityAttributeId) {
         this.entityAttributeId = entityAttributeId;
         this.domainModel = domainModel;
     }
@@ -52,7 +52,7 @@ public class NumberAttributeModel implements IModel<Long> {
         }
     }
 
-    public static NumberAttributeModel of(IModel<? extends Domain<?>> domainModel, Long entityAttributeId){
+    public static NumberAttributeModel of(IModel<? extends Domain<?>> domainModel, int entityAttributeId){
         return new NumberAttributeModel(domainModel, entityAttributeId);
     }
 

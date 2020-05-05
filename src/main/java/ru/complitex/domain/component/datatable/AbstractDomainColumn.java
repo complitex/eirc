@@ -34,8 +34,7 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
     }
 
     public AbstractDomainColumn(EntityAttribute entityAttribute){
-        super(Model.of(entityAttribute.getValueText()), new SortProperty(entityAttribute.getValueType().getKey(),
-                entityAttribute));
+        super(Model.of(entityAttribute.getValueText()), new SortProperty("", entityAttribute)); //todo sort key
     }
 
     public AbstractDomainColumn(String columnKey) {

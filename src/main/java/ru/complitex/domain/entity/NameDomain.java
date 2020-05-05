@@ -7,9 +7,9 @@ import ru.complitex.domain.util.Locales;
  * 27.05.2020 00:23
  */
 public abstract class NameDomain<T extends NameDomain<T>> extends Domain<T> {
-    private Long nameEntityAttributeId;
+    private int nameEntityAttributeId;
 
-    public NameDomain(Long entityId, String entityName, Long nameEntityAttributeId) {
+    public NameDomain(int entityId, String entityName, int nameEntityAttributeId) {
         super(entityId, entityName);
         this.nameEntityAttributeId = nameEntityAttributeId;
     }
@@ -22,11 +22,11 @@ public abstract class NameDomain<T extends NameDomain<T>> extends Domain<T> {
         setTextValue(nameEntityAttributeId, name);
     }
 
-    public String getName(Long localeId){
+    public String getName(Integer localeId){
         return getTextValue(nameEntityAttributeId, localeId);
     }
 
-    public void setName(String name, Long localeId){
+    public void setName(String name, Integer localeId){
         setTextValue(nameEntityAttributeId, name, localeId);
     }
 

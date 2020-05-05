@@ -10,10 +10,10 @@ import ru.complitex.domain.util.Attributes;
  */
 public class TextValueModel implements IModel<String> {
     private IModel<? extends Domain> domainModel;
-    private Long entityAttributeId;
-    private Long localeId;
+    private int entityAttributeId;
+    private int localeId;
 
-    public TextValueModel(IModel<? extends Domain> domainModel, Long entityAttributeId, Long localeId) {
+    public TextValueModel(IModel<? extends Domain> domainModel, int entityAttributeId, int localeId) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
         this.localeId = localeId;

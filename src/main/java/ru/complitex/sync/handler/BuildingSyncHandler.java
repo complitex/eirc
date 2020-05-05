@@ -40,7 +40,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(CityType.ENTITY_ID,
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
                 Long.valueOf(parentSync.getAdditionalParentId()))));
 
         if (cityTypeSyncs.isEmpty()){

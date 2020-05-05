@@ -9,9 +9,9 @@ import ru.complitex.domain.entity.Domain;
  */
 public class BooleanAttributeModel implements IModel<Boolean> {
     private IModel<? extends Domain> domainModel;
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
-    public BooleanAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+    public BooleanAttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
     }
@@ -32,7 +32,7 @@ public class BooleanAttributeModel implements IModel<Boolean> {
         }
     }
 
-    public static BooleanAttributeModel of(IModel<? extends Domain> domainModel, Long entityAttributeId){
+    public static BooleanAttributeModel of(IModel<? extends Domain> domainModel, int entityAttributeId){
         return new BooleanAttributeModel(domainModel, entityAttributeId);
     }
 }

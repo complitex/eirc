@@ -2,6 +2,7 @@ package ru.complitex.domain.service;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.mapper.DomainMapper;
 import ru.complitex.domain.util.Domains;
@@ -9,6 +10,7 @@ import ru.complitex.domain.util.Domains;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,28 +47,50 @@ public class DomainService implements Serializable {
         return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId));
     }
 
-    public String getEntityName(Long entityId){
+    public String getEntityName(int entityId){
         return entityService.getEntity(entityId).getName();
     }
 
-    public Domain<?> getDomainRef(Long referenceId, Long objectId){
+    public Domain<?> getDomainRef(int referenceId, Long objectId){
         return domainMapper.getDomain(getEntityName(referenceId), objectId);
     }
 
     public void save(Domain<?> domain){
         if (domain.getObjectId() != null){
-            domainMapper.updateDomain(domain);
+            domainMapper.update(domain);
         }else{
-            domainMapper.insertDomain(domain);
+            domainMapper.insert(domain);
         }
     }
 
     public void insert(Domain<?> domain){
-        domainMapper.insertDomain(domain);
+        domainMapper.insert(domain);
+    }
+
+    public void insert(Domain<?> domain, Date startDate){
+        domain.setStartDate(startDate);
+
+        domainMapper.insert(domain);
     }
 
     public void update(Domain<?> domain){
-        domainMapper.updateDomain(domain);
+        domainMapper.update(domain);
+    }
+
+    public void delete(Domain<?> domain){
+        domainMapper.delete(domain);
+    }
+
+    public void enable(Domain<?> domain){
+        domain.setStatus(Status.ACTIVE);
+
+        domainMapper.update(domain);
+    }
+
+    public void disable(Domain<?> domain){
+        domain.setStatus(Status.INACTIVE);
+
+        domainMapper.update(domain);
     }
 
     public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
@@ -91,7 +115,5 @@ public class DomainService implements Serializable {
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
     }
 
-    public void delete(Domain<?> domain){
-        domainMapper.delete(domain);
-    }
+
 }

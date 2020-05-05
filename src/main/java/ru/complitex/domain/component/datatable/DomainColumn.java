@@ -68,25 +68,25 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     @Override
     public Component getFilter(String componentId, FilterDataForm<?> form) {
-        Long entityAttributeId = entityAttribute.getEntityAttributeId();
+        int entityAttributeId = entityAttribute.getEntityAttributeId();
 
         @SuppressWarnings("unchecked")
         Domain<T> domain = ((FilterWrapper<T>)form.getModelObject()).getObject();
 
         domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 
-        switch (entityAttribute.getValueType()){
-            case NUMBER:
+        switch (entityAttribute.getValueTypeId()){
+            case ValueType.NUMBER:
                 TextDataFilter<Long> textFilter = new TextDataFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
-            case DECIMAL:
+            case ValueType.DECIMAL:
                 TextDataFilter<BigDecimal> decimalFilter = new TextDataFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
                 decimalFilter.getFilter().setType(BigDecimal.class);
 
                 return decimalFilter;
-            case DATE:
+            case ValueType.DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
@@ -103,44 +103,44 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
-        switch (entityAttribute.getValueType()){
-            case TEXT_LIST:
+        switch (entityAttribute.getValueTypeId()){
+            case ValueType.TEXT_LIST:
                 List<Value> values = attribute.getValues();
 
                 if (values != null && !values.isEmpty()) {
-                    if (values.get(0).getLocaleId() != null){
+                    if (values.get(0).getLocaleId() != 0){
                         text = Attributes.displayText(entityAttribute,
                                 attribute.getTextValue(entityAttribute.getEntityAttributeId()));
                     }else{
                         text = values.stream()
-                                .filter(v -> v.getLocaleId() == null)
+                                .filter(v -> v.getLocaleId() == 0)
                                 .map(v -> Attributes.displayText(entityAttribute, v.getText()))
                                 .collect(Collectors.joining("\n"));
                     }
                 }
 
                 break;
-            case REFERENCE:
+            case ValueType.REFERENCE:
                 if (attribute.getNumber() != null) {
                     text = displayEntity(entityAttribute, attribute.getNumber());
                 }
 
                 break;
-            case NUMBER:
+            case ValueType.NUMBER:
                 text = attribute.getNumber() != null ?  attribute.getNumber() + "" : "";
 
                 break;
-            case DECIMAL:
+            case ValueType.DECIMAL:
                 text = attribute.getDecimal() != null ?  attribute.getDecimal() + "" : "";
 
                 break;
 
-            case DATE:
+            case ValueType.DATE:
                 text = attribute.getDate() != null ? dateFormat.format(attribute.getDate()) : "";
 
                 break;
 
-            case REFERENCE_LIST:
+            case ValueType.REFERENCE_LIST:
                 if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null){
                     EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
@@ -188,17 +188,17 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
                 String text;
 
-                switch (referenceEntityAttribute.getValueType()){
-                    case REFERENCE:
+                switch (referenceEntityAttribute.getValueTypeId()){
+                    case ValueType.REFERENCE:
                         text = displayEntity(referenceEntityAttribute, refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()));
                         break;
-                    case TEXT_LIST:
+                    case ValueType.TEXT_LIST:
                         text = refDomain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
                         break;
-                    case TEXT:
+                    case ValueType.TEXT:
                         text = refDomain.getText(referenceEntityAttribute.getEntityAttributeId());
                         break;
-                    case NUMBER:
+                    case ValueType.NUMBER:
                         text = refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()) + "";
                         break;
                     default:

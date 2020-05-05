@@ -10,9 +10,9 @@ import ru.complitex.domain.entity.Domain;
  */
 public class AttributeModel implements IModel<Attribute> {
     private IModel<? extends Domain> domainModel;
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
-    public AttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+    public AttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
     }

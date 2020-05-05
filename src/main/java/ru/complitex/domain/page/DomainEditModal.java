@@ -25,10 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.ui.form.FormGroupBorder;
 import ru.complitex.domain.component.form.DomainAutoComplete;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Entity;
-import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
 import ru.complitex.domain.service.DomainService;
@@ -108,31 +105,31 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 Component component = getComponent("component", attribute);
 
                 if (component == null) {
-                    switch (entityAttribute.getValueType()){
-                        case DECIMAL:
+                    switch (entityAttribute.getValueTypeId()){
+                        case ValueType.DECIMAL:
                             input1 = new TextField<>("input1", DecimalAttributeModel.of(attribute), BigDecimal.class);
 
                             break;
-                        case TEXT:
-                        case REFERENCE_LIST:
+                        case ValueType.TEXT:
+                        case ValueType.REFERENCE_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
                             break;
-                        case DATE:
+                        case ValueType.DATE:
                             input1 = new DateTextField("input1",
                                     new PropertyModel<>(attribute, "date"),
                                     new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
                             break;
-                        case REFERENCE:
+                        case ValueType.REFERENCE:
                             EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
 
                             component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
                                     referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
                             break;
-                        case BOOLEAN:
-                        case NUMBER:
+                        case ValueType.BOOLEAN:
+                        case ValueType.NUMBER:
                             input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
                             break;
-                        case TEXT_LIST:
+                        case ValueType.TEXT_LIST:
                             input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
                                     Locales.getLocaleId(Locales.RU)), entityAttribute.getStringType()));
                             input1.add(new AttributeModifier("placeholder", getString("RU")));

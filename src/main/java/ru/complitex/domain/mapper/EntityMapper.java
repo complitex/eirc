@@ -13,7 +13,7 @@ import javax.enterprise.context.RequestScoped;
  */
 @RequestScoped
 public class EntityMapper extends BaseMapper {
-    public Entity getEntity(Long id){
+    public Entity getEntity(int id){
         return sqlSession().selectOne("selectEntity", id);
     }
 
@@ -21,7 +21,7 @@ public class EntityMapper extends BaseMapper {
         return sqlSession().selectOne("selectEntityByName", entityName);
     }
 
-    public String getReferenceEntityName(String entityName, Long entityAttributeId){
+    public String getReferenceEntityName(String entityName, int entityAttributeId){
         return sqlSession().selectOne("selectReferenceEntityName", Maps.of("entityName", entityName,
                 "entityAttributeId", entityAttributeId));
     }

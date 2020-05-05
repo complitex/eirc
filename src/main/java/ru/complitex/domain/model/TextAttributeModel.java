@@ -14,7 +14,7 @@ import ru.complitex.domain.util.Attributes;
  */
 public class TextAttributeModel implements IModel<String> {
     private Domain domain;
-    private Long entityAttributeId;
+    private int entityAttributeId;
 
     private Attribute attribute;
 
@@ -24,14 +24,14 @@ public class TextAttributeModel implements IModel<String> {
 
     private IModel<? extends Domain> domainModel;
 
-    public TextAttributeModel(Domain domain, Long entityAttributeId) {
+    public TextAttributeModel(Domain domain, int entityAttributeId) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
 
         this.type = StringType.DEFAULT;
     }
 
-    public TextAttributeModel(Domain domain, Long entityAttributeId, StringType type) {
+    public TextAttributeModel(Domain domain, int entityAttributeId, StringType type) {
         this.domain = domain;
         this.entityAttributeId = entityAttributeId;
 
@@ -48,14 +48,14 @@ public class TextAttributeModel implements IModel<String> {
         this.type = type;
     }
 
-    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId, StringType type) {
+    public TextAttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId, StringType type) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
 
         this.type = type;
     }
 
-    public TextAttributeModel(IModel<? extends Domain> domainModel, Long entityAttributeId) {
+    public TextAttributeModel(IModel<? extends Domain> domainModel, int entityAttributeId) {
         this.domainModel = domainModel;
         this.entityAttributeId = entityAttributeId;
 
@@ -102,7 +102,7 @@ public class TextAttributeModel implements IModel<String> {
         }
     }
 
-    public static TextAttributeModel of(IModel<? extends Domain> model, Long entityAttributeId){
+    public static TextAttributeModel of(IModel<? extends Domain> model, int entityAttributeId){
         return new TextAttributeModel(model, entityAttributeId);
     }
 }

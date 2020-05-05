@@ -5,7 +5,7 @@
 -- ------------------------------
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE  `user` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `login` VARCHAR(64) NOT NULL COMMENT 'Логин',
   `password` VARCHAR(64) NOT NULL COMMENT 'Пароль',
   PRIMARY KEY (`id`),
@@ -20,7 +20,7 @@ INSERT INTO `user`(login, password) value ('admin', sha2('admin', 256));
 -- ------------------------------
 DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE  `user_group` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `login` VARCHAR(45) NOT NULL COMMENT 'Имя пользователя',
   `group_name` VARCHAR(45) NOT NULL COMMENT 'Название группы',
   PRIMARY KEY (`id`),
@@ -37,7 +37,7 @@ INSERT INTO `user_group` (login, group_name) value ('admin', 'ADMINISTRATORS');
 
 DROP TABLE IF EXISTS `locale`;
 CREATE TABLE `locale` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локали',
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор локали',
   `locale` VARCHAR(2) NOT NULL COMMENT 'Код локали',
   `system` TINYINT(1) NOT NULL default 0 COMMENT 'Является ли локаль системной',
   PRIMARY KEY (`id`),
@@ -54,7 +54,7 @@ INSERT INTO `locale`(`id`, `locale`, `system`) VALUES (2, 'UA', 0);
 
 DROP TABLE IF EXISTS `update`;
 CREATE TABLE `update` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
   `version` VARCHAR(64) NOT NULL COMMENT 'Версия',
   `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата обновления',
   PRIMARY KEY (`id`)
@@ -67,22 +67,29 @@ CREATE TABLE `update` (
 
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `id` INT NOT NULL COMMENT 'Идентификатор сущности',
   `name` VARCHAR(100) NOT NULL COMMENT 'Название сущности',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_entity` (`name`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Сущность';
 
+DROP TABLE IF EXISTS entity_value_type;
+CREATE TABLE `entity_value_type` (
+  `id` INT NOT NULL COMMENT 'Идентификатор типа значения атрибута',
+  `value_type` VARCHAR(100) NOT NULL COMMENT 'Тип значения атрибута',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип значения атрибута';
+
 DROP TABLE IF EXISTS `entity_attribute`;
 CREATE TABLE `entity_attribute` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `entity_attribute_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор атрибута',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `entity_id` INT NOT NULL COMMENT 'Идентификатор сущности',
+  `entity_attribute_id` INT NOT NULL COMMENT 'Идентификатор атрибута',
   `start_date` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия атрибута',
   `end_date` TIMESTAMP NULL default NULL COMMENT 'Дата окончания периода действия атрибута',
-  `value_type_id` BIGINT(20) COMMENT  'Тип значения атрибута',
-  `reference_entity_id` BIGINT(20) COMMENT  'Ссылка на сущность',
-  `reference_entity_attribute_id` BIGINT(20) COMMENT  'Ссылка на атрибут',
+  `value_type_id` INT COMMENT  'Тип значения атрибута',
+  `reference_entity_id` INT COMMENT  'Ссылка на сущность',
+  `reference_entity_attribute_id` INT COMMENT  'Ссылка на атрибут',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`entity_attribute_id`, `entity_id`),
   KEY `key_entity_id` (`entity_id`),
@@ -97,10 +104,10 @@ CREATE TABLE `entity_attribute` (
 
 DROP TABLE IF EXISTS `entity_value`;
 CREATE TABLE `entity_value` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
-  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
-  `entity_attribute_id` BIGINT(20) NULL COMMENT 'Идентификатор атрибута',
-  `locale_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор локали',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор',
+  `entity_id` INT NOT NULL COMMENT 'Идентификатор сущности',
+  `entity_attribute_id` INT NULL COMMENT 'Идентификатор атрибута',
+  `locale_id` INT NOT NULL COMMENT 'Идентификатор локали',
   `text` VARCHAR(1000) COMMENT 'Текстовое значение',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`entity_id`, `entity_attribute_id`, `locale_id`),
@@ -114,12 +121,7 @@ CREATE TABLE `entity_value` (
   CONSTRAINT `fk_entity_value__locale` FOREIGN KEY (`locale_id`) REFERENCES `locale` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Значения';
 
-DROP TABLE IF EXISTS entity_value_type;
-CREATE TABLE `entity_value_type` (
-  `id` BIGINT(20) NOT NULL COMMENT 'Идентификатор типа значения атрибута',
-  `value_type` VARCHAR(100) NOT NULL COMMENT 'Тип значения атрибута',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тип значения атрибута';
+
 
 
 INSERT INTO entity_value_type (id, value_type) VALUE (1, 'boolean');
@@ -138,11 +140,11 @@ INSERT INTO entity_value_type (id, value_type) VALUE (9, 'reference_list');
 
 DROP TABLE IF EXISTS `permission`;
 CREATE TABLE `permission` (
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
-  `permission_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор права доступа',
+  `id` BIGINT NOT NULL AUTO_INCREMENT  COMMENT 'Идентификатор',
+  `permission_id` BIGINT NOT NULL COMMENT 'Идентификатор права доступа',
   `table` VARCHAR(64) NOT NULL COMMENT 'Таблица',
   `entity` VARCHAR(64) NOT NULL COMMENT 'Сущность',
-  `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
+  `object_id` BIGINT NOT NULL COMMENT 'Идентификатор объекта',
   PRIMARY KEY (`id`),
   UNIQUE KEY `key_unique` (`permission_id`, `entity`, `object_id`),
   KEY `key_permission_id` (`permission_id`),
@@ -165,13 +167,13 @@ BEGIN
     SET @createDomain = CONCAT('
         CREATE TABLE `', entityName, '`
         (
-            `id`               BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
-            `object_id`        BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
+            `id`               BIGINT NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `object_id`        BIGINT NOT NULL COMMENT ''Идентификатор объекта'',
             `start_date`       TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия объекта'',
             `end_date`         TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия объекта'',
-            `status`           INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
-            `permission_id`    BIGINT(20) NULL COMMENT ''Права доступа к объекту'',
-            `user_id`          BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            `status`           INT  NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `permission_id`    BIGINT NULL COMMENT ''Права доступа к объекту'',
+            `user_id`          BIGINT NULL COMMENT ''Идентифитактор пользователя'',
             PRIMARY KEY (`id`),
             UNIQUE KEY `unique_object_id__status` (`object_id`, `status`),
             KEY `key_object_id` (`object_id`),
@@ -190,16 +192,16 @@ BEGIN
     SET @createAttribute = CONCAT('
         CREATE TABLE `', entityName, '_attribute`
         (
-            `id`                  BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
-            `domain_id`           BIGINT(20) NOT NULL COMMENT ''Идентификатор домена'',
-            `entity_attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор типа атрибута'',
+            `id`                  BIGINT NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `domain_id`           BIGINT NOT NULL COMMENT ''Идентификатор домена'',
+            `entity_attribute_id` INT NOT NULL COMMENT ''Идентификатор типа атрибута'',
             `text`                VARCHAR(255) COMMENT ''Текст'',
-            `number`              BIGINT(20) COMMENT ''Число'',
+            `number`              BIGINT COMMENT ''Число'',
             `date`                DATETIME COMMENT ''Дата'',
             `start_date`          TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT ''Дата начала периода действия атрибута'',
             `end_date`            TIMESTAMP  NULL     DEFAULT NULL COMMENT ''Дата окончания периода действия атрибута'',
-            `status`              INTEGER    NOT NULL DEFAULT 1 COMMENT ''Статус'',
-            `user_id`             BIGINT(20) NULL COMMENT ''Идентифитактор пользователя'',
+            `status`              INT    NOT NULL DEFAULT 1 COMMENT ''Статус'',
+            `user_id`             BIGINT NULL COMMENT ''Идентифитактор пользователя'',
             PRIMARY KEY (`id`),
             KEY `key_domain_id` (`domain_id`),
             KEY `key_entity_attribute_id` (`entity_attribute_id`),
@@ -220,11 +222,11 @@ BEGIN
     SET @createValue = CONCAT('
         CREATE TABLE `', entityName, '_value`
         (
-            `id`           BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
-            `attribute_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор атрибута'',
-            `locale_id`    BIGINT(20) COMMENT ''Идентификатор локали'',
+            `id`           BIGINT NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор'',
+            `attribute_id` BIGINT NOT NULL COMMENT ''Идентификатор атрибута'',
+            `locale_id`    INT COMMENT ''Идентификатор локали'',
             `text`         VARCHAR(1000) COMMENT ''Текстовое значение'',
-            `number`       BIGINT(20) COMMENT ''Числовое значение'',
+            `number`       BIGINT COMMENT ''Числовое значение'',
             PRIMARY KEY (`id`),
             UNIQUE KEY `unique_id__locale` (`attribute_id`, `locale_id`),
             KEY `key_attribute_id` (`attribute_id`),
@@ -403,18 +405,18 @@ BEGIN
 
     SET @createMatching = CONCAT('
         CREATE TABLE `', entityName, '_matching` (
-          `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор соответствия'',
-          `object_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор объекта'',
-          `parent_id` BIGINT(20) COMMENT ''Идентификатор родителя'',
+          `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT ''Идентификатор соответствия'',
+          `object_id` BIGINT NOT NULL COMMENT ''Идентификатор объекта'',
+          `parent_id` BIGINT COMMENT ''Идентификатор родителя'',
           `additional_parent_id` VARCHAR(64) COMMENT ''Дополнительный идентификатор родителя'',
-          `external_id` BIGINT(20) COMMENT ''Внешний идентификатор'',
+          `external_id` BIGINT COMMENT ''Внешний идентификатор'',
           `additional_external_id` VARCHAR(64) COMMENT ''Дополнительный внешний идентификатор'',
           `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
           `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительное соответствие'',
           `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
           `end_date` DATETIME COMMENT ''Дата окончания актуальности'',
-          `company_id` BIGINT(20) NOT NULL COMMENT ''Идентификатор компании'',
-          `user_company_id` BIGINT(20) COMMENT ''Идентификатор компании пользователя'',
+          `company_id` BIGINT NOT NULL COMMENT ''Идентификатор компании'',
+          `user_company_id` BIGINT COMMENT ''Идентификатор компании пользователя'',
           PRIMARY KEY (`id`),
           UNIQUE KEY `unique_external_id` (`external_id`, `additional_external_id`, `company_id`, `user_company_id`),
           KEY `key_object_id` (`object_id`),
@@ -453,20 +455,20 @@ CALL createMatching('apartment', 'Квартира');
 
 DROP TABLE IF EXISTS `sync`;
 CREATE TABLE `sync`(
-  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор синхронизации',
-  `parent_id` BIGINT(20) COMMENT 'Идентификатор родителя',
+  `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор синхронизации',
+  `parent_id` BIGINT COMMENT 'Идентификатор родителя',
   `additional_parent_id` VARCHAR(64) COMMENT 'Дополнительный идентификатор родителя',
-  `external_id` BIGINT(20) NOT NULL COMMENT 'Внешний идентификатор',
+  `external_id` BIGINT NOT NULL COMMENT 'Внешний идентификатор',
   `additional_external_id` VARCHAR(64) COMMENT 'Дополнительный внешний идентификатор',
   `name` VARCHAR(250) NOT NULL COMMENT 'Название',
   `additional_name` VARCHAR(50) COMMENT 'Дополнительное название',
   `alt_name` VARCHAR(250) COMMENT 'Название в альтернативной локали',
   `alt_additional_name` VARCHAR(50) COMMENT 'Дополнительное название в альтернативной локали',
-  `servicing_organization` BIGINT(20) COMMENT 'Обслуживающая организация',
-  `balance_holder` BIGINT(20) COMMENT 'Балансодержатель',
+  `servicing_organization` BIGINT COMMENT 'Обслуживающая организация',
+  `balance_holder` BIGINT COMMENT 'Балансодержатель',
   `date` DATETIME NOT NULL COMMENT 'Дата актуальности',
-  `status` INTEGER NOT NULL COMMENT 'Статус синхронизации',
-  `entity_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор сущности',
+  `status` INT NOT NULL COMMENT 'Статус синхронизации',
+  `entity_id` INT NOT NULL COMMENT 'Идентификатор сущности',
   PRIMARY KEY (`id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_additional_parent_id` (`additional_parent_id`),

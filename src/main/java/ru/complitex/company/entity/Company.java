@@ -7,14 +7,14 @@ import ru.complitex.domain.entity.ShortNameDomain;
  * 27.05.2020 22:05
  */
 public class Company extends ShortNameDomain<Company> {
-    public final static Long ENTITY_ID = 11L;
+    public final static int ENTITY_ID = 11;
     public final static String ENTITY_NAME = "company";
 
-    public final static Long PARENT = 1L;
-    public final static Long NAME = 2L;
-    public final static Long SHORT_NAME = 3L;
-    public final static Long EDRPOU = 4L;
-    public final static Long CODE = 5L;
+    public final static int PARENT = 1;
+    public final static int NAME = 2;
+    public final static int SHORT_NAME = 3;
+    public final static int EDRPOU = 4;
+    public final static int CODE = 5;
 
     public Company() {
         super(ENTITY_ID, ENTITY_NAME, NAME, SHORT_NAME);

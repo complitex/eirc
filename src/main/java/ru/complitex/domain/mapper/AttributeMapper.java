@@ -27,7 +27,7 @@ public class AttributeMapper extends BaseMapper {
 
         attribute.setStartDate(startDate);
 
-        if (attribute.getStatus() == null){
+        if (attribute.getStatus() == 0){
             attribute.setStatus(Status.ACTIVE);
         }
         if (attribute.getDate() != null){
