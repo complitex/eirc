@@ -6,13 +6,13 @@ import org.apache.wicket.Component;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.ui.component.InputPanel;
 import ru.complitex.common.ui.datatable.DataForm;
-import ru.complitex.common.ui.datatable.TextFilter;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -76,21 +76,16 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueTypeId()){
             case ValueType.NUMBER:
-                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), dataForm);
-                textFilter.getFilter().setType(Long.class);
-
-                return textFilter;
+                return new TextField<>(componentId, new NumberAttributeModel(domain, entityAttributeId), Long.class);
             case ValueType.DECIMAL:
-                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), dataForm);
-                decimalFilter.getFilter().setType(BigDecimal.class);
 
-                return decimalFilter;
+                return new TextField<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), BigDecimal.class);
             case ValueType.DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), dataForm);
+                return new TextField<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT));
         }
     }
 
