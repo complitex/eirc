@@ -23,6 +23,14 @@ public abstract class DataProvider<T extends Serializable> extends SortableDataP
         this.filterWrapper = filterWrapper;
     }
 
+    public FilterWrapper<T> getFilterWrapper() {
+        return filterWrapper;
+    }
+
+    public void setFilterWrapper(FilterWrapper<T> filterWrapper) {
+        this.filterWrapper = filterWrapper;
+    }
+
     @Override
     public FilterWrapper<T> getFilterState() {
         return filterWrapper;

@@ -27,6 +27,10 @@ public class Sync implements Serializable {
     public Sync() {
     }
 
+    public Sync(int entityId) {
+        this.entityId = entityId;
+    }
+
     public Sync(int entityId, int status) {
         this.entityId = entityId;
         this.status = status;

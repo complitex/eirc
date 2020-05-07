@@ -14,6 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,17 +22,17 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 12.12.2018 19:07
  */
-public class FilterDataToolbar extends AbstractToolbar {
+public class DataToolbar extends AbstractToolbar {
     private static final String FILTER_ID = "filter";
 
-    public <T, S, F> FilterDataToolbar(final DataTable<T, S> table, final FilterDataForm<F> form) {
-        super(table);
+    public <T extends Serializable, S> DataToolbar(DataTable<T, S> dataTable, DataForm<T> dataForm) {
+        super(dataTable);
 
-        Args.notNull(table, "table");
+        Args.notNull(dataTable, "table");
 
-        IModel<List<IColumn<T, S>>> model = (IModel<List<IColumn<T, S>>>) () -> new LinkedList<>(table.getColumns());
+        IModel<List<IColumn<T, S>>> model = (IModel<List<IColumn<T, S>>>) () -> new LinkedList<>(dataTable.getColumns());
 
-        ListView<IColumn<T, S>> filters = new ListView<IColumn<T, S>>("filters", model) {
+        ListView<IColumn<T, S>> filters = new ListView<>("filters", model) {
 
             @Override
             protected void populateItem(ListItem<IColumn<T, S>> item) {
@@ -40,9 +41,9 @@ public class FilterDataToolbar extends AbstractToolbar {
 
                 Component filter = null;
 
-                if (col instanceof IFilterDataColumn) {
-                    IFilterDataColumn<T, S> filteredCol = (IFilterDataColumn<T, S>) col;
-                    filter = filteredCol.getFilter(FILTER_ID, form);
+                if (col instanceof IDataColumn) {
+                    IDataColumn<T, S> filteredCol = (IDataColumn<T, S>) col;
+                    filter = filteredCol.getFilter(FILTER_ID, dataForm);
                 }
 
                 if (filter == null) {
@@ -80,7 +81,7 @@ public class FilterDataToolbar extends AbstractToolbar {
 
     @Override
     protected void onBeforeRender() {
-        if (findParent(FilterDataForm.class) == null) {
+        if (findParent(DataForm.class) == null) {
             throw new IllegalStateException("FilterToolbar must be contained within a FilterDataForm");
         }
         super.onBeforeRender();

@@ -8,22 +8,22 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.ui.datatable.FilterDataForm;
-import ru.complitex.common.ui.datatable.TextDataFilter;
+import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.ui.datatable.TextFilter;
 import ru.complitex.domain.entity.Domain;
 
 /**
  * @author Anatoly A. Ivanov
  * 20.12.2017 2:17
  */
-public class DomainIdColumn<T extends Domain> extends AbstractDomainColumn<T> {
+public class DomainIdColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
     public DomainIdColumn() {
         super(Model.of("№"), new SortProperty("id"));
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
-        return new TextDataFilter<>(componentId, new PropertyModel<>(form.getDefaultModel(), "object.objectId"), form);
+    public Component getFilter(String componentId, DataForm<T> dataForm) {
+        return new TextFilter<>(componentId, new PropertyModel<>(dataForm.getDefaultModel(), "object.objectId"), dataForm);
     }
 
     @Override

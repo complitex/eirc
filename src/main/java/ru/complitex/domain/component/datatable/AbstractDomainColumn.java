@@ -7,9 +7,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.SortProperty;
-import ru.complitex.common.ui.datatable.FilterDataForm;
-import ru.complitex.common.ui.datatable.IFilterDataColumn;
-import ru.complitex.common.ui.datatable.TextDataFilter;
+import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.ui.datatable.IDataColumn;
+import ru.complitex.common.ui.datatable.TextFilter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 
@@ -19,8 +19,8 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:20
  */
-public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractColumn<T, SortProperty>
-        implements IFilterDataColumn<T, SortProperty>, Serializable {
+public abstract class AbstractDomainColumn<T extends Domain<T>>  extends AbstractColumn<T, SortProperty>
+        implements IDataColumn<T, SortProperty>, Serializable {
     private EntityAttribute entityAttribute;
 
     private String columnKey;
@@ -44,8 +44,8 @@ public abstract class AbstractDomainColumn<T extends Domain>  extends AbstractCo
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
-        return new TextDataFilter<>(componentId, new PropertyModel<>(form.getModel(),
-                "map." + columnKey), form);
+    public Component getFilter(String componentId, DataForm<T> dataForm) {
+        return new TextFilter<>(componentId, new PropertyModel<>(dataForm.getModel(),
+                "map." + columnKey), dataForm);
     }
 }

@@ -19,8 +19,8 @@ import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.SortProperty;
 import ru.complitex.common.ui.datatable.DataProvider;
-import ru.complitex.common.ui.datatable.FilterDataForm;
-import ru.complitex.common.ui.datatable.FilterDataTable;
+import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.ui.datatable.DataTable;
 import ru.complitex.domain.component.datatable.*;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.service.DomainService;
@@ -58,7 +58,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
 
     private FeedbackPanel feedback;
 
-    private FilterDataTable<T> table;
+    private DataTable<T> table;
 
     private AbstractDomainEditModal<T> domainEditModal;
 
@@ -83,16 +83,16 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
             @Override
             protected List<T> data() {
-                return getDomains(getFilterState());
+                return getDomains(getFilterWrapper());
             }
 
             @Override
             public long size() {
-                return getDomainsCount(getFilterState());
+                return getDomainsCount(getFilterWrapper());
             }
         };
 
-        FilterDataForm<FilterWrapper<T>> form = new FilterDataForm<>("form", dataProvider);
+        DataForm<T> form = new DataForm<>("form", filterWrapper);
         container.add(form);
 
 
@@ -118,7 +118,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         }
 
 
-        table = new FilterDataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + domainClass.getName()){
+        table = new DataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -255,7 +255,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         return feedback;
     }
 
-    public FilterDataTable<T> getTable() {
+    public DataTable<T> getTable() {
         return table;
     }
 

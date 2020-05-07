@@ -13,14 +13,14 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.ui.component.LinkPanel;
-import ru.complitex.common.ui.datatable.FilterDataForm;
+import ru.complitex.common.ui.datatable.DataForm;
 import ru.complitex.domain.entity.Domain;
 
 /**
  * @author Anatoly A. Ivanov
  * 26.02.2019 20:22
  */
-public abstract class DomainEditActionsColumn<T extends Domain> extends AbstractDomainColumn<T> {
+public abstract class DomainEditActionsColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
@@ -39,11 +39,11 @@ public abstract class DomainEditActionsColumn<T extends Domain> extends Abstract
 //    }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
+    public Component getFilter(String componentId, DataForm<T> dataForm) {
         return new LinkPanel(componentId, new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             public void onClick(AjaxRequestTarget target) {
-                target.add(form);
+                target.add(dataForm);
             }
         }.setIconType(FontAwesomeIconType.search));
     }

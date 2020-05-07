@@ -10,10 +10,9 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.ui.component.InputPanel;
-import ru.complitex.common.ui.datatable.FilterDataForm;
-import ru.complitex.common.ui.datatable.TextDataFilter;
+import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.ui.datatable.TextFilter;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -67,22 +66,22 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
     }
 
     @Override
-    public Component getFilter(String componentId, FilterDataForm<?> form) {
+    public Component getFilter(String componentId, DataForm<T> dataForm) {
         int entityAttributeId = entityAttribute.getEntityAttributeId();
 
         @SuppressWarnings("unchecked")
-        Domain<T> domain = ((FilterWrapper<T>)form.getModelObject()).getObject();
+        Domain<T> domain = dataForm.getModelObject().getObject();
 
         domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 
         switch (entityAttribute.getValueTypeId()){
             case ValueType.NUMBER:
-                TextDataFilter<Long> textFilter = new TextDataFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), form);
+                TextFilter<Long> textFilter = new TextFilter<>(componentId, new NumberAttributeModel(domain, entityAttributeId), dataForm);
                 textFilter.getFilter().setType(Long.class);
 
                 return textFilter;
             case ValueType.DECIMAL:
-                TextDataFilter<BigDecimal> decimalFilter = new TextDataFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), form);
+                TextFilter<BigDecimal> decimalFilter = new TextFilter<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), dataForm);
                 decimalFilter.getFilter().setType(BigDecimal.class);
 
                 return decimalFilter;
@@ -91,7 +90,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextDataFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), form);
+                return new TextFilter<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT), dataForm);
         }
     }
 
