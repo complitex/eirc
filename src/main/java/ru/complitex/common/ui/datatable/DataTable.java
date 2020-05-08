@@ -6,7 +6,7 @@ import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,29 +15,29 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class DataTable<T extends Serializable> extends org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable<T, SortProperty>
+public class DataTable<T extends Serializable> extends org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable<T, Sort>
         implements IAjaxIndicatorAware {
     private AjaxIndicatorAppender ajaxIndicatorAppender;
 
     private boolean hideOnEmpty = false;
 
-    public DataTable(String id, List<? extends IColumn<T, SortProperty>> columns, DataProvider<T> dataProvider,
-                     DataForm<T> dataForm, long rowsPerPage, String tableKey) {
-        super(id, columns, dataProvider, rowsPerPage);
+    public DataTable(String id, List<? extends IColumn<T, Sort>> columns, DataProvider<T> provider,
+                     DataForm<T> form, long rowsPerPage, String tableKey) {
+        super(id, columns, provider, rowsPerPage);
 
 //        ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
 //                .findAny()
 //                .map(c -> ((DomainActionColumn) c).getAjaxIndicatorAppender())
 //                .orElse(null);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<SortProperty>(this, dataProvider){
+        addTopToolbar(new AjaxFallbackHeadersToolbar<Sort>(this, provider){
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;
             }
         });
 
-        addTopToolbar(new DataToolbar(this, dataForm){
+        addTopToolbar(new DataToolbar(this, form){
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();
@@ -52,7 +52,7 @@ public class DataTable<T extends Serializable> extends org.apache.wicket.extensi
             }
         });
 
-        addBottomToolbar(new NavigationToolbar(this, tableKey){
+        addBottomToolbar(new PagingToolbar(this, tableKey){
             @Override
             public boolean isVisible() {
                 return getRowCount() > 5;

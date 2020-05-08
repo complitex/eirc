@@ -5,7 +5,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -15,7 +15,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 16:57
  */
-public abstract class DataProvider<T extends Serializable> extends SortableDataProvider<T, SortProperty>
+public abstract class DataProvider<T extends Serializable> extends SortableDataProvider<T, Sort>
         implements IFilterStateLocator<FilterWrapper<T>> {
     private FilterWrapper<T> filterWrapper;
 
@@ -51,7 +51,7 @@ public abstract class DataProvider<T extends Serializable> extends SortableDataP
         FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
 
         if (getSort() != null){
-            filterWrapper.setSortProperty(getSort().getProperty());
+            filterWrapper.setSort(getSort().getProperty());
             filterWrapper.setAscending(getSort().isAscending());
         }
 

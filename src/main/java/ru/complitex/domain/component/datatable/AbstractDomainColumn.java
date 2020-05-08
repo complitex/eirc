@@ -7,7 +7,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.ui.datatable.DataForm;
 import ru.complitex.common.ui.datatable.IDataColumn;
 import ru.complitex.domain.entity.Domain;
@@ -19,26 +19,24 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:20
  */
-public abstract class AbstractDomainColumn<T extends Domain<T>>  extends AbstractColumn<T, SortProperty>
-        implements IDataColumn<T, SortProperty>, Serializable {
-    private EntityAttribute entityAttribute;
-
+public abstract class AbstractDomainColumn<T extends Domain<T>>  extends AbstractColumn<T, Sort>
+        implements IDataColumn<T, Sort>, Serializable {
     private String columnKey;
 
     public AbstractDomainColumn(IModel<String> displayModel) {
         super(displayModel);
     }
 
-    public AbstractDomainColumn(IModel<String> displayModel, SortProperty sortProperty) {
-        super(displayModel, sortProperty);
+    public AbstractDomainColumn(IModel<String> displayModel, Sort sort) {
+        super(displayModel, sort);
     }
 
     public AbstractDomainColumn(EntityAttribute entityAttribute){
-        super(Model.of(entityAttribute.getValueText()), new SortProperty("", entityAttribute)); //todo sort key
+        super(Model.of(entityAttribute.getValueText()), new Sort("", entityAttribute)); //todo sort key
     }
 
     public AbstractDomainColumn(String columnKey) {
-        super(new ResourceModel(columnKey), new SortProperty(columnKey));
+        super(new ResourceModel(columnKey), new Sort(columnKey));
 
         this.columnKey = columnKey;
     }

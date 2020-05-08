@@ -14,6 +14,7 @@ import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
 import ru.complitex.eirc.security.EircRoles;
+import ru.complitex.sync.page.CountrySyncPage;
 
 /**
  * @author Anatoly A. Ivanov
@@ -36,6 +37,12 @@ public class BasePage extends WebPage {
         address.add(new BookmarkablePageLink<>("streets", StreetListPage.class));
         address.add(new BookmarkablePageLink<>("buildings", BuildingListPage.class));
         address.add(new BookmarkablePageLink<>("apartments", HomePage.class));
+
+        WebMarkupContainer sync = new WebMarkupContainer("sync");
+        add(sync);
+
+        sync.add(new BookmarkablePageLink<>("counties", CountrySyncPage.class));
+
     }
 
     @Override

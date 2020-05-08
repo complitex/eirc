@@ -8,11 +8,15 @@ import org.apache.wicket.markup.html.panel.Panel;
  * 14.09.2018 14:02
  */
 public class InputPanel extends Panel {
-    public static String INPUT_COMPONENT_ID = "input";
+    public static String ID = "input";
 
     public InputPanel(String id, Component input) {
         super(id);
 
         add(input);
+    }
+
+    public static InputPanel of(String id, Component input){
+        return new InputPanel(id, input);
     }
 }

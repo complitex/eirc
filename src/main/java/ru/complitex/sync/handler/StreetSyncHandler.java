@@ -15,7 +15,7 @@ import ru.complitex.sync.entity.SyncStatus;
 import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.mapper.SyncMapper;
 
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -27,7 +27,7 @@ import static ru.complitex.common.util.Strings.equalsIgnoreCase;
  * @author Anatoly Ivanov
  * Date: 03.08.2014 6:46
  */
-@Stateless
+@RequestScoped
 public class StreetSyncHandler implements ISyncHandler<Street> {
 
     @Inject

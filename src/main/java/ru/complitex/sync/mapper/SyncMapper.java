@@ -22,15 +22,15 @@ public class SyncMapper extends BaseMapper {
     }
 
     public Sync getSync(Long id){
-        return sqlSession().selectOne(".selectSync", id);
+        return sqlSession().selectOne("selectSync", id);
     }
 
     public List<Sync> getSyncs(FilterWrapper<Sync> filterWrapper){
-        return sqlSession().selectList(".selectSyncList", filterWrapper);
+        return sqlSession().selectList("selectSyncs", filterWrapper);
     }
 
     public Long getSyncsCount(FilterWrapper<Sync> filterWrapper){
-        return sqlSession().selectOne(".selectSyncCount", filterWrapper);
+        return sqlSession().selectOne("selectSyncsCount", filterWrapper);
     }
 
     public boolean isExist(Sync domainSync){
@@ -38,10 +38,10 @@ public class SyncMapper extends BaseMapper {
     }
 
     public void delete(Long id){
-        sqlSession().delete(".deleteSync", id);
+        sqlSession().delete("deleteSync", id);
     }
 
     public void deleteAll(int entityId){
-        sqlSession().delete(".deleteAllSyncs", entityId);
+        sqlSession().delete("deleteAllSyncs", entityId);
     }
 }

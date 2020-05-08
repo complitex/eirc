@@ -1,12 +1,11 @@
 package ru.complitex.common.mapper;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionManager;
 import org.apache.wicket.cdi.NonContextual;
 import org.mybatis.cdi.SqlSessionManagerRegistry;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
 
 /**
@@ -17,15 +16,30 @@ public abstract class BaseMapper implements Serializable {
     @Inject
     private transient SqlSessionManagerRegistry sqlSessionManagerRegistry;
 
-    @Inject
-    @Named("local")
-    private transient SqlSessionFactory sqlSessionFactory;
+    private transient SqlSessionManager sqlSessionManager;
+
+    private String environmentId;
+
+    public BaseMapper() {
+        environmentId = "local";
+    }
+
+    public BaseMapper(String environmentId) {
+        this.environmentId = environmentId;
+    }
 
     public SqlSession sqlSession() {
-        if (sqlSessionManagerRegistry == null || sqlSessionFactory == null){
+        if (sqlSessionManagerRegistry == null){
             NonContextual.of(this).inject(this);
         }
 
-        return sqlSessionManagerRegistry.getManager(sqlSessionFactory);
+        if (sqlSessionManager == null){
+            sqlSessionManager = sqlSessionManagerRegistry.getManagers().stream()
+                    .filter(m -> m.getConfiguration().getEnvironment().getId().equals(environmentId))
+                    .findAny()
+                    .orElse(null);
+        }
+
+        return sqlSessionManager;
     }
 }

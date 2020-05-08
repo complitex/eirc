@@ -310,45 +310,45 @@
     </sql>
 
     <sql id="selectDomainsSelectSort">
-        <if test="sortProperty != null">
+        <if test="sort != null">
             <choose>
-                <when test="sortProperty.key == 'text'">, sort_a.text</when>
-                <when test="sortProperty.key == 'number'">, sort_a.number</when>
-                <when test="sortProperty.key == 'date'">, sort_a.date</when>
-                <when test="sortProperty.key == 'value'">, sort_v.text</when>
-                <when test="sortProperty.key == 'entity'">, sort_rv.text</when>
+                <when test="sort.key == 'text'">, sort_a.text</when>
+                <when test="sort.key == 'number'">, sort_a.number</when>
+                <when test="sort.key == 'date'">, sort_a.date</when>
+                <when test="sort.key == 'value'">, sort_v.text</when>
+                <when test="sort.key == 'entity'">, sort_rv.text</when>
             </choose>
         </if>
     </sql>
 
     <sql id="selectDomainsFromSort">
-        <if test="sortProperty != null">
-            <if test="sortProperty.key in {'text', 'number', 'date', 'value', 'entity', 'entity_value'}">
+        <if test="sort != null">
+            <if test="sort.key in {'text', 'number', 'date', 'value', 'entity', 'entity_value'}">
                 left join `${object.entityName}_attribute` sort_a
                   on sort_a.domain_id = d.id
-                    and sort_a.entity_attribute_id = #{sortProperty.value.entityAttributeId}
+                    and sort_a.entity_attribute_id = #{sort.value.entityAttributeId}
                     and sort_a.status = 1
 
-                <if test="sortProperty.key in {'value', 'entity_value'}">
+                <if test="sort.key in {'value', 'entity_value'}">
                     left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
                 </if>
 
                 <!--
-                <if test="sortProperty.key == 'entity' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
-                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                <if test="sort.key == 'entity' and sort.value != null and sort.value.referenceEntityAttribute != null">
+                    left join `${sort.value.referenceEntityAttribute.entityName}_attribute` sort_ra
                       on sort_ra.object_id = sort_a.number
-                        and sort_ra.entity_attribute_id = #{sortProperty.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
                         and sort_ra.status = 1
-                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                    left join `${sort.value.referenceEntityAttribute.entityName}_value` sort_rv
                       on sort_rv.attribute_id = sort_ra.id
                 </if>
 
-                <if test="sortProperty.key == 'entity_value' and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
-                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                <if test="sort.key == 'entity_value' and sort.value != null and sort.value.referenceEntityAttribute != null">
+                    left join `${sort.value.referenceEntityAttribute.entityName}_attribute` sort_ra
                       on sort_ra.object_id = sort_v.number
-                        and sort_ra.entity_attribute_id = #{sortProperty.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
                         and sort_ra.status = 1
-                    left join `${sortProperty.value.referenceEntityAttribute.entityName}_value` sort_rv
+                    left join `${sort.value.referenceEntityAttribute.entityName}_value` sort_rv
                       on sort_rv.attribute_id = sort_ra.id
                 </if>
                 -->
@@ -357,15 +357,15 @@
     </sql>
 
     <sql id="selectDomainsOrderSort">
-        <if test="sortProperty != null">
+        <if test="sort != null">
             <choose>
-                <when test="sortProperty.key == 'id'">order by d.id ${asc}</when>
-                <when test="sortProperty.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
-                <when test="sortProperty.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
-                <when test="sortProperty.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
-                <when test="sortProperty.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
+                <when test="sort.key == 'id'">order by d.id ${asc}</when>
+                <when test="sort.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
+                <when test="sort.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
+                <when test="sort.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
+                <when test="sort.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
                 <!--
-                <when test="sortProperty.key in {'entity', 'entity_value'} and sortProperty.value != null and sortProperty.value.referenceEntityAttribute != null">
+                <when test="sort.key in {'entity', 'entity_value'} and sort.value != null and sort.value.referenceEntityAttribute != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
                 </when>
                 -->

@@ -81,7 +81,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
                 return new TextField<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), BigDecimal.class);
             case ValueType.DATE:
-                return new InputPanel(componentId, new DateTextField(InputPanel.INPUT_COMPONENT_ID,
+                return new InputPanel(componentId, new DateTextField(InputPanel.ID,
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:

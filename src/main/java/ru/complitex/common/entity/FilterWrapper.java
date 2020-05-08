@@ -19,7 +19,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     private T object;
     private Long first = 0L;
     private Long count = 0L;
-    private SortProperty sortProperty;
+    private Sort sort;
     private boolean ascending = false;
     private Map<String, Object> map = new HashMap<>();
 
@@ -69,20 +69,20 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     }
 
     public FilterWrapper<T> sort(String key, Object value){
-        this.sortProperty = new SortProperty(key, value);
+        this.sort = new Sort(key, value);
 
         return this;
     }
 
     public FilterWrapper<T> sort(String key, Object value, boolean ascending){
-        this.sortProperty = new SortProperty(key, value);
+        this.sort = new Sort(key, value);
         this.ascending = ascending;
 
         return this;
     }
 
     public FilterWrapper<T> sort(String key, boolean ascending){
-        this.sortProperty = new SortProperty(key);
+        this.sort = new Sort(key);
         this.ascending = ascending;
 
         return this;
@@ -97,7 +97,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     }
 
     public String getOrderLimit(){
-        return "order by `" + getSortProperty().getKey() + "` " + getAsc() + getLimit();
+        return "order by `" + getSort().getKey() + "` " + getAsc() + getLimit();
     }
 
     public T getObject() {
@@ -124,12 +124,12 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         this.count = count;
     }
 
-    public SortProperty getSortProperty() {
-        return sortProperty;
+    public Sort getSort() {
+        return sort;
     }
 
-    public void setSortProperty(SortProperty sortProperty) {
-        this.sortProperty = sortProperty;
+    public void setSort(Sort sort) {
+        this.sort = sort;
     }
 
     public boolean isAscending() {

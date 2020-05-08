@@ -17,7 +17,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
-import ru.complitex.common.entity.SortProperty;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.common.ui.datatable.DataProvider;
 import ru.complitex.common.ui.datatable.DataForm;
 import ru.complitex.common.ui.datatable.DataTable;
@@ -56,7 +56,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
 
     private WebMarkupContainer container;
 
-    private FeedbackPanel feedback;
+    private FeedbackPanel notification;
 
     private DataTable<T> table;
 
@@ -73,9 +73,9 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         container.setOutputMarkupId(true);
         add(container);
 
-        feedback = new NotificationPanel("feedback");
-        feedback.setOutputMarkupId(true);
-        container.add(feedback);
+        notification = new NotificationPanel("notification");
+        notification.setOutputMarkupId(true);
+        container.add(notification);
 
 
         filterWrapper = newFilterWrapper();
@@ -96,7 +96,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         container.add(form);
 
 
-        List<IColumn<T, SortProperty>> columns = new ArrayList<>();
+        List<IColumn<T, Sort>> columns = new ArrayList<>();
 
         columns.add(new DomainIdColumn<>());
 
@@ -173,7 +173,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
     }
 
     protected AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
-        return new DomainEditModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(feedback, table)){
+        return new DomainEditModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
             @Override
             protected boolean validate(Domain<T> domain) {
                 return DomainListModalPage.this.validate(domain);
@@ -251,8 +251,8 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         return container;
     }
 
-    public FeedbackPanel getFeedback() {
-        return feedback;
+    public FeedbackPanel getNotification() {
+        return notification;
     }
 
     public DataTable<T> getTable() {

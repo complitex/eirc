@@ -26,5 +26,7 @@
         <mapper resource="ru/complitex/domain/mapper/DomainMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>
+
+        <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
     </mappers>
 </configuration>

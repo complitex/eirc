@@ -20,10 +20,10 @@ import java.util.HashMap;
  * @author Anatoly A. Ivanov
  * 12.12.2018 21:36
  */
-public class NavigationToolbar extends AbstractToolbar {
-    public static final MetaDataKey<HashMap<String, Long>> ITEMS_PER_PAGE = new MetaDataKey<HashMap<String, Long>>() {};
+public class PagingToolbar extends AbstractToolbar {
+    public static final MetaDataKey<HashMap<String, Long>> ITEMS_PER_PAGE = new MetaDataKey<>() {};
 
-    public NavigationToolbar(DataTable<?, ?> table, String tableKey) {
+    public PagingToolbar(DataTable<?, ?> table, String tableKey) {
         super(table);
 
         WebMarkupContainer span = new WebMarkupContainer("span");

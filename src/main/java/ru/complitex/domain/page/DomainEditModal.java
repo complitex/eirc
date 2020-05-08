@@ -51,7 +51,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
     private DomainService domainService;
 
     private WebMarkupContainer container;
-    private NotificationPanel feedback;
+    private NotificationPanel notification;
 
     private ListView<EntityAttribute> listView;
 
@@ -78,17 +78,17 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
                 .setVisible(false);
         add(container);
 
-        feedback = new NotificationPanel("feedback");
-        feedback.showRenderedMessages(false)
+        notification = new NotificationPanel("notification");
+        notification.showRenderedMessages(false)
                 .setOutputMarkupId(true);
-        container.add(feedback);
+        container.add(notification);
 
         listView = new ListView<>("attributes",
                 entityAttributes != null ? entityAttributes : entity.getAttributes()) {
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                Domain domain = DomainEditModal.this.getModelObject();
+                T domain = DomainEditModal.this.getModelObject();
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
@@ -210,7 +210,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             T domain = getModelObject();
 
             if (!DomainEditModal.this.validate(domain)){
-                target.add(feedback);
+                target.add(notification);
 
                 return;
             }
@@ -231,7 +231,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
             getSession().error("Ошибка сохранения " + e.getLocalizedMessage());
 
-            target.add(feedback);
+            target.add(notification);
         }
     }
 

@@ -61,11 +61,11 @@
         </where>
     </sql>
 
-    <select id="selectSyncList" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="syncResultMap">
+    <select id="selectSyncs" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="syncResultMap">
         select * from `sync` <include refid="selectSyncWhere"/> ${orderLimit}
     </select>
 
-    <select id="selectSyncCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+    <select id="selectSyncsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
         select count(*) from `sync` <include refid="selectSyncWhere"/>
     </select>
 </mapper>
