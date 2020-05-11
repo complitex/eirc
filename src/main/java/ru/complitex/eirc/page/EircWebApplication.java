@@ -13,7 +13,7 @@ import ru.complitex.address.page.*;
 import ru.complitex.common.ui.application.ServletAuthorizationStrategy;
 import ru.complitex.common.ui.application.ServletUnauthorizedListener;
 import ru.complitex.eirc.page.login.LoginPage;
-import ru.complitex.sync.page.CountrySyncPage;
+import ru.complitex.sync.page.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -57,5 +57,12 @@ public class EircWebApplication extends WebApplication {
         mountPage("streets", StreetListPage.class);
         mountPage("buildings", BuildingListPage.class);
         mountPage("sync/counties", CountrySyncPage.class);
+        mountPage("sync/regions", RegionSyncPage.class);
+        mountPage("sync/city-types", CityTypeSyncPage.class);
+        mountPage("sync/cities", CitySyncPage.class);
+        mountPage("sync/districts", DistrictSyncPage.class);
+        mountPage("sync/street-types", StreetTypeSyncPage.class);
+        mountPage("sync/streets", StreetSyncPage.class);
+        mountPage("sync/buildings", BuildingSyncPage.class);
     }
 }

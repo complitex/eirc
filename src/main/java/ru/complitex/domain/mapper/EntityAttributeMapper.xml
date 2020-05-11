@@ -7,7 +7,7 @@
         <result column="entity_attribute_id" property="entityAttributeId"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
-        <result column="value_type_id" property="valueType"/>
+        <result column="value_type_id" property="valueTypeId"/>
         <result column="reference_entity_id" property="referenceEntityId"/>
         <result column="reference_entity_attribute_id" property="referenceEntityAttributeId"/>
         <result column="entity_name" property="entityName"/>

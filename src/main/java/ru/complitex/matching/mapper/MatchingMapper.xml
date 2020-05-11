@@ -11,8 +11,8 @@
         <result column="additional_name" property="additionalName"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
-        <result column="organization_id" property="organizationId"/>
-        <result column="user_organization_id" property="userOrganizationId"/>
+        <result column="company_id" property="companyId"/>
+        <result column="user_company_id" property="userCompanyId"/>
 
         <result column="entity_name" property="entityName"/>
     </resultMap>
@@ -22,10 +22,10 @@
             keyProperty="id" useGeneratedKeys="true">
         insert into `${entityName}_matching` (`object_id`, `parent_id`, `additional_parent_id`,
             `external_id`, `additional_external_id`, `name`, `additional_name`, `start_date`, `end_date`,
-            `organization_id`, `user_organization_id`)
+            `company_id`, `user_company_id`)
         values (#{objectId}, #{parentId}, #{additionalParentId},
             #{externalId}, #{additionalExternalId}, #{name}, #{additionalName}, #{startDate}, #{endDate},
-            #{organizationId}, #{userOrganizationId})
+            #{companyId}, #{userCompanyId})
     </insert>
 
     <!--suppress SqlResolve -->
@@ -35,7 +35,7 @@
             `external_id` = #{externalId}, `additional_external_id` = #{additionalExternalId},
             `name` = #{name}, `additional_name` = #{additionalName},
             `start_date` = #{startDate}, `end_date` = #{endDate},
-            `organization_id` = #{organizationId}, `user_organization_id` = #{userOrganizationId}
+            `company_id` = #{companyId}, `user_company_id` = #{userCompanyId}
         where `id` = #{id}
     </update>
 
@@ -55,8 +55,8 @@
             <if test="object.additionalName != null">and c.`additional_name` = #{object.additionalName}</if>
             <if test="object.startDate != null">and c.`start_date` = #{object.startDate}</if>
             <if test="object.endDate != null">and c.`end_date` = #{object.endDate}</if>
-            <if test="object.organizationId != null">and c.`organization_id` = #{object.organizationId}</if>
-            <if test="object.userOrganizationId != null">and c.`user_organization_id` = #{object.userOrganizationId}</if>
+            <if test="object.companyId != null">and c.`company_id` = #{object.companyId}</if>
+            <if test="object.userCompanyId != null">and c.`user_company_id` = #{object.userCompanyId}</if>
         </where>
     </sql>
 
@@ -69,7 +69,7 @@
     <select id="selectMatchingList" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="matchingResultMap">
         select c.*, '${object.entityName}' entity_name from `${object.entityName}_matching` c
         <include refid="selectMatchingWhere"/>
-        ${orderLimit}
+        ${limit}
     </select>
 
     <!--suppress SqlResolve -->

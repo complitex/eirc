@@ -14,7 +14,7 @@ import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
 import ru.complitex.eirc.security.EircRoles;
-import ru.complitex.sync.page.CountrySyncPage;
+import ru.complitex.sync.page.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -42,7 +42,14 @@ public class BasePage extends WebPage {
         add(sync);
 
         sync.add(new BookmarkablePageLink<>("counties", CountrySyncPage.class));
-
+        sync.add(new BookmarkablePageLink<>("regions", RegionSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("cityTypes", CityTypeSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("cities", CitySyncPage.class));
+        sync.add(new BookmarkablePageLink<>("districts", DistrictSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("streetTypes", StreetTypeSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("streets", StreetSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("buildings", BuildingSyncPage.class));
+        sync.add(new BookmarkablePageLink<>("apartments", HomePage.class));
     }
 
     @Override

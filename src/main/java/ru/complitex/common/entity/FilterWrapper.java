@@ -97,7 +97,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     }
 
     public String getOrderLimit(){
-        return "order by `" + getSort().getKey() + "` " + getAsc() + getLimit();
+        return "order by `" + sort.getKey() + "` " + getAsc() + getLimit();
     }
 
     public T getObject() {

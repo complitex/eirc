@@ -114,10 +114,14 @@ public class SyncService {
         }
     }
 
-    public void load(int entityId){
+    public <T extends Domain<T>> void load(Class<T> domainClass){
         if (processing.get()){
             return;
         }
+
+        T domain = Domains.newObject(domainClass);
+
+        int entityId = domain.getEntityId();
 
         try {
             //lock sync
@@ -219,11 +223,11 @@ public class SyncService {
 
             Entity entity = entityService.getEntity(domainClass);
 
-            Long companyId = syncAdapter.getCompany().getObjectId();
+            Long companyId = 1L; //syncAdapter.getCompany().getObjectId();
 
             ISyncHandler<T> handler = getHandler(entity.getId());
 
-            //sync
+
             getSyncs(entity.getId(), 0, null).forEach(s -> { //todo sync status id
                 try {
                     if (cancelSync.get()){
@@ -316,7 +320,7 @@ public class SyncService {
                 broadcastService.broadcast(getClass(), "processed", s);
             });
 
-            //clear
+
             matchingMapper.getMatchingList(entity.getName(), companyId).forEach(c -> {
                 if (getSyncs(entity.getId(), 0, c.getExternalId()).isEmpty()){
                     matchingMapper.delete(c);
@@ -325,7 +329,7 @@ public class SyncService {
                 }
             });
 
-            //delayed
+
             getSyncs(entity.getId(), SyncStatus.DELAYED, null).forEach(s -> {
                 if (syncMapper.getSync(s.getId()).getStatus() == SyncStatus.DELAYED) {
                     List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(entity.getName(),

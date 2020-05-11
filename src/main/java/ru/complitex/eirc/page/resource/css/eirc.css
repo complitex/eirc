@@ -140,3 +140,20 @@ td .btn{
 .input-list{
     margin-top: 3px;
 }
+
+.navigation .bootstrap-select{
+    width: 83px !important;
+    line-height: 1.25;
+    padding: 0 0.75rem;
+}
+
+.navigation .btn{
+    padding: 0.5rem 0.75rem;
+    line-height: 1.25;
+}
+
+.navigation span{
+    padding: 0.5rem 0.75rem;
+    line-height: 1.25;
+    opacity: 0.65;
+}

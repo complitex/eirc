@@ -16,6 +16,7 @@ import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.mapper.SyncMapper;
+import ru.complitex.sync.service.SyncService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ import java.util.List;
 public class SyncPage<T extends Domain<T>> extends BasePage {
     @Inject
     private SyncMapper syncMapper;
+
+    @Inject
+    private SyncService syncService;
 
     public SyncPage(Class<T> domainClass) {
         WebMarkupContainer container = new WebMarkupContainer("container");
@@ -56,7 +60,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<Sync, Sort>> columns = new ArrayList<>();
 
-        columns.add(new DataColumn<>("id"));
+        columns.add(new DataColumn<Sync>("id").setCssClass("domain-id-column"));
         columns.add(new DataColumn<>("name"));
         columns.add(new DataColumn<>("additionalName"));
         columns.add(new DataColumn<>("altName"));
@@ -74,10 +78,12 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         DataTable<Sync> table = new DataTable<>("table", columns, provider, form, 15, "syncPage" + domain.getEntityName());
         form.add(table);
 
-        form.add(new AjaxLink<>("sync") {
+        form.add(new AjaxLink<>("load") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                syncService.load(domainClass);
 
+                target.add(table);
             }
         });
     }

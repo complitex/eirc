@@ -22,6 +22,8 @@ public class DataColumn<T extends Serializable> extends AbstractColumn<T, Sort>
         implements IDataColumn<T, Sort> {
     private String columnKey;
 
+    private String cssClass;
+
     public DataColumn(String columnKey) {
         super(new ResourceModel(columnKey), new Sort(columnKey));
 
@@ -36,6 +38,17 @@ public class DataColumn<T extends Serializable> extends AbstractColumn<T, Sort>
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new Label(columnKey, PropertyModel.of(rowModel, columnKey)));
+        cellItem.add(new Label(componentId, PropertyModel.of(rowModel, columnKey)));
+    }
+
+    @Override
+    public String getCssClass() {
+        return cssClass;
+    }
+
+    public DataColumn<T> setCssClass(String cssClass){
+        this.cssClass = cssClass;
+
+        return this;
     }
 }
