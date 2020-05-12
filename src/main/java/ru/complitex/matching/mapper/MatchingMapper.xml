@@ -40,7 +40,7 @@
     </update>
 
     <!--suppress SqlResolve -->
-    <delete id="deleteMatching" parameterType="ru.complitex.matching.entity.Matching">
+    <delete id="deleteMatching" parameterType="long">
         delete from `${entityName}_matching` where `id` = #{id}
     </delete>
 

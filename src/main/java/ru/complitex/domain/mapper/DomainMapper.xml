@@ -259,7 +259,7 @@
                 <if test="a.values != null and !a.values.empty">
                     <foreach collection="a.values" item="v">
                         <if test="a.filter = 'equal' and v.text != null and v.localeId != null">
-                            and v${i} = #{v.text} and v${i}.locale_id = #{v.localeId}
+                            and v${i}.text = #{v.text} and v${i}.locale_id = #{v.localeId}
                         </if>
                     </foreach>
                 </if>
@@ -297,7 +297,7 @@
                 </when>
                 <otherwise>
                     <choose>
-                        <when test="object.status != null">
+                        <when test="object.status != 0">
                             and d.status = #{object.status}
                         </when>
                         <otherwise>

@@ -1,5 +1,7 @@
 package ru.complitex.matching.entity;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -182,5 +184,24 @@ public class Matching implements Serializable {
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).omitNullValues()
+                .add("id", id)
+                .add("objectId", objectId)
+                .add("parentId", parentId)
+                .add("additionalParentId", additionalParentId)
+                .add("externalId", externalId)
+                .add("additionalExternalId", additionalExternalId)
+                .add("name", name)
+                .add("additionalName", additionalName)
+                .add("startDate", startDate)
+                .add("endDate", endDate)
+                .add("companyId", companyId)
+                .add("userCompanyId", userCompanyId)
+                .add("entityName", entityName)
+                .toString();
     }
 }

@@ -76,16 +76,18 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
         switch (entityAttribute.getValueTypeId()){
             case ValueType.NUMBER:
-                return new TextField<>(componentId, new NumberAttributeModel(domain, entityAttributeId), Long.class);
+                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
+                        new NumberAttributeModel(domain, entityAttributeId), Long.class));
             case ValueType.DECIMAL:
-
-                return new TextField<>(componentId, new DecimalAttributeModel(domain, entityAttributeId), BigDecimal.class);
+                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
+                        new DecimalAttributeModel(domain, entityAttributeId), BigDecimal.class));
             case ValueType.DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.ID,
                         new DateAttributeModel(domain, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
-                return new TextField<>(componentId, new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT));
+                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
+                        new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT)));
         }
     }
 

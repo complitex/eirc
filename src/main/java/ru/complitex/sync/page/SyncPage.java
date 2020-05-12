@@ -2,9 +2,11 @@ package ru.complitex.sync.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.ui.datatable.DataColumn;
@@ -70,7 +72,12 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         columns.add(new DataColumn<>("externalId"));
         columns.add(new DataColumn<>("additionalExternalId"));
         columns.add(new DataColumn<>("date"));
-        columns.add(new DataColumn<>("status"));
+        columns.add(new DataColumn<>("status"){
+            @Override
+            protected IModel<?> getLabelModel(IModel<Sync> rowModel) {
+                return new ResourceModel("syncStatus." + rowModel.getObject().getStatus());
+            }
+        });
 
         DataForm<Sync> form = new DataForm<>("form", filterWrapper);
         container.add(form);
@@ -78,10 +85,19 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         DataTable<Sync> table = new DataTable<>("table", columns, provider, form, 15, "syncPage" + domain.getEntityName());
         form.add(table);
 
-        form.add(new AjaxLink<>("load") {
+        form.add(new IndicatingAjaxLink<>("load") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 syncService.load(domainClass);
+
+                target.add(table);
+            }
+        });
+
+        form.add(new IndicatingAjaxLink<>("sync") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                syncService.sync(domainClass);
 
                 target.add(table);
             }

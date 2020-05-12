@@ -228,7 +228,7 @@ public class SyncService {
             ISyncHandler<T> handler = getHandler(entity.getId());
 
 
-            getSyncs(entity.getId(), 0, null).forEach(s -> { //todo sync status id
+            getSyncs(entity.getId(), SyncStatus.LOADED, null).forEach(s -> {
                 try {
                     if (cancelSync.get()){
                         return;
@@ -260,7 +260,6 @@ public class SyncService {
                             }
 
                             s.setStatus(SyncStatus.SYNCHRONIZED);
-                            syncMapper.updateStatus(s);
                         }else{
                             List<Matching> objectMatchingList = matchingMapper.getMatchingListByObjectId(entity.getName(),
                                     domain.getObjectId(),  companyId);
@@ -277,9 +276,9 @@ public class SyncService {
 
                                 log.info("sync: delay domain object {}", domain);
                             }
-
-                            syncMapper.updateStatus(s);
                         }
+
+                        syncMapper.updateStatus(s);
                     }else {
                         T domain;
 
@@ -314,18 +313,18 @@ public class SyncService {
                     s.setStatus(SyncStatus.ERROR);
                     syncMapper.updateStatus(s);
 
-                    log.warn("sync: warn sync {}", e.getMessage());
+                    log.error("sync: error ", e);
                 }
 
                 broadcastService.broadcast(getClass(), "processed", s);
             });
 
 
-            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(c -> {
-                if (getSyncs(entity.getId(), 0, c.getExternalId()).isEmpty()){
-                    matchingMapper.delete(c);
+            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
+                if (getSyncs(entity.getId(), 0, m.getExternalId()).isEmpty()){
+                    matchingMapper.delete(m.getId());
 
-                    log.info("sync: delete matching {}", c);
+                    log.info("sync: delete matching {}", m);
                 }
             });
 
@@ -345,7 +344,7 @@ public class SyncService {
                             matching.getObjectId(), companyId);
 
                     boolean corresponds = objectMatchingList.stream()
-                            .allMatch(c -> c.getId().equals(matching.getId()) || handler.isMatch(c, matching));
+                            .allMatch(m -> m.getId().equals(matching.getId()) || handler.isMatch(m, matching));
 
                     if (corresponds){
                         T domain = domainService.getDomain(domainClass, matching.getObjectId());
@@ -357,9 +356,9 @@ public class SyncService {
 
                         log.info("sync: update deferred domain object {}", domain);
 
-                        objectMatchingList.forEach(c -> {
-                            if (!c.getId().equals(matching.getId())){
-                                Sync sync = getSyncs(entity.getId(), 0, c.getExternalId()).get(0);
+                        objectMatchingList.forEach(m -> {
+                            if (!m.getId().equals(matching.getId())){
+                                Sync sync = getSyncs(entity.getId(), 0, m.getExternalId()).get(0);
 
                                 sync.setStatus(SyncStatus.SYNCHRONIZED);
                                 syncMapper.updateStatus(sync);
@@ -399,7 +398,6 @@ public class SyncService {
         } finally {
             processing.set(false);
         }
-
     }
 
 

@@ -8,6 +8,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.ui.component.InputPanel;
 import ru.complitex.common.ui.datatable.DataForm;
 import ru.complitex.common.ui.datatable.IDataColumn;
 import ru.complitex.domain.entity.Domain;
@@ -43,6 +44,7 @@ public abstract class AbstractDomainColumn<T extends Domain<T>>  extends Abstrac
 
     @Override
     public Component getFilter(String componentId, DataForm<T> dataForm) {
-        return new TextField<>(componentId, new PropertyModel<>(dataForm.getModel(),"map." + columnKey));
+        return InputPanel.of(componentId, new TextField<>(InputPanel.ID, new PropertyModel<>(dataForm.getModel(),
+                "map." + columnKey)));
     }
 }

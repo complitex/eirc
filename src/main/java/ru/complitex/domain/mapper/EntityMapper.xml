@@ -15,7 +15,7 @@
                     select="ru.complitex.domain.mapper.EntityAttributeMapper.selectEntityAttributes"/>
     </resultMap>
 
-    <select id="selectEntity" parameterType="long" resultMap="entityResultMap">
+    <select id="selectEntity" parameterType="int" resultMap="entityResultMap">
         select * from entity where id = #{id}
     </select>
 

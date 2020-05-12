@@ -2,11 +2,10 @@ package ru.complitex.matching.mapper;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mapper.BaseMapper;
-import ru.complitex.domain.service.EntityService;
+import ru.complitex.common.util.Dates;
 import ru.complitex.matching.entity.Matching;
 
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -15,8 +14,6 @@ import java.util.List;
  */
 @RequestScoped
 public class MatchingMapper extends BaseMapper {
-    @Inject
-    private EntityService entityService;
 
     public List<Matching> getMatchingList(FilterWrapper<Matching> filterWrapper){
         return sqlSession().selectList("selectMatchingList", filterWrapper);
@@ -52,15 +49,20 @@ public class MatchingMapper extends BaseMapper {
     }
 
     public Matching insert(Matching matching){
+        if (matching.getStartDate() == null){
+            matching.setStartDate(Dates.getCurrentDate());
+        }
+
+        sqlSession().insert("insertMatching", matching);
 
         return matching;
     }
 
     public void update(Matching matching){
-
+        sqlSession().update("updateMatching", matching);
     }
 
-    public void delete(Matching matching){
-
+    public void delete(Long id){
+        sqlSession().delete("deleteMatching", id);
     }
 }

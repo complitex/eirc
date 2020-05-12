@@ -344,7 +344,7 @@ CALL createAttribute(3, 2, 8, 'Краткое название', 'Коротка
 
 CALL createDomain(4,'city', 'Населённый пункт', 'Населений пункт');
 CALL createReference(4, 1, 2, 2, 'Регион', 'Регіон');
-CALL createReference(4, 2, 3, 1, 'Тип насённого пункта', 'Тип населеного пункту');
+CALL createReference(4, 2, 3, 1, 'Тип', 'Тип');
 CALL createAttribute(4, 3, 8, 'Название', 'Назва');
 
 CALL createDomain(5,'district', 'Район', 'Район');
@@ -352,7 +352,7 @@ CALL createReference(5, 1, 4, 3, 'Населённый пункт', 'Насел�
 CALL createAttribute(5, 2, 8, 'Название', 'Назва');
 CALL createAttribute(5, 3, 4, 'Код района', 'Код району');
 
-CALL createDomain(6, 'street_type', 'Тип улицы', 'Тип улицы');
+CALL createDomain(6, 'street_type', 'Тип', 'Тип');
 CALL createAttribute(6, 1, 8, 'Название', 'Назва');
 CALL createAttribute(6, 2, 8, 'Краткое название', 'Коротка назва');
 
@@ -412,10 +412,10 @@ BEGIN
           `external_id` BIGINT COMMENT ''Внешний идентификатор'',
           `additional_external_id` VARCHAR(64) COMMENT ''Дополнительный внешний идентификатор'',
           `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
-          `additional_name` VARCHAR(1000) NOT NULL COMMENT ''Дополнительное соответствие'',
+          `additional_name` VARCHAR(1000) COMMENT ''Дополнительное соответствие'',
           `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
           `end_date` DATETIME COMMENT ''Дата окончания актуальности'',
-          `company_id` BIGINT NOT NULL COMMENT ''Идентификатор компании'',
+          `company_id` BIGINT COMMENT ''Идентификатор компании'',
           `user_company_id` BIGINT COMMENT ''Идентификатор компании пользователя'',
           PRIMARY KEY (`id`),
           UNIQUE KEY `unique_external_id` (`external_id`, `additional_external_id`, `company_id`, `user_company_id`),

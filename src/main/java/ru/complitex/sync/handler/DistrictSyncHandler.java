@@ -54,7 +54,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(FilterWrapper.of(new Sync(District.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(FilterWrapper.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync domainSync, Long organizationId){

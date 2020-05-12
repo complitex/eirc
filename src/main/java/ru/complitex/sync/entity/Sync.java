@@ -1,8 +1,9 @@
 package ru.complitex.sync.entity;
 
+import com.google.common.base.MoreObjects;
+
 import java.io.Serializable;
 import java.util.Date;
-import java.util.StringJoiner;
 
 /**
  * @author Anatoly Ivanov
@@ -156,21 +157,21 @@ public class Sync implements Serializable {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Sync.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("parentId=" + parentId)
-                .add("additionalParentId='" + additionalParentId + "'")
-                .add("externalId=" + externalId)
-                .add("additionalExternalId='" + additionalExternalId + "'")
-                .add("name='" + name + "'")
-                .add("additionalName='" + additionalName + "'")
-                .add("altName='" + altName + "'")
-                .add("altAdditionalName='" + altAdditionalName + "'")
-                .add("servicingOrganization='" + servicingOrganization + "'")
-                .add("balanceHolder='" + balanceHolder + "'")
-                .add("date=" + date)
-                .add("status=" + status)
-                .add("entityId=" + entityId)
+        return MoreObjects.toStringHelper(this).omitNullValues()
+                .add("id", id)
+                .add("parentId", parentId)
+                .add("additionalParentId", additionalParentId)
+                .add("externalId", externalId)
+                .add("additionalExternalId", additionalExternalId)
+                .add("name", name)
+                .add("additionalName", additionalName)
+                .add("altName", altName)
+                .add("altAdditionalName", altAdditionalName)
+                .add("servicingOrganization", servicingOrganization)
+                .add("balanceHolder", balanceHolder)
+                .add("date", date)
+                .add("status", status)
+                .add("entityId", entityId)
                 .toString();
     }
 }

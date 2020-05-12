@@ -9,6 +9,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.ui.component.InputPanel;
 import ru.complitex.common.ui.datatable.DataForm;
 import ru.complitex.domain.entity.Domain;
 
@@ -23,7 +24,8 @@ public class DomainIdColumn<T extends Domain<T>> extends AbstractDomainColumn<T>
 
     @Override
     public Component getFilter(String componentId, DataForm<T> dataForm) {
-        return new TextField<>(componentId, new PropertyModel<>(dataForm.getModelObject(), "object.objectId"));
+        return  InputPanel.of(componentId, new TextField<>(InputPanel.ID, new PropertyModel<>(dataForm.getModelObject(),
+                "object.objectId")));
     }
 
     @Override

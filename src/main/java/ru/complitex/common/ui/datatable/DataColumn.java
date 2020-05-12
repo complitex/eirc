@@ -38,7 +38,11 @@ public class DataColumn<T extends Serializable> extends AbstractColumn<T, Sort>
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new Label(componentId, PropertyModel.of(rowModel, columnKey)));
+        cellItem.add(new Label(componentId, getLabelModel(rowModel)));
+    }
+
+    protected IModel<?> getLabelModel(IModel<T> rowModel){
+        return PropertyModel.of(rowModel, columnKey);
     }
 
     @Override
