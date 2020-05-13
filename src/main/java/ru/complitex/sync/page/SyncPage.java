@@ -1,8 +1,9 @@
 package ru.complitex.sync.page;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.spinner.SpinnerAjaxButton;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
@@ -82,25 +83,25 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         DataForm<Sync> form = new DataForm<>("form", filterWrapper);
         container.add(form);
 
-        DataTable<Sync> table = new DataTable<>("table", columns, provider, form, 15, "syncPage" + domain.getEntityName());
+        DataTable<Sync> table = new DataTable<>("table", columns, provider, form, 10, "syncPage" + domain.getEntityName());
         form.add(table);
 
-        form.add(new IndicatingAjaxLink<>("load") {
+        form.add(new SpinnerAjaxButton("load", new ResourceModel("load"), Buttons.Type.Outline_Primary) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 syncService.load(domainClass);
 
                 target.add(table);
             }
-        });
+        }.setDefaultFormProcessing(false));
 
-        form.add(new IndicatingAjaxLink<>("sync") {
+        form.add(new SpinnerAjaxButton("sync", new ResourceModel("sync"), Buttons.Type.Outline_Primary) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target) {
                 syncService.sync(domainClass);
 
                 target.add(table);
             }
-        });
+        }.setDefaultFormProcessing(false));
     }
 }

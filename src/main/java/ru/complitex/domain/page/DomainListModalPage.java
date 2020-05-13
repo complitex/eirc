@@ -118,7 +118,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         }
 
 
-        table = new DataTable<T>("table", columns, dataProvider, form, 15, "domainListModalPage" + domainClass.getName()){
+        table = new DataTable<T>("table", columns, dataProvider, form, 10, "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
