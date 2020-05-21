@@ -17,10 +17,10 @@ import java.util.Objects;
  * @author Anatoly A. Ivanov
  * 23.02.2019 22:34
  */
-public class FormGroupBorder extends Border {
+public class GroupBorder extends Border {
     private Label info;
 
-    public FormGroupBorder(String id, IModel<String> labelModel) {
+    public GroupBorder(String id, IModel<String> labelModel) {
         super(id);
 
         setOutputMarkupId(true);
@@ -42,7 +42,7 @@ public class FormGroupBorder extends Border {
         addToBorder(info);
     }
 
-    public FormGroupBorder(String id) {
+    public GroupBorder(String id) {
         this(id, new ResourceModel(id));
     }
 

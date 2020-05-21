@@ -37,7 +37,7 @@ import java.util.Optional;
  * @author Anatoly A. Ivanov
  * 19.12.2017 3:40
  */
-public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage {
+public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     public static final String CURRENT_PAGE_ATTRIBUTE = "_PAGE";
 
     public static final String DOMAIN_EDIT_MODAL_ID = "edit";
@@ -60,9 +60,9 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
 
     private DataTable<T> table;
 
-    private AbstractDomainEditModal<T> domainEditModal;
+    private DomainModal<T> domainModal;
 
-    public DomainListModalPage(Class<T> domainClass) {
+    public DomainPage(Class<T> domainClass) {
         this.domainClass = domainClass;
 
         this.entity = entityService.getEntity(domainClass);
@@ -112,7 +112,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
 
                 @Override
                 protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel) {
-                    DomainListModalPage.this.onNewAction(repeatingView, rowModel);
+                    DomainPage.this.onNewAction(repeatingView, rowModel);
                 }
             });
         }
@@ -135,10 +135,10 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         form.add(table);
 
 
-        container.add(new AjaxLink<Void>("add") {
+        container.add(new AjaxLink<Void>("create") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                onAdd(target);
+                onCreate(target);
             }
 
             @Override
@@ -152,9 +152,9 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         container.add(editForm);
 
         if (isEditEnabled()) {
-            domainEditModal = newDomainEditModal(DOMAIN_EDIT_MODAL_ID);
+            domainModal = newDomainModal(DOMAIN_EDIT_MODAL_ID);
 
-            editForm.add(domainEditModal);
+            editForm.add(domainModal);
         }else{
             editForm.add(new EmptyPanel("edit"));
         }
@@ -172,16 +172,16 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         return FilterWrapper.of(Domains.newObject(domainClass));
     }
 
-    protected AbstractDomainEditModal<T> newDomainEditModal(String componentId) {
-        return new DomainEditModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
+    protected DomainModal<T> newDomainModal(String componentId) {
+        return new DomainModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
             @Override
             protected boolean validate(Domain<T> domain) {
-                return DomainListModalPage.this.validate(domain);
+                return DomainPage.this.validate(domain);
             }
 
             @Override
             protected Component getComponent(String componentId, Attribute attribute) {
-                return DomainListModalPage.this.getEditComponent(componentId, attribute);
+                return DomainPage.this.getEditComponent(componentId, attribute);
             }
         };
     }
@@ -194,8 +194,8 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
         return true;
     }
 
-    protected void onAdd(AjaxRequestTarget target) {
-        domainEditModal.edit(newDomain(), target);
+    protected void onCreate(AjaxRequestTarget target) {
+        domainModal.edit(newDomain(), target);
     }
 
     protected T newDomain(){
@@ -207,7 +207,7 @@ public abstract class DomainListModalPage<T extends Domain<T>> extends BasePage 
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
-        domainEditModal.edit(object, target);
+        domainModal.edit(object, target);
     }
 
     protected void onRowItem(Item<T> item){

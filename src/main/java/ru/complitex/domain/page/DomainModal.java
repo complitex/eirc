@@ -23,7 +23,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.ui.form.FormGroupBorder;
+import ru.complitex.common.ui.form.GroupBorder;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -41,7 +41,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 26.02.2019 18:17
  */
-public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModal<T> {
+public class DomainModal<T extends Domain<T>> extends Modal<T> {
     private Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -59,8 +59,8 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public DomainEditModal(String markupId, Class<T> domainClass, List<EntityAttribute> entityAttributes,
-                           SerializableConsumer<AjaxRequestTarget> onChange) {
+    public DomainModal(String markupId, Class<T> domainClass, List<EntityAttribute> entityAttributes,
+                       SerializableConsumer<AjaxRequestTarget> onChange) {
         super(markupId, Model.of(Domains.newObject(domainClass)));
 
         this.onChange = onChange;
@@ -88,13 +88,13 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
                 EntityAttribute entityAttribute = item.getModelObject();
-                T domain = DomainEditModal.this.getModelObject();
+                T domain = DomainModal.this.getModelObject();
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
                 onAttribute(attribute);
 
-                FormGroupBorder group = new FormGroupBorder("group", Model.of(entityAttribute.getValue().getText())){
+                GroupBorder group = new GroupBorder("group", Model.of(entityAttribute.getValue().getText())){
                     @Override
                     protected boolean isRequired() {
                         return entityAttribute.isRequired();
@@ -169,7 +169,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                DomainEditModal.this.save(target);
+                DomainModal.this.save(target);
             }
 
             @Override
@@ -181,7 +181,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         addButton(new BootstrapAjaxLink<Void>(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Secondary) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                DomainEditModal.this.cancel(target);
+                DomainModal.this.cancel(target);
             }
         }.setLabel(new ResourceModel("cancel")));
     }
@@ -194,7 +194,6 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         return null;
     }
 
-    @Override
     public void edit(T domain, AjaxRequestTarget target){
         setModelObject(domain);
 
@@ -209,7 +208,7 @@ public class DomainEditModal<T extends Domain<T>> extends AbstractDomainEditModa
         try {
             T domain = getModelObject();
 
-            if (!DomainEditModal.this.validate(domain)){
+            if (!DomainModal.this.validate(domain)){
                 target.add(notification);
 
                 return;

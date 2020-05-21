@@ -6,6 +6,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
@@ -77,10 +78,16 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         DataTable<Matching> table = new DataTable<>("table", provider, columns, form, 10, MatchingPage.class.getName());
         form.add(table);
 
+        Form<Matching> matchingForm = new Form<>("matchingForm");
+        form.add(matchingForm);
+
+        MatchingModal modal = new MatchingModal("modal");
+        matchingForm.add(modal);
+
         form.add(new BootstrapAjaxLink<>("create", null, Buttons.Type.Outline_Primary, new StringResourceModel("create", this)) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-
+                modal.open(target, new Matching(domain.getEntityName()));
             }
         });
 
