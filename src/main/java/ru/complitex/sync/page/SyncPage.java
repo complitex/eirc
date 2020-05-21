@@ -83,7 +83,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         DataForm<Sync> form = new DataForm<>("form", filterWrapper);
         container.add(form);
 
-        DataTable<Sync> table = new DataTable<>("table", columns, provider, form, 10, "syncPage" + domain.getEntityName());
+        DataTable<Sync> table = new DataTable<>("table", provider, columns, form, 10, "syncPage" + domain.getEntityName());
         form.add(table);
 
         form.add(new SpinnerAjaxButton("load", new ResourceModel("load"), Buttons.Type.Outline_Primary) {

@@ -14,7 +14,8 @@ import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
 import ru.complitex.eirc.security.EircRoles;
-import ru.complitex.sync.page.*;
+import ru.complitex.matching.page.address.*;
+import ru.complitex.sync.page.address.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -36,7 +37,20 @@ public class BasePage extends WebPage {
         address.add(new BookmarkablePageLink<>("streetTypes", StreetTypeListPage.class));
         address.add(new BookmarkablePageLink<>("streets", StreetListPage.class));
         address.add(new BookmarkablePageLink<>("buildings", BuildingListPage.class));
-        address.add(new BookmarkablePageLink<>("apartments", HomePage.class));
+        address.add(new BookmarkablePageLink<>("apartments", ApartmentListPage.class));
+
+        WebMarkupContainer matching = new WebMarkupContainer("matching");
+        add(matching);
+
+        matching.add(new BookmarkablePageLink<>("counties", CountryMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("regions", RegionMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("cityTypes", CityTypeMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("cities", CityMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("districts", DistrictMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("streetTypes", StreetTypeMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("streets", StreetMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("buildings", BuildingMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("apartments", ApartmentMatchingPage.class));
 
         WebMarkupContainer sync = new WebMarkupContainer("sync");
         add(sync);
@@ -63,6 +77,6 @@ public class BasePage extends WebPage {
 
         response.render(CssHeaderItem.forReference(FontAwesome5CssReference.instance()));
 
-        response.render(OnDomReadyHeaderItem.forScript("$('#menu').metisMenu({toggle: true})"));
+        response.render(OnDomReadyHeaderItem.forScript("$('#menu').metisMenu({toggle: false})"));
     }
 }

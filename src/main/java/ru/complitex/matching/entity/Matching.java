@@ -28,6 +28,10 @@ public class Matching implements Serializable {
     public Matching() {
     }
 
+    public Matching(String entityName) {
+        this.entityName = entityName;
+    }
+
     public Matching(String entityName, Long objectId, Long externalId, String name, Long companyId) {
         this.entityName = entityName;
 

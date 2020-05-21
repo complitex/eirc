@@ -21,7 +21,7 @@ public class DataTable<T extends Serializable> extends org.apache.wicket.extensi
 
     private boolean hideOnEmpty = false;
 
-    public DataTable(String id, List<? extends IColumn<T, Sort>> columns, DataProvider<T> provider,
+    public DataTable(String id, DataProvider<T> provider, List<? extends IColumn<T, Sort>> columns,
                      DataForm<T> form, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 

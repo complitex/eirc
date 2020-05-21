@@ -13,7 +13,8 @@ import ru.complitex.address.page.*;
 import ru.complitex.common.ui.application.ServletAuthorizationStrategy;
 import ru.complitex.common.ui.application.ServletUnauthorizedListener;
 import ru.complitex.eirc.page.login.LoginPage;
-import ru.complitex.sync.page.*;
+import ru.complitex.matching.page.address.*;
+import ru.complitex.sync.page.address.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -48,6 +49,7 @@ public class EircWebApplication extends WebApplication {
 
     private void configureMountPage() {
         mountPage("login", LoginPage.class);
+        
         mountPage("counties", CountryListPage.class);
         mountPage("regions", RegionListPage.class);
         mountPage("city-types", CityTypeListPage.class);
@@ -56,6 +58,18 @@ public class EircWebApplication extends WebApplication {
         mountPage("street-types", StreetTypeListPage.class);
         mountPage("streets", StreetListPage.class);
         mountPage("buildings", BuildingListPage.class);
+        mountPage("apartments", ApartmentListPage.class);
+
+        mountPage("matching/counties", CountryMatchingPage.class);
+        mountPage("matching/regions", RegionMatchingPage.class);
+        mountPage("matching/city-types", CityTypeMatchingPage.class);
+        mountPage("matching/cities", CityMatchingPage.class);
+        mountPage("matching/districts", DistrictMatchingPage.class);
+        mountPage("matching/street-types", StreetTypeMatchingPage.class);
+        mountPage("matching/streets", StreetMatchingPage.class);
+        mountPage("matching/buildings", BuildingMatchingPage.class);
+        mountPage("matching/apartments", ApartmentMatchingPage.class);
+        
         mountPage("sync/counties", CountrySyncPage.class);
         mountPage("sync/regions", RegionSyncPage.class);
         mountPage("sync/city-types", CityTypeSyncPage.class);

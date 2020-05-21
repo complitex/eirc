@@ -1,6 +1,7 @@
-package ru.complitex.sync.page;
+package ru.complitex.sync.page.address;
 
 import ru.complitex.address.entity.Street;
+import ru.complitex.sync.page.SyncPage;
 
 /**
  * @author Anatoly Ivanov

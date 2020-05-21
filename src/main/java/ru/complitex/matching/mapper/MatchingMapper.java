@@ -19,6 +19,10 @@ public class MatchingMapper extends BaseMapper {
         return sqlSession().selectList("selectMatchingList", filterWrapper);
     }
 
+    public Long getMatchingListCount(FilterWrapper<Matching> filterWrapper){
+        return sqlSession().selectOne("selectMatchingListCount", filterWrapper);
+    }
+
     public List<Matching> getMatchingList(String entityName, Long companyId){
         Matching matching = new Matching();
 
