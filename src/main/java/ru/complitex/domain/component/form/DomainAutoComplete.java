@@ -7,14 +7,20 @@ import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
 import ru.complitex.domain.util.Locales;
+
+import javax.inject.Inject;
 
 /**
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
 public class DomainAutoComplete extends AbstractDomainAutoComplete {
+    @Inject
+    private EntityService entityService;
+
     private EntityAttribute entityAttribute;
 
     public DomainAutoComplete(String id, EntityAttribute entityAttribute,
@@ -26,6 +32,12 @@ public class DomainAutoComplete extends AbstractDomainAutoComplete {
 
     public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
         this(id, entityAttribute,  model, null);
+    }
+
+    public DomainAutoComplete(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+        super(id, entityName, model, null);
+
+        this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
     }
 
     protected Domain getFilterObject(String input){
