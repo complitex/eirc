@@ -413,7 +413,7 @@ BEGIN
           `additional_external_id` VARCHAR(64) COMMENT ''Дополнительный внешний идентификатор'',
           `name` VARCHAR(1000) NOT NULL COMMENT ''Соответствие'',
           `additional_name` VARCHAR(1000) COMMENT ''Дополнительное соответствие'',
-          `start_date` DATETIME NOT NULL DEFAULT NOW() COMMENT ''Дата начала актуальности'',
+          `start_date` DATETIME COMMENT ''Дата начала актуальности'',
           `end_date` DATETIME COMMENT ''Дата окончания актуальности'',
           `company_id` BIGINT COMMENT ''Идентификатор компании'',
           `user_company_id` BIGINT COMMENT ''Идентификатор компании пользователя'',

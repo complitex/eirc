@@ -13,6 +13,10 @@
     </logger>
     -->
 
+   <!-- <logger name="org.apache.wicket.resource.loader.ComponentStringResourceLoader" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+-->
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>

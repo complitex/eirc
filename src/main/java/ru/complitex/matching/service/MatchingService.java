@@ -1,8 +1,10 @@
 package ru.complitex.matching.service;
 
 import ru.complitex.matching.entity.Matching;
+import ru.complitex.matching.mapper.MatchingMapper;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 /**
  * @author Anatoly Ivanov
@@ -10,9 +12,10 @@ import javax.enterprise.context.RequestScoped;
  */
 @RequestScoped
 public class MatchingService {
-    public void save(Matching matching){
+    @Inject
+    private MatchingMapper matchingMapper;
 
-    }
+
 
 
 

@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
@@ -93,6 +94,13 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         modal = new MatchingModal("modal"){
             @Override
+            protected Component newObjectId(String componentId) {
+                Component component =  MatchingPage.this.newObjectId(componentId, getModel());
+
+                return component != null ? component : super.newObjectId(componentId);
+            }
+
+            @Override
             protected boolean isParentIdVisible() {
                 return MatchingPage.this.isParentIdVisible();
             }
@@ -108,6 +116,11 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             protected boolean isAdditionalParentIdVisible() {
                 return MatchingPage.this.isAdditionalParentIdVisible();
             }
+
+            @Override
+            protected void onSave(AjaxRequestTarget target) {
+                target.add(container);
+            }
         };
         matchingForm.add(modal);
 
@@ -117,6 +130,10 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
                 modal.open(target, new Matching(domain.getEntityName()));
             }
         });
+    }
+
+    protected Component newObjectId(String componentId, IModel<Matching> model) {
+        return null;
     }
 
     protected boolean isParentIdVisible() {

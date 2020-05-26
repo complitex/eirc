@@ -57,8 +57,12 @@ public class TextFieldGroup<T extends Serializable> extends FormComponentPanel<T
         add(group);
     }
 
+    public TextFieldGroup(String id, String resourceKey) {
+        this(id, new ResourceModel(resourceKey), null, null);
+    }
+
     public TextFieldGroup(String id) {
-        this(id, new ResourceModel(id), null, null);
+        this(id, id);
     }
 
     public TextFieldGroup(String id, Class<T> type) {

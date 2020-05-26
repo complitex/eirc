@@ -8,17 +8,29 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.ui.form.DateTextFieldGroup;
 import ru.complitex.common.ui.form.TextFieldGroup;
+import ru.complitex.company.entity.Company;
+import ru.complitex.domain.component.form.DomainAutoCompleteGroup;
 import ru.complitex.matching.entity.Matching;
+import ru.complitex.matching.mapper.MatchingMapper;
+
+import javax.inject.Inject;
 
 /**
  * @author Anatoly Ivanov
  * 14.05.2020 16:40
  */
 public class MatchingModal extends Modal<Matching> {
+    @Inject
+    private MatchingMapper matchingMapper;
+
+    private WebMarkupContainer container;
+
     public MatchingModal(String markupId) {
         super(markupId, new CompoundPropertyModel<>(new Matching()));
 
@@ -28,7 +40,7 @@ public class MatchingModal extends Modal<Matching> {
 
         header(new ResourceModel("modalHeader"));
 
-        WebMarkupContainer container = new WebMarkupContainer("container");
+        container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
 
@@ -41,13 +53,16 @@ public class MatchingModal extends Modal<Matching> {
         container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
 
         container.add(new TextFieldGroup<>("externalId", Long.class));
-        container.add(new TextFieldGroup<>("additionalExternalId"));
-        container.add(new TextFieldGroup<>("name"));
-        container.add(new TextFieldGroup<>("additionalName"));
-        container.add(new DateTextFieldGroup("startDate"));
-        container.add(new DateTextFieldGroup("endDate"));
-        container.add(new TextFieldGroup<>("companyId"));
-        container.add(new TextFieldGroup<>("userCompanyId"));
+        container.add(new TextFieldGroup<>("additionalExternalId", "modalAdditionalExternalId"));
+        container.add(new TextFieldGroup<>("name").setRequired(true));
+        container.add(new TextFieldGroup<>("additionalName", "modalAdditionalName"));
+        container.add(new DateTextFieldGroup("startDate", "modalStartDate"));
+        container.add(new DateTextFieldGroup("endDate", "modalEndDate"));
+
+        container.add(new DomainAutoCompleteGroup("companyId", Company.ENTITY_NAME, Company.NAME,
+                PropertyModel.of(getModel(), "companyId"), false));
+        container.add(new DomainAutoCompleteGroup("userCompanyId", "modalUserCompanyId",
+                Company.ENTITY_NAME, Company.NAME, PropertyModel.of(getModel(), "userCompanyId"), false));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Primary) {
             @Override
@@ -71,7 +86,7 @@ public class MatchingModal extends Modal<Matching> {
     }
 
     protected Component newObjectId(String componentId){
-        return new TextFieldGroup<>(componentId);
+        return new TextFieldGroup<>(componentId, Long.class);
     }
 
     protected boolean isParentIdVisible(){
@@ -93,15 +108,35 @@ public class MatchingModal extends Modal<Matching> {
     protected void open(AjaxRequestTarget target, Matching matching){
         setModelObject(matching);
 
+        target.add(container);
+
         show(target);
+    }
+
+    private void clear(){
+        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
     }
 
 
     protected void save(AjaxRequestTarget target) {
+        matchingMapper.save(getModelObject());
+
+        success(getString("info_saved"));
+
+        close(target);
+
+        onSave(target);
+
+        clear();
+    }
+
+    protected void onSave(AjaxRequestTarget target){
 
     }
 
     protected void cancel(AjaxRequestTarget target) {
         close(target);
+
+        clear();
     }
 }

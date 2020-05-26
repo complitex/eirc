@@ -2,7 +2,6 @@ package ru.complitex.matching.mapper;
 
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.mapper.BaseMapper;
-import ru.complitex.common.util.Dates;
 import ru.complitex.matching.entity.Matching;
 
 import javax.enterprise.context.RequestScoped;
@@ -53,10 +52,6 @@ public class MatchingMapper extends BaseMapper {
     }
 
     public Matching insert(Matching matching){
-        if (matching.getStartDate() == null){
-            matching.setStartDate(Dates.getCurrentDate());
-        }
-
         sqlSession().insert("insertMatching", matching);
 
         return matching;
@@ -64,6 +59,14 @@ public class MatchingMapper extends BaseMapper {
 
     public void update(Matching matching){
         sqlSession().update("updateMatching", matching);
+    }
+
+    public void save(Matching matching){
+        if (matching.getId() == null){
+            insert(matching);
+        }else {
+            update(matching);
+        }
     }
 
     public void delete(Long id){

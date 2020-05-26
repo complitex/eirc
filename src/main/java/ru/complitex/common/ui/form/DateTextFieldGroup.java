@@ -64,8 +64,12 @@ public class DateTextFieldGroup extends FormComponentPanel<Date> {
         this(id, new ResourceModel(id), model);
     }
 
+    public DateTextFieldGroup(String id, String resourceKey) {
+        this(id, new ResourceModel(resourceKey), null);
+    }
+
     public DateTextFieldGroup(String id) {
-        this(id, new ResourceModel(id), null);
+        this(id, id);
     }
 
     protected DateTextFieldConfig getDateTextFieldConfig() {
