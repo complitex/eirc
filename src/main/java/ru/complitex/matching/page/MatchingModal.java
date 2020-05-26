@@ -24,6 +24,7 @@ public class MatchingModal extends Modal<Matching> {
 
         setBackdrop(Backdrop.FALSE);
         setCloseOnEscapeKey(false);
+        size(Size.Large);
 
         header(new ResourceModel("modalHeader"));
 
@@ -33,6 +34,8 @@ public class MatchingModal extends Modal<Matching> {
 
         NotificationPanel notification = new NotificationPanel("notification");
         container.add(notification);
+
+        container.add(newObjectId("objectId"));
 
         container.add(newParentId("parentId").setVisible(isParentIdVisible()));
         container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
@@ -65,6 +68,10 @@ public class MatchingModal extends Modal<Matching> {
             }
         }.setLabel(new ResourceModel("cancel")));
 
+    }
+
+    protected Component newObjectId(String componentId){
+        return new TextFieldGroup<>(componentId);
     }
 
     protected boolean isParentIdVisible(){

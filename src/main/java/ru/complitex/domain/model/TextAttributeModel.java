@@ -1,12 +1,10 @@
 package ru.complitex.domain.model;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.model.IModel;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.StringType;
 import ru.complitex.domain.entity.Value;
-import ru.complitex.domain.util.Attributes;
 
 /**
  * @author Anatoly A. Ivanov
@@ -69,14 +67,14 @@ public class TextAttributeModel implements IModel<String> {
                 : attribute != null ? attribute.getText()
                 : value.getText();
 
-        switch (type){
-            case LOWER_CASE:
-                return StringUtils.lowerCase(text);
-            case UPPER_CASE:
-                return StringUtils.upperCase(text);
-            case CAPITALIZE:
-                return Attributes.capitalize(text);
-        }
+//        switch (type){
+//            case LOWER_CASE:
+//                return StringUtils.lowerCase(text);
+//            case UPPER_CASE:
+//                return StringUtils.upperCase(text);
+//            case CAPITALIZE:
+//                return Attributes.capitalize(text);
+//        }
 
         return text;
     }
