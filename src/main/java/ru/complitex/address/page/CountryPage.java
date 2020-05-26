@@ -10,8 +10,8 @@ import ru.complitex.eirc.security.EircRoles;
  * 17.03.2020 11:35 PM
  */
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
-public class CountryListPage extends DomainPage<Country> {
-    public CountryListPage() {
+public class CountryPage extends DomainPage<Country> {
+    public CountryPage() {
         super(Country.class, Country.NAME);
     }
 }

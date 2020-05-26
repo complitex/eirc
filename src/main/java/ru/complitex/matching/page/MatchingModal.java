@@ -5,6 +5,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -33,8 +34,9 @@ public class MatchingModal extends Modal<Matching> {
         NotificationPanel notification = new NotificationPanel("notification");
         container.add(notification);
 
-        container.add(new TextFieldGroup<>("parentId", Long.class));
-        container.add(new TextFieldGroup<>("additionalParentId", Long.class));
+        container.add(newParentId("parentId").setVisible(isParentIdVisible()));
+        container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
+
         container.add(new TextFieldGroup<>("externalId", Long.class));
         container.add(new TextFieldGroup<>("additionalExternalId"));
         container.add(new TextFieldGroup<>("name"));
@@ -63,6 +65,22 @@ public class MatchingModal extends Modal<Matching> {
             }
         }.setLabel(new ResourceModel("cancel")));
 
+    }
+
+    protected boolean isParentIdVisible(){
+        return true;
+    }
+
+    protected Component newParentId(String componentId){
+        return new TextFieldGroup<>(componentId, Long.class);
+    }
+
+    protected boolean isAdditionalParentIdVisible(){
+        return true;
+    }
+
+    protected Component newAdditionalParentId(String componentId){
+        return new TextFieldGroup<>(componentId, Long.class);
     }
 
     protected void open(AjaxRequestTarget target, Matching matching){

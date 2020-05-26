@@ -7,8 +7,8 @@ import ru.complitex.domain.page.DomainPage;
  * @author Anatoly Ivanov
  * 14.05.2020 18:11
  */
-public class ApartmentListPage extends DomainPage<Apartment> {
-    public ApartmentListPage() {
+public class ApartmentPage extends DomainPage<Apartment> {
+    public ApartmentPage() {
         super(Apartment.class, Apartment.BUILDING, Apartment.NAME);
     }
 }

@@ -12,6 +12,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import ru.complitex.address.page.*;
 import ru.complitex.common.ui.application.ServletAuthorizationStrategy;
 import ru.complitex.common.ui.application.ServletUnauthorizedListener;
+import ru.complitex.company.page.CompanyPage;
 import ru.complitex.eirc.page.login.LoginPage;
 import ru.complitex.matching.page.address.*;
 import ru.complitex.sync.page.address.*;
@@ -50,15 +51,17 @@ public class EircWebApplication extends WebApplication {
     private void configureMountPage() {
         mountPage("login", LoginPage.class);
         
-        mountPage("counties", CountryListPage.class);
-        mountPage("regions", RegionListPage.class);
-        mountPage("city-types", CityTypeListPage.class);
-        mountPage("cities", CityListPage.class);
-        mountPage("districts", DistrictListPage.class);
-        mountPage("street-types", StreetTypeListPage.class);
-        mountPage("streets", StreetListPage.class);
-        mountPage("buildings", BuildingListPage.class);
-        mountPage("apartments", ApartmentListPage.class);
+        mountPage("counties", CountryPage.class);
+        mountPage("regions", RegionPage.class);
+        mountPage("city-types", CityTypePage.class);
+        mountPage("cities", CityPage.class);
+        mountPage("districts", DistrictPage.class);
+        mountPage("street-types", StreetTypePage.class);
+        mountPage("streets", StreetPage.class);
+        mountPage("buildings", BuildingPage.class);
+        mountPage("apartments", ApartmentPage.class);
+
+        mountPage("companies", CompanyPage.class);
 
         mountPage("matching/counties", CountryMatchingPage.class);
         mountPage("matching/regions", RegionMatchingPage.class);

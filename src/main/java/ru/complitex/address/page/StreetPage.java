@@ -7,8 +7,8 @@ import ru.complitex.address.entity.Street;
  * @author Anatoly A. Ivanov
  * 8.04.2020 10:07 PM
  */
-public class StreetListPage extends DomainPage<Street> {
-    public StreetListPage() {
+public class StreetPage extends DomainPage<Street> {
+    public StreetPage() {
         super(Street.class, Street.CITY, Street.STREET_TYPE, Street.NAME);
     }
 }

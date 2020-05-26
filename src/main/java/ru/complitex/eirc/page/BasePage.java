@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import ru.complitex.address.page.*;
+import ru.complitex.company.page.CompanyPage;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
@@ -26,18 +27,19 @@ public class BasePage extends WebPage {
     public BasePage() {
         add(new BookmarkablePageLink<>("brand", HomePage.class));
 
-        WebMarkupContainer address = new WebMarkupContainer("address");
+        WebMarkupContainer address = new WebMarkupContainer("domains");
         add(address);
 
-        address.add(new BookmarkablePageLink<>("counties", CountryListPage.class));
-        address.add(new BookmarkablePageLink<>("regions", RegionListPage.class));
-        address.add(new BookmarkablePageLink<>("cityTypes", CityTypeListPage.class));
-        address.add(new BookmarkablePageLink<>("cities", CityListPage.class));
-        address.add(new BookmarkablePageLink<>("districts", DistrictListPage.class));
-        address.add(new BookmarkablePageLink<>("streetTypes", StreetTypeListPage.class));
-        address.add(new BookmarkablePageLink<>("streets", StreetListPage.class));
-        address.add(new BookmarkablePageLink<>("buildings", BuildingListPage.class));
-        address.add(new BookmarkablePageLink<>("apartments", ApartmentListPage.class));
+        address.add(new BookmarkablePageLink<>("counties", CountryPage.class));
+        address.add(new BookmarkablePageLink<>("regions", RegionPage.class));
+        address.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
+        address.add(new BookmarkablePageLink<>("cities", CityPage.class));
+        address.add(new BookmarkablePageLink<>("districts", DistrictPage.class));
+        address.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
+        address.add(new BookmarkablePageLink<>("streets", StreetPage.class));
+        address.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
+        address.add(new BookmarkablePageLink<>("apartments", ApartmentPage.class));
+        address.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
 
         WebMarkupContainer matching = new WebMarkupContainer("matching");
         add(matching);

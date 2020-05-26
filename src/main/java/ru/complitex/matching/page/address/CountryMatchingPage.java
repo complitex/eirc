@@ -11,4 +11,14 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     public CountryMatchingPage() {
         super(Country.class);
     }
+
+    @Override
+    protected boolean isParentIdVisible() {
+        return false;
+    }
+
+    @Override
+    protected boolean isAdditionalParentIdVisible() {
+        return false;
+    }
 }

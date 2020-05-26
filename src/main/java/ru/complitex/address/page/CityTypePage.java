@@ -7,8 +7,8 @@ import ru.complitex.address.entity.CityType;
  * @author Anatoly A. Ivanov
  * 02.04.2020 11:46 PM
  */
-public class CityTypeListPage extends DomainPage<CityType> {
-    public CityTypeListPage() {
+public class CityTypePage extends DomainPage<CityType> {
+    public CityTypePage() {
         super(CityType.class, CityType.NAME, CityType.SHORT_NAME);
     }
 }

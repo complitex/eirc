@@ -3,6 +3,7 @@ package ru.complitex.matching.page;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -31,6 +32,8 @@ import java.util.List;
 public class MatchingPage<T extends Domain<T>> extends BasePage {
     @Inject
     private MatchingMapper matchingMapper;
+
+    private MatchingModal modal;
 
     public MatchingPage(Class<T> domainClass) {
         WebMarkupContainer container = new WebMarkupContainer("container");
@@ -61,8 +64,15 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         columns.add(new DataColumn<Matching>("id").setCssClass("domain-id-column"));
         columns.add(new DataColumn<>("objectId"));
-        columns.add(new DataColumn<>("parentId"));
-        columns.add(new DataColumn<>("additionalParentId"));
+
+        if (isParentIdVisible()) {
+            columns.add(new DataColumn<>("parentId"));
+        }
+
+        if (isAdditionalParentIdVisible()) {
+            columns.add(new DataColumn<>("additionalParentId"));
+        }
+
         columns.add(new DataColumn<>("externalId"));
         columns.add(new DataColumn<>("additionalExternalId"));
         columns.add(new DataColumn<>("name"));
@@ -81,7 +91,24 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         Form<Matching> matchingForm = new Form<>("matchingForm");
         form.add(matchingForm);
 
-        MatchingModal modal = new MatchingModal("modal");
+        modal = new MatchingModal("modal"){
+            @Override
+            protected boolean isParentIdVisible() {
+                return MatchingPage.this.isParentIdVisible();
+            }
+
+            @Override
+            public Component newParentId(String componentId) {
+                Component component = MatchingPage.this.newParentId(componentId);
+
+                return component != null ? component : super.newParentId(componentId);
+            }
+
+            @Override
+            protected boolean isAdditionalParentIdVisible() {
+                return MatchingPage.this.isAdditionalParentIdVisible();
+            }
+        };
         matchingForm.add(modal);
 
         form.add(new BootstrapAjaxLink<>("create", null, Buttons.Type.Outline_Primary, new StringResourceModel("create", this)) {
@@ -90,6 +117,18 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
                 modal.open(target, new Matching(domain.getEntityName()));
             }
         });
-
     }
+
+    protected boolean isParentIdVisible() {
+        return true;
+    }
+
+    protected Component newParentId(String componentId) {
+        return null;
+    }
+
+    protected boolean isAdditionalParentIdVisible() {
+        return true;
+    }
+
 }
