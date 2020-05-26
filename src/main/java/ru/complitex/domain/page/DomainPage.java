@@ -25,7 +25,6 @@ import ru.complitex.domain.component.datatable.AbstractDomainColumn;
 import ru.complitex.domain.component.datatable.DomainColumn;
 import ru.complitex.domain.component.datatable.DomainEditActionsColumn;
 import ru.complitex.domain.component.datatable.DomainIdColumn;
-import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -188,13 +187,13 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             }
 
             @Override
-            protected Component getComponent(String componentId, Attribute attribute) {
-                return DomainPage.this.getEditComponent(componentId, attribute);
+            protected Component newComponent(String componentId, T domain, EntityAttribute entityAttribute) {
+                return DomainPage.this.newEditComponent(componentId, domain, entityAttribute);
             }
         };
     }
 
-    protected Component getEditComponent(String componentId, Attribute attribute) {
+    protected Component newEditComponent(String componentId, T domain, EntityAttribute entityAttribute) {
         return null;
     }
 

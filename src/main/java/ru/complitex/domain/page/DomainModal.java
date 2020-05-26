@@ -23,7 +23,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.ui.form.GroupBorder;
+import ru.complitex.common.ui.form.Group;
 import ru.complitex.domain.component.form.DomainAutoComplete;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -92,17 +92,18 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
 
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
-                onAttribute(attribute);
 
-                GroupBorder group = new GroupBorder("group", Model.of(entityAttribute.getValue().getText())){
+                Group group = new Group("group", Model.of(entityAttribute.getValue().getText())){
                     @Override
                     protected boolean isRequired() {
                         return entityAttribute.isRequired();
                     }
                 };
+
                 FormComponent input1 = null;
                 FormComponent input2 = null;
-                Component component = getComponent("component", attribute);
+
+                Component component = newComponent("component", domain, entityAttribute);
 
                 if (component == null) {
                     switch (entityAttribute.getValueTypeId()){
@@ -122,8 +123,8 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
                         case ValueType.REFERENCE:
                             EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
 
-                            component = new DomainAutoComplete("component", referenceEntityAttribute.getEntityName(),
-                                    referenceEntityAttribute, new PropertyModel<>(attribute, "number"));
+                            component = new DomainAutoComplete("component", referenceEntityAttribute,
+                                    new PropertyModel<>(attribute, "number"));
                             break;
                         case ValueType.BOOLEAN:
                         case ValueType.NUMBER:
@@ -186,11 +187,7 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected void onAttribute(Attribute attribute){
-
-    }
-
-    protected Component getComponent(String componentId, Attribute attribute){
+    protected Component newComponent(String componentId, T domain, EntityAttribute entityAttribute){
         return null;
     }
 

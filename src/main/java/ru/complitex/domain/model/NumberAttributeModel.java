@@ -52,6 +52,10 @@ public class NumberAttributeModel implements IModel<Long> {
         }
     }
 
+    public static NumberAttributeModel of(Domain<?> domain, int entityAttributeId){
+        return new NumberAttributeModel(domain, entityAttributeId);
+    }
+
     public static NumberAttributeModel of(IModel<? extends Domain<?>> domainModel, int entityAttributeId){
         return new NumberAttributeModel(domainModel, entityAttributeId);
     }

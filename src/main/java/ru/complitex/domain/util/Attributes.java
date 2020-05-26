@@ -13,22 +13,22 @@ import java.util.Set;
  */
 public class Attributes {
     public static String displayText(EntityAttribute entityAttribute, String text){
-        if (text == null){
-            return null;
-        }
-
-        if (entityAttribute != null) {
-            switch (entityAttribute.getStringType()){
-                case LOWER_CASE:
-                    return text.toLowerCase();
-                case UPPER_CASE:
-                    return text.toUpperCase();
-                case CAPITALIZE:
-                    return capitalize(text);
-                case CAPITALIZE_WORDS:
-                    return capitalizeWords(text);
-            }
-        }
+//        if (text == null){
+//            return null;
+//        }
+//
+//        if (entityAttribute != null) {
+//            switch (entityAttribute.getStringType()){
+//                case LOWER_CASE:
+//                    return text.toLowerCase();
+//                case UPPER_CASE:
+//                    return text.toUpperCase();
+//                case CAPITALIZE:
+//                    return capitalize(text);
+//                case CAPITALIZE_WORDS:
+//                    return capitalizeWords(text);
+//            }
+//        }
 
         return text;
     }

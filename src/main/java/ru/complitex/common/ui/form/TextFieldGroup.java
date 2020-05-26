@@ -24,7 +24,7 @@ public class TextFieldGroup<T extends Serializable> extends FormComponentPanel<T
         setOutputMarkupId(true);
         setOutputMarkupPlaceholderTag(true);
 
-        GroupBorder group = new GroupBorder("group", label){
+        Group group = new Group("group", label){
             @Override
             protected boolean isRequired() {
                 return TextFieldGroup.this.isRequired();
