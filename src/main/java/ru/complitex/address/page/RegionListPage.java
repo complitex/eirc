@@ -12,6 +12,6 @@ import ru.complitex.eirc.security.EircRoles;
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
 public class RegionListPage extends DomainPage<Region> {
     public RegionListPage() {
-        super(Region.class);
+        super(Region.class, Region.COUNTRY, Region.NAME);
     }
 }

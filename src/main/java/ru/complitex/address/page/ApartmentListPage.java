@@ -9,6 +9,6 @@ import ru.complitex.domain.page.DomainPage;
  */
 public class ApartmentListPage extends DomainPage<Apartment> {
     public ApartmentListPage() {
-        super(Apartment.class);
+        super(Apartment.class, Apartment.BUILDING, Apartment.NAME);
     }
 }

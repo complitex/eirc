@@ -18,20 +18,24 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.ui.datatable.DataProvider;
 import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.ui.datatable.DataProvider;
 import ru.complitex.common.ui.datatable.DataTable;
-import ru.complitex.domain.component.datatable.*;
-import ru.complitex.domain.entity.*;
+import ru.complitex.domain.component.datatable.AbstractDomainColumn;
+import ru.complitex.domain.component.datatable.DomainColumn;
+import ru.complitex.domain.component.datatable.DomainEditActionsColumn;
+import ru.complitex.domain.component.datatable.DomainIdColumn;
+import ru.complitex.domain.entity.Attribute;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -62,8 +66,12 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private DomainModal<T> domainModal;
 
-    public DomainPage(Class<T> domainClass) {
+    private Integer[] requiredEntityAttributeIds;
+
+    public DomainPage(Class<T> domainClass, Integer... requiredEntityAttributeIds) {
         this.domainClass = domainClass;
+
+        this.requiredEntityAttributeIds = requiredEntityAttributeIds;
 
         this.entity = entityService.getEntity(domainClass);
 
@@ -173,7 +181,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected DomainModal<T> newDomainModal(String componentId) {
-        return new DomainModal<T>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
+        return new DomainModal<>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
             @Override
             protected boolean validate(Domain<T> domain) {
                 return DomainPage.this.validate(domain);
@@ -240,7 +248,12 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected List<EntityAttribute> getEditEntityAttributes(){
-        return getListEntityAttributes();
+        List<EntityAttribute> list = getListEntityAttributes();
+        Set<Integer> set = new HashSet<>(Arrays.asList(requiredEntityAttributeIds));
+
+        list.forEach(a -> a.setRequired(set.contains(a.getEntityAttributeId())));
+
+        return list;
     }
 
     public FilterWrapper<T> getFilterWrapper() {

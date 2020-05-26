@@ -9,6 +9,6 @@ import ru.complitex.address.entity.StreetType;
  */
 public class StreetTypeListPage extends DomainPage<StreetType> {
     public StreetTypeListPage() {
-        super(StreetType.class);
+        super(StreetType.class, StreetType.NAME, StreetType.SHORT_NAME);
     }
 }

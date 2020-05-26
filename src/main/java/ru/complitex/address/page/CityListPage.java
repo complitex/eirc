@@ -9,6 +9,6 @@ import ru.complitex.address.entity.City;
  */
 public class CityListPage extends DomainPage<City> {
     public CityListPage() {
-        super(City.class);
+        super(City.class, City.REGION, City.CITY_TYPE, City.NAME);
     }
 }

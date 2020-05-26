@@ -164,3 +164,7 @@ td .btn{
 [hidden]{
     display: none;
 }
+
+form label[required=required]:after{
+    content: "*";
+}

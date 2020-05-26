@@ -1,8 +1,8 @@
 package ru.complitex.address.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import ru.complitex.domain.page.DomainPage;
 import ru.complitex.address.entity.Country;
+import ru.complitex.domain.page.DomainPage;
 import ru.complitex.eirc.security.EircRoles;
 
 /**
@@ -12,6 +12,6 @@ import ru.complitex.eirc.security.EircRoles;
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
 public class CountryListPage extends DomainPage<Country> {
     public CountryListPage() {
-        super(Country.class);
+        super(Country.class, Country.NAME);
     }
 }
