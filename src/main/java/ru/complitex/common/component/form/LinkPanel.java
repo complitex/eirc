@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.component;
+package ru.complitex.common.component.form;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;

@@ -1,9 +1,10 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.component.table;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
 import ru.complitex.common.entity.Sort;
@@ -15,14 +16,14 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 17:09
  */
-public class DataTable<T extends Serializable> extends org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable<T, Sort>
+public class Table<T extends Serializable> extends DataTable<T, Sort>
         implements IAjaxIndicatorAware {
     private AjaxIndicatorAppender ajaxIndicatorAppender;
 
     private boolean hideOnEmpty = false;
 
-    public DataTable(String id, DataProvider<T> provider, List<? extends IColumn<T, Sort>> columns,
-                     DataForm<T> form, long rowsPerPage, String tableKey) {
+    public Table(String id, Provider<T> provider, List<? extends IColumn<T, Sort>> columns,
+                 TableForm<T> form, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 
 //        ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
@@ -37,7 +38,7 @@ public class DataTable<T extends Serializable> extends org.apache.wicket.extensi
             }
         });
 
-        addTopToolbar(new DataToolbar(this, form){
+        addTopToolbar(new Toolbar(this, form){
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();
@@ -52,7 +53,7 @@ public class DataTable<T extends Serializable> extends org.apache.wicket.extensi
             }
         });
 
-        addBottomToolbar(new PagingToolbar(this, tableKey){
+        addBottomToolbar(new Paging(this, tableKey){
             @Override
             public boolean isVisible() {
                 return getRowCount() > 5;

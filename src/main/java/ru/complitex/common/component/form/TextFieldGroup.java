@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.form;
+package ru.complitex.common.component.form;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -57,28 +57,12 @@ public class TextFieldGroup<T extends Serializable> extends FormComponentPanel<T
         add(group);
     }
 
-    public TextFieldGroup(String id, String resourceKey) {
-        this(id, new ResourceModel(resourceKey), null, null);
+    public TextFieldGroup(String id, Class<T> type) {
+        this(id, new ResourceModel("_" + id), null, type);
     }
 
     public TextFieldGroup(String id) {
-        this(id, id);
-    }
-
-    public TextFieldGroup(String id, Class<T> type) {
-        this(id, new ResourceModel(id), null, type);
-    }
-
-    public TextFieldGroup(String id, IModel<T> model, Class<T> type) {
-        this(id, new ResourceModel(id), model, type);
-    }
-
-    public TextFieldGroup(String id, IModel<T> model) {
-        this(id, model, null);
-    }
-
-    public TextFieldGroup(String id, IModel<String> label, IModel<T> model) {
-        this(id, label, model, null);
+        this(id, null);
     }
 
     public TextFieldGroup<T> onUpdate(SerializableConsumer<AjaxRequestTarget> onUpdate){

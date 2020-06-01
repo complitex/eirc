@@ -1,4 +1,4 @@
-package ru.complitex.domain.component.datatable;
+package ru.complitex.domain.component.table;
 
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
@@ -11,8 +11,8 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.ui.component.InputPanel;
-import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.component.form.InputPanel;
+import ru.complitex.common.component.table.TableForm;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateAttributeModel;
 import ru.complitex.domain.model.DecimalAttributeModel;
@@ -66,11 +66,11 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
     }
 
     @Override
-    public Component getFilter(String componentId, DataForm<T> dataForm) {
+    public Component newFilter(String componentId, TableForm<T> tableForm) {
         int entityAttributeId = entityAttribute.getEntityAttributeId();
 
         @SuppressWarnings("unchecked")
-        Domain<T> domain = dataForm.getModelObject().getObject();
+        Domain<T> domain = tableForm.getModelObject().getObject();
 
         domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 

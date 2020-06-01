@@ -18,13 +18,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.ui.datatable.DataForm;
-import ru.complitex.common.ui.datatable.DataProvider;
-import ru.complitex.common.ui.datatable.DataTable;
-import ru.complitex.domain.component.datatable.AbstractDomainColumn;
-import ru.complitex.domain.component.datatable.DomainColumn;
-import ru.complitex.domain.component.datatable.DomainEditActionsColumn;
-import ru.complitex.domain.component.datatable.DomainIdColumn;
+import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Provider;
+import ru.complitex.common.component.table.Table;
+import ru.complitex.domain.component.table.AbstractDomainColumn;
+import ru.complitex.domain.component.table.DomainColumn;
+import ru.complitex.domain.component.table.DomainActionColumn;
+import ru.complitex.domain.component.table.DomainIdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -61,7 +61,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private FeedbackPanel notification;
 
-    private DataTable<T> table;
+    private Table<T> table;
 
     private DomainModal<T> domainModal;
 
@@ -87,7 +87,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         filterWrapper = newFilterWrapper();
 
-        DataProvider<T> dataProvider = new DataProvider<T>(filterWrapper) {
+        Provider<T> provider = new Provider<T>(filterWrapper) {
             @Override
             protected List<T> data() {
                 return getDomains(getFilterWrapper());
@@ -99,7 +99,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             }
         };
 
-        DataForm<T> form = new DataForm<>("form", filterWrapper);
+        TableForm<T> form = new TableForm<>("form", filterWrapper);
         container.add(form);
 
 
@@ -111,7 +111,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
 
         if (isEditEnabled()) {
-            columns.add(new DomainEditActionsColumn<T>() {
+            columns.add(new DomainActionColumn<T>() {
                 @Override
                 protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
                     onEdit(rowModel.getObject(), target);
@@ -125,7 +125,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         }
 
 
-        table = new DataTable<T>("table", dataProvider, columns, form, 10, "domainListModalPage" + domainClass.getName()){
+        table = new Table<T>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -267,7 +267,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return notification;
     }
 
-    public DataTable<T> getTable() {
+    public Table<T> getTable() {
         return table;
     }
 

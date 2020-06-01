@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.application;
+package ru.complitex.common.application;
 
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;

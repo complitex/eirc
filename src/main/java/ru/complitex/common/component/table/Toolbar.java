@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.component.table;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
@@ -22,10 +22,10 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 12.12.2018 19:07
  */
-public class DataToolbar extends AbstractToolbar {
+public class Toolbar extends AbstractToolbar {
     private static final String FILTER_ID = "filter";
 
-    public <T extends Serializable, S> DataToolbar(DataTable<T, S> dataTable, DataForm<T> dataForm) {
+    public <T extends Serializable, S> Toolbar(DataTable<T, S> dataTable, TableForm<T> tableForm) {
         super(dataTable);
 
         Args.notNull(dataTable, "table");
@@ -41,9 +41,9 @@ public class DataToolbar extends AbstractToolbar {
 
                 Component filter = null;
 
-                if (col instanceof IDataColumn) {
-                    IDataColumn<T, S> filteredCol = (IDataColumn<T, S>) col;
-                    filter = filteredCol.getFilter(FILTER_ID, dataForm);
+                if (col instanceof IFilterColumn) {
+                    IFilterColumn<T, S> filteredCol = (IFilterColumn<T, S>) col;
+                    filter = filteredCol.newFilter(FILTER_ID, tableForm);
                 }
 
                 if (filter == null) {
@@ -81,7 +81,7 @@ public class DataToolbar extends AbstractToolbar {
 
     @Override
     protected void onBeforeRender() {
-        if (findParent(DataForm.class) == null) {
+        if (findParent(TableForm.class) == null) {
             throw new IllegalStateException("FilterToolbar must be contained within a FilterDataForm");
         }
         super.onBeforeRender();

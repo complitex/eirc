@@ -12,10 +12,10 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.ui.form.DateTextFieldGroup;
-import ru.complitex.common.ui.form.TextFieldGroup;
+import ru.complitex.common.component.form.DateTextFieldGroup;
+import ru.complitex.common.component.form.TextFieldGroup;
 import ru.complitex.company.entity.Company;
-import ru.complitex.domain.component.form.DomainAutoCompleteGroup;
+import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 
@@ -38,7 +38,7 @@ public class MatchingModal extends Modal<Matching> {
         setCloseOnEscapeKey(false);
         size(Size.Large);
 
-        header(new ResourceModel("modalHeader"));
+        header(new ResourceModel("_header"));
 
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
@@ -53,16 +53,16 @@ public class MatchingModal extends Modal<Matching> {
         container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
 
         container.add(new TextFieldGroup<>("externalId", Long.class));
-        container.add(new TextFieldGroup<>("additionalExternalId", "modalAdditionalExternalId"));
+        container.add(new TextFieldGroup<>("additionalExternalId"));
         container.add(new TextFieldGroup<>("name").setRequired(true));
-        container.add(new TextFieldGroup<>("additionalName", "modalAdditionalName"));
-        container.add(new DateTextFieldGroup("startDate", "modalStartDate"));
-        container.add(new DateTextFieldGroup("endDate", "modalEndDate"));
+        container.add(new TextFieldGroup<>("additionalName"));
+        container.add(new DateTextFieldGroup("startDate"));
+        container.add(new DateTextFieldGroup("endDate"));
 
-        container.add(new DomainAutoCompleteGroup("companyId", Company.ENTITY_NAME, Company.NAME,
+        container.add(new DomainGroup("companyId", Company.ENTITY_NAME, Company.NAME,
                 PropertyModel.of(getModel(), "companyId"), false));
-        container.add(new DomainAutoCompleteGroup("userCompanyId", "modalUserCompanyId",
-                Company.ENTITY_NAME, Company.NAME, PropertyModel.of(getModel(), "userCompanyId"), false));
+        container.add(new DomainGroup("userCompanyId",  Company.ENTITY_NAME, Company.NAME,
+                PropertyModel.of(getModel(), "userCompanyId"), false));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Primary) {
             @Override

@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.application;
+package ru.complitex.common.application;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.cdi.NonContextual;

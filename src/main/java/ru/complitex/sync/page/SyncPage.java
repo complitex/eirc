@@ -10,10 +10,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.ui.datatable.DataColumn;
-import ru.complitex.common.ui.datatable.DataForm;
-import ru.complitex.common.ui.datatable.DataProvider;
-import ru.complitex.common.ui.datatable.DataTable;
+import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Provider;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
@@ -49,7 +49,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         FilterWrapper<Sync> filterWrapper = FilterWrapper.of(new Sync(domain.getEntityId()));
 
-        DataProvider<Sync> provider = new DataProvider<>(filterWrapper) {
+        Provider<Sync> provider = new Provider<>(filterWrapper) {
             @Override
             protected List<Sync> data() {
                 return syncMapper.getSyncs(filterWrapper);
@@ -63,27 +63,27 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<Sync, Sort>> columns = new ArrayList<>();
 
-        columns.add(new DataColumn<Sync>("id").setCssClass("domain-id-column"));
-        columns.add(new DataColumn<>("name"));
-        columns.add(new DataColumn<>("additionalName"));
-        columns.add(new DataColumn<>("altName"));
-        columns.add(new DataColumn<>("altAdditionalName"));
-        columns.add(new DataColumn<>("parentId"));
-        columns.add(new DataColumn<>("additionalParentId"));
-        columns.add(new DataColumn<>("externalId"));
-        columns.add(new DataColumn<>("additionalExternalId"));
-        columns.add(new DataColumn<>("date"));
-        columns.add(new DataColumn<>("status"){
+        columns.add(new Column<Sync>("id").setCssClass("domain-id-column"));
+        columns.add(new Column<>("name"));
+        columns.add(new Column<>("additionalName"));
+        columns.add(new Column<>("altName"));
+        columns.add(new Column<>("altAdditionalName"));
+        columns.add(new Column<>("parentId"));
+        columns.add(new Column<>("additionalParentId"));
+        columns.add(new Column<>("externalId"));
+        columns.add(new Column<>("additionalExternalId"));
+        columns.add(new Column<>("date"));
+        columns.add(new Column<>("status"){
             @Override
-            protected IModel<?> getLabelModel(IModel<Sync> rowModel) {
+            protected IModel<?> newItemModel(IModel<Sync> rowModel) {
                 return new ResourceModel("syncStatus." + rowModel.getObject().getStatus());
             }
         });
 
-        DataForm<Sync> form = new DataForm<>("form", filterWrapper);
+        TableForm<Sync> form = new TableForm<>("form", filterWrapper);
         container.add(form);
 
-        DataTable<Sync> table = new DataTable<>("table", provider, columns, form, 10, "syncPage" + domain.getEntityName());
+        Table<Sync> table = new Table<>("table", provider, columns, form, 10, "syncPage" + domain.getEntityName());
         form.add(table);
 
         form.add(new SpinnerAjaxButton("load", new ResourceModel("load"), Buttons.Type.Outline_Primary) {

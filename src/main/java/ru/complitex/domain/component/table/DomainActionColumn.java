@@ -1,4 +1,4 @@
-package ru.complitex.domain.component.datatable;
+package ru.complitex.domain.component.table;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
@@ -12,15 +12,15 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import ru.complitex.common.ui.component.LinkPanel;
-import ru.complitex.common.ui.datatable.DataForm;
+import ru.complitex.common.component.form.LinkPanel;
+import ru.complitex.common.component.table.TableForm;
 import ru.complitex.domain.entity.Domain;
 
 /**
  * @author Anatoly A. Ivanov
  * 26.02.2019 20:22
  */
-public abstract class DomainEditActionsColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public abstract class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
@@ -29,7 +29,7 @@ public abstract class DomainEditActionsColumn<T extends Domain<T>> extends Abstr
         }
     };
 
-    public DomainEditActionsColumn() {
+    public DomainActionColumn() {
         super(Model.of(""));
     }
 
@@ -39,11 +39,11 @@ public abstract class DomainEditActionsColumn<T extends Domain<T>> extends Abstr
 //    }
 
     @Override
-    public Component getFilter(String componentId, DataForm<T> dataForm) {
+    public Component newFilter(String componentId, TableForm<T> tableForm) {
         return new LinkPanel(componentId, new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
             public void onClick(AjaxRequestTarget target) {
-                target.add(dataForm);
+                target.add(tableForm);
             }
         }.setIconType(FontAwesomeIconType.search));
     }
@@ -56,7 +56,7 @@ public abstract class DomainEditActionsColumn<T extends Domain<T>> extends Abstr
         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                DomainEditActionsColumn.this.onAction(rowModel, target);
+                DomainActionColumn.this.onAction(rowModel, target);
             }
 
             @Override

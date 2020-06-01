@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.component.table;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -10,7 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.ui.component.InputPanel;
+import ru.complitex.common.component.form.InputPanel;
 
 import java.io.Serializable;
 
@@ -18,30 +18,30 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 15.03.2019 22:50
  */
-public class DataColumn<T extends Serializable> extends AbstractColumn<T, Sort>
-        implements IDataColumn<T, Sort> {
+public class Column<T extends Serializable> extends AbstractColumn<T, Sort>
+        implements IFilterColumn<T, Sort> {
     private String columnKey;
 
     private String cssClass;
 
-    public DataColumn(String columnKey) {
+    public Column(String columnKey) {
         super(new ResourceModel(columnKey), new Sort(columnKey));
 
         this.columnKey = columnKey;
     }
 
     @Override
-    public Component getFilter(String componentId, DataForm<T> dataForm) {
+    public Component newFilter(String componentId, TableForm<T> tableForm) {
         return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                new PropertyModel<>(dataForm.getModel(),"map." + columnKey)));
+                new PropertyModel<>(tableForm.getModel(),"map." + columnKey)));
     }
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new Label(componentId, getLabelModel(rowModel)));
+        cellItem.add(new Label(componentId, newItemModel(rowModel)));
     }
 
-    protected IModel<?> getLabelModel(IModel<T> rowModel){
+    protected IModel<?> newItemModel(IModel<T> rowModel){
         return PropertyModel.of(rowModel, columnKey);
     }
 
@@ -50,7 +50,7 @@ public class DataColumn<T extends Serializable> extends AbstractColumn<T, Sort>
         return cssClass;
     }
 
-    public DataColumn<T> setCssClass(String cssClass){
+    public Column<T> setCssClass(String cssClass){
         this.cssClass = cssClass;
 
         return this;

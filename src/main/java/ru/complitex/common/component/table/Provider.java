@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.component.table;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -15,11 +15,11 @@ import java.util.List;
  * @author Anatoly A. Ivanov
  * 28.11.2017 16:57
  */
-public abstract class DataProvider<T extends Serializable> extends SortableDataProvider<T, Sort>
+public abstract class Provider<T extends Serializable> extends SortableDataProvider<T, Sort>
         implements IFilterStateLocator<FilterWrapper<T>> {
     private FilterWrapper<T> filterWrapper;
 
-    public DataProvider(FilterWrapper<T> filterWrapper) {
+    public Provider(FilterWrapper<T> filterWrapper) {
         this.filterWrapper = filterWrapper;
     }
 

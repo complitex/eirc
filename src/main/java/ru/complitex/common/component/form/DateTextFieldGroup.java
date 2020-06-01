@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.form;
+package ru.complitex.common.component.form;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.FormGroup;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;

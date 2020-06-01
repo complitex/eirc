@@ -2,7 +2,7 @@ package ru.complitex.company.page;
 
 import org.apache.wicket.Component;
 import ru.complitex.company.entity.Company;
-import ru.complitex.domain.component.form.DomainAutoComplete;
+import ru.complitex.domain.component.form.DomainPanel;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.page.DomainPage;
 
@@ -20,7 +20,7 @@ public class CompanyPage extends DomainPage<Company> {
     @Override
     protected Component newEditComponent(String componentId, Company company, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == Company.PARENT){
-             return new DomainAutoComplete(componentId, Company.ENTITY_NAME, Company.NAME, of(company, Company.PARENT));
+             return new DomainPanel(componentId, Company.ENTITY_NAME, Company.NAME, of(company, Company.PARENT));
         }
 
         return super.newEditComponent(componentId, company, entityAttribute);

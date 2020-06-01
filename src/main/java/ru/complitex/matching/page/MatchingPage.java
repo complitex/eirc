@@ -9,14 +9,17 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.ui.datatable.DataColumn;
-import ru.complitex.common.ui.datatable.DataForm;
-import ru.complitex.common.ui.datatable.DataProvider;
-import ru.complitex.common.ui.datatable.DataTable;
+import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.Provider;
+import ru.complitex.common.component.table.Table;
+import ru.complitex.common.component.table.TableForm;
+import ru.complitex.company.entity.Company;
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
 import ru.complitex.matching.entity.Matching;
@@ -34,6 +37,9 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
     @Inject
     private MatchingMapper matchingMapper;
 
+    @Inject
+    private DomainService domainService;
+
     private MatchingModal modal;
 
     public MatchingPage(Class<T> domainClass) {
@@ -49,7 +55,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         FilterWrapper<Matching> filterWrapper = FilterWrapper.of(new Matching(domain.getEntityName()));
 
-        DataProvider<Matching> provider = new DataProvider<Matching>(filterWrapper) {
+        Provider<Matching> provider = new Provider<Matching>(filterWrapper) {
             @Override
             protected List<Matching> data() {
                 return matchingMapper.getMatchingList(filterWrapper);
@@ -63,30 +69,46 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
-        columns.add(new DataColumn<Matching>("id").setCssClass("domain-id-column"));
-        columns.add(new DataColumn<>("objectId"));
+        columns.add(new Column<Matching>("id").setCssClass("domain-id-column"));
+        columns.add(newObjectId("objectId"));
 
         if (isParentIdVisible()) {
-            columns.add(new DataColumn<>("parentId"));
+            columns.add(newParentId("parentId"));
         }
 
         if (isAdditionalParentIdVisible()) {
-            columns.add(new DataColumn<>("additionalParentId"));
+            columns.add(new Column<>("additionalParentId"));
         }
 
-        columns.add(new DataColumn<>("externalId"));
-        columns.add(new DataColumn<>("additionalExternalId"));
-        columns.add(new DataColumn<>("name"));
-        columns.add(new DataColumn<>("additionalName"));
-        columns.add(new DataColumn<>("startDate"));
-        columns.add(new DataColumn<>("endDate"));
-        columns.add(new DataColumn<>("companyId"));
-        columns.add(new DataColumn<>("userCompanyId"));
+        columns.add(new Column<>("externalId"));
+        columns.add(new Column<>("additionalExternalId"));
+        columns.add(new Column<>("name"));
+        columns.add(new Column<>("additionalName"));
+        columns.add(new Column<>("startDate"));
+        columns.add(new Column<>("endDate"));
 
-        DataForm<Matching> form = new DataForm<>("form", filterWrapper);
+        columns.add(new Column<>("companyId"){
+            @Override
+            protected IModel<?> newItemModel(IModel<Matching> rowModel) {
+                Long companyId = rowModel.getObject().getCompanyId();
+
+                return Model.of(companyId != null ? domainService.getDomain(Company.class, companyId).getName() : "");
+            }
+        });
+
+        columns.add(new Column<>("userCompanyId"){
+            @Override
+            protected IModel<?> newItemModel(IModel<Matching> rowModel) {
+                Long userCompanyId = rowModel.getObject().getUserCompanyId();
+
+                return Model.of(userCompanyId != null ? domainService.getDomain(Company.class, userCompanyId).getName() : "");
+            }
+        });
+
+        TableForm<Matching> form = new TableForm<>("form", filterWrapper);
         container.add(form);
 
-        DataTable<Matching> table = new DataTable<>("table", provider, columns, form, 10, MatchingPage.class.getName());
+        Table<Matching> table = new Table<>("table", provider, columns, form, 10, MatchingPage.class.getName());
         form.add(table);
 
         Form<Matching> matchingForm = new Form<>("matchingForm");
@@ -107,7 +129,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
             @Override
             public Component newParentId(String componentId) {
-                Component component = MatchingPage.this.newParentId(componentId);
+                Component component = MatchingPage.this.newParentId(componentId, getModel());
 
                 return component != null ? component : super.newParentId(componentId);
             }
@@ -132,6 +154,10 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         });
     }
 
+    protected Column<Matching> newObjectId(String columnKey) {
+        return new Column<>(columnKey);
+    }
+
     protected Component newObjectId(String componentId, IModel<Matching> model) {
         return null;
     }
@@ -140,12 +166,20 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected Component newParentId(String componentId) {
+    protected Column<Matching> newParentId(String columnKey) {
+        return new Column<>(columnKey);
+    }
+
+    protected Component newParentId(String componentId, IModel<Matching> model) {
         return null;
     }
 
     protected boolean isAdditionalParentIdVisible() {
         return true;
+    }
+
+    protected Column<Matching> newAdditionalParentId(String columnKey) {
+        return new Column<>(columnKey);
     }
 
 }

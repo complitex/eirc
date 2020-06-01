@@ -1,4 +1,4 @@
-package ru.complitex.common.ui.datatable;
+package ru.complitex.common.component.table;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.ajax.BootstrapAjaxPagingNavigator;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
@@ -20,10 +20,10 @@ import java.util.HashMap;
  * @author Anatoly A. Ivanov
  * 12.12.2018 21:36
  */
-public class PagingToolbar extends AbstractToolbar {
+public class Paging extends AbstractToolbar {
     public static final MetaDataKey<HashMap<String, Long>> ITEMS_PER_PAGE = new MetaDataKey<>() {};
 
-    public PagingToolbar(DataTable<?, ?> table, String tableKey) {
+    public Paging(DataTable<?, ?> table, String tableKey) {
         super(table);
 
         WebMarkupContainer span = new WebMarkupContainer("span");

@@ -17,24 +17,24 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainAutoComplete extends AbstractDomainAutoComplete {
+public class DomainPanel extends AbstractDomainPanel {
     @Inject
     private EntityService entityService;
 
     private EntityAttribute entityAttribute;
 
-    public DomainAutoComplete(String id, EntityAttribute entityAttribute,
-                              IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
+    public DomainPanel(String id, EntityAttribute entityAttribute,
+                       IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, entityAttribute.getEntityName(), model, onChange);
 
         this.entityAttribute = entityAttribute;
     }
 
-    public DomainAutoComplete(String id, EntityAttribute entityAttribute, IModel<Long> model) {
+    public DomainPanel(String id, EntityAttribute entityAttribute, IModel<Long> model) {
         this(id, entityAttribute,  model, null);
     }
 
-    public DomainAutoComplete(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+    public DomainPanel(String id, String entityName, int entityAttributeId, IModel<Long> model) {
         super(id, entityName, model, null);
 
         this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
