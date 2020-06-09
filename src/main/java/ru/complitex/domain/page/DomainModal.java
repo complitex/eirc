@@ -24,7 +24,7 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.component.form.Group;
-import ru.complitex.domain.component.form.DomainPanel;
+import ru.complitex.domain.component.form.DomainInput;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DecimalAttributeModel;
 import ru.complitex.domain.model.TextAttributeModel;
@@ -123,7 +123,7 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
                         case ValueType.REFERENCE:
                             EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
 
-                            component = new DomainPanel("component", referenceEntityAttribute,
+                            component = new DomainInput("component", referenceEntityAttribute,
                                     new PropertyModel<>(attribute, "number"));
                             break;
                         case ValueType.BOOLEAN:

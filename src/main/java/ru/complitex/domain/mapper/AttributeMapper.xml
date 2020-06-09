@@ -22,17 +22,17 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertAttribute" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (domain_id, entity_attribute_id, `text`, `number`, start_date, end_date,
-            `status`, `user_id`)
-        value (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate},
+        insert into ${entityName}_attribute (domain_id, entity_attribute_id, "text", "number", start_date, end_date,
+            "status", "user_id")
+        values (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{startDate}, #{endDate},
             #{status}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
     <insert id="insertAttributeWithDate" parameterType="ru.complitex.domain.entity.Attribute" useGeneratedKeys="true" keyProperty="id">
-        insert into ${entityName}_attribute (domain_id, entity_attribute_id, `text`, `number`, `date`, start_date,
-            end_date, `status`, user_id)
-        value (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate},
+        insert into ${entityName}_attribute (domain_id, entity_attribute_id, "text", "number", "date", start_date,
+            end_date, "status", user_id)
+        values (#{domainId}, #{entityAttributeId}, #{text}, #{number}, #{date}, #{startDate},
             #{endDate}, #{status}, #{userId})
     </insert>
 
@@ -73,7 +73,7 @@
 
     <!--suppress SqlResolve -->
     <update id="archiveAttribute" parameterType="ru.complitex.domain.entity.Attribute">
-        update ${entityName}_attribute set end_date = #{endDate}, `status` = 2 where id = #{id}
+        update ${entityName}_attribute set end_date = #{endDate}, "status" = 2 where id = #{id}
     </update>
 
     <!--suppress SqlResolve -->

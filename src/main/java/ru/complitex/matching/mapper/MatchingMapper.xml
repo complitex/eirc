@@ -20,61 +20,61 @@
     <!--suppress SqlResolve -->
     <insert id="insertMatching" parameterType="ru.complitex.matching.entity.Matching"
             keyProperty="id" useGeneratedKeys="true">
-        insert into `${entityName}_matching` (`object_id`, `parent_id`, `additional_parent_id`,
-            `external_id`, `additional_external_id`, `name`, `additional_name`, `start_date`, `end_date`,
-            `company_id`, `user_company_id`)
+        insert into "${entityName}_matching" ("object_id", "parent_id", "additional_parent_id",
+            "external_id", "additional_external_id", "name", "additional_name", "start_date", "end_date",
+            "company_id", "user_company_id")
         values (#{objectId}, #{parentId}, #{additionalParentId},
-            #{externalId}, #{additionalExternalId}, #{name}, #{additionalName}, #{startDate}, #{endDate},
+            #{externalId}, #{additionalExternalId}, upper(#{name}), upper(#{additionalName}), #{startDate}, #{endDate},
             #{companyId}, #{userCompanyId})
     </insert>
 
     <!--suppress SqlResolve -->
     <update id="updateMatching" parameterType="ru.complitex.matching.entity.Matching">
-        update `${entityName}_matching` set `object_id` = #{objectId},
-            `parent_id` = #{parentId}, `additional_parent_id` = #{additionalParentId},
-            `external_id` = #{externalId}, `additional_external_id` = #{additionalExternalId},
-            `name` = #{name}, `additional_name` = #{additionalName},
-            `start_date` = #{startDate}, `end_date` = #{endDate},
-            `company_id` = #{companyId}, `user_company_id` = #{userCompanyId}
-        where `id` = #{id}
+        update "${entityName}_matching" set "object_id" = #{objectId},
+            "parent_id" = #{parentId}, "additional_parent_id" = #{additionalParentId},
+            "external_id" = #{externalId}, "additional_external_id" = #{additionalExternalId},
+            "name" = upper(#{name}), "additional_name" = upper(#{additionalName},
+            "start_date" = #{startDate}, "end_date" = #{endDate},
+            "company_id" = #{companyId}, "user_company_id" = #{userCompanyId}
+        where "id" = #{id}
     </update>
 
     <!--suppress SqlResolve -->
     <delete id="deleteMatching" parameterType="long">
-        delete from `${entityName}_matching` where `id` = #{id}
+        delete from "${entityName}_matching" where "id" = #{id}
     </delete>
 
     <sql id="selectMatchingWhere">
         <where>
-            <if test="object.objectId != null">and c.`object_id` = #{object.objectId}</if>
-            <if test="object.parentId != null">and c.`parent_id` = #{object.parentId}</if>
-            <if test="object.additionalParentId != null">and c.`additional_parent_id` = #{object.additionalParentId}</if>
-            <if test="object.externalId != null">and c.`external_id` = #{object.externalId}</if>
-            <if test="object.additionalExternalId != null">and c.`additional_external_id` = #{object.additionalExternalId}</if>
-            <if test="object.name != null">and c.`name` = #{object.name}</if>
-            <if test="object.additionalName != null">and c.`additional_name` = #{object.additionalName}</if>
-            <if test="object.startDate != null">and c.`start_date` = #{object.startDate}</if>
-            <if test="object.endDate != null">and c.`end_date` = #{object.endDate}</if>
-            <if test="object.companyId != null">and c.`company_id` = #{object.companyId}</if>
-            <if test="object.userCompanyId != null">and c.`user_company_id` = #{object.userCompanyId}</if>
+            <if test="object.objectId != null">and c."object_id" = #{object.objectId}</if>
+            <if test="object.parentId != null">and c."parent_id" = #{object.parentId}</if>
+            <if test="object.additionalParentId != null">and c."additional_parent_id" = #{object.additionalParentId}</if>
+            <if test="object.externalId != null">and c."external_id" = #{object.externalId}</if>
+            <if test="object.additionalExternalId != null">and c."additional_external_id" = #{object.additionalExternalId}</if>
+            <if test="object.name != null">and c."name" = #{object.name}</if>
+            <if test="object.additionalName != null">and c."additional_name" = #{object.additionalName}</if>
+            <if test="object.startDate != null">and c."start_date" = #{object.startDate}</if>
+            <if test="object.endDate != null">and c."end_date" = #{object.endDate}</if>
+            <if test="object.companyId != null">and c."company_id" = #{object.companyId}</if>
+            <if test="object.userCompanyId != null">and c."user_company_id" = #{object.userCompanyId}</if>
         </where>
     </sql>
 
     <!--suppress SqlResolve -->
     <select id="selectMatching" resultMap="matchingResultMap" parameterType="ru.complitex.matching.entity.Matching">
-        select c.*, '${entityName}' entity_name from `${entityName}_matching` c where c.`id` = #{id}
+        select c.*, '${entityName}' entity_name from "${entityName}_matching" c where c."id" = #{id}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectMatchingList" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="matchingResultMap">
-        select c.*, '${object.entityName}' entity_name from `${object.entityName}_matching` c
+        select c.*, '${object.entityName}' entity_name from "${object.entityName}_matching" c
         <include refid="selectMatchingWhere"/>
         ${limit}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
-        select count(*) from `${object.entityName}_matching` c
+        select count(*) from "${object.entityName}_matching" c
         <include refid="selectMatchingWhere"/>
     </select>
 </mapper>

@@ -17,24 +17,24 @@ import javax.inject.Inject;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainPanel extends AbstractDomainPanel {
+public class DomainInput extends AbstractDomainInput {
     @Inject
     private EntityService entityService;
 
     private EntityAttribute entityAttribute;
 
-    public DomainPanel(String id, EntityAttribute entityAttribute,
+    public DomainInput(String id, EntityAttribute entityAttribute,
                        IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, entityAttribute.getEntityName(), model, onChange);
 
         this.entityAttribute = entityAttribute;
     }
 
-    public DomainPanel(String id, EntityAttribute entityAttribute, IModel<Long> model) {
+    public DomainInput(String id, EntityAttribute entityAttribute, IModel<Long> model) {
         this(id, entityAttribute,  model, null);
     }
 
-    public DomainPanel(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+    public DomainInput(String id, String entityName, int entityAttributeId, IModel<Long> model) {
         super(id, entityName, model, null);
 
         this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);

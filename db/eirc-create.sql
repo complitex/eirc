@@ -322,7 +322,7 @@ CALL create_reference(5, 1, 4, 3, 'Населённый пункт', 'Насел
 CALL create_attribute(5, 2, 8, 'Название', 'Назва');
 CALL create_attribute(5, 3, 4, 'Код района', 'Код району');
 
-CALL create_domain(6, 'street_type', 'Тип', 'Тип');
+CALL create_domain(6, 'street_type', 'Тип улицы', 'Тип вулиці');
 CALL create_attribute(6, 1, 8, 'Название', 'Назва');
 CALL create_attribute(6, 2, 8, 'Краткое название', 'Коротка назва');
 

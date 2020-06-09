@@ -21,6 +21,6 @@ public class DomainGroup extends Panel {
         };
         add(group);
 
-        group.add(new DomainPanel("autocomplete", entityName, entityAttributeId, model));
+        group.add(new DomainInput("autocomplete", entityName, entityAttributeId, model));
     }
 }

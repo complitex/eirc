@@ -93,7 +93,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
     }
 
     public String getLimit(){
-        return count != null && count > 0 ? " limit " + first + ", " + count : "";
+        return count != null && count > 0 ? " limit " + count + " offset " + first : "";
     }
 
     public String getOrderLimit(){

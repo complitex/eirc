@@ -7,13 +7,11 @@
     </appender>
 
 
-   <!--
    <logger name="ru.complitex.domain.mapper.DomainMapper" level="DEBUG" additivity="false" >
         <appender-ref ref="STDOUT" />
     </logger>
-    -->
 
-   <!-- <logger name="org.apache.wicket.resource.loader.ComponentStringResourceLoader" level="DEBUG" additivity="false">
+   <!-- <logger name="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm" level="DEBUG" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 -->

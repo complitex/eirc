@@ -8,9 +8,9 @@ echo ---------------------------------------------------
 echo
 echo Register the JDBC connection pool
 $GLASSFISH_ASADMIN create-jdbc-connection-pool \
-  --datasourceclassname="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource" \
+  --datasourceclassname="org.postgresql.ds.PGPoolingDataSource" \
   --restype="javax.sql.ConnectionPoolDataSource" \
-  --property="url=jdbc\:mysql\://localhost\:3306/eirc_db:user=eirc:password=eirc:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true:useSSL=false:serverTimezone=UTC" eircPool
+  --property="url=jdbc\:postgresql\://localhost/eirc_db:user=eirc:password=eirc" eircPool
 
 echo
 echo Create a JDBC resource with the specified JNDI name

@@ -30,7 +30,7 @@ import java.util.Locale;
  * @author Anatoly A. Ivanov
  * 09.01.2019 20:50
  */
-public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
+public abstract class AbstractDomainInput extends FormComponentPanel<Long> {
     @Inject
     private DomainMapper domainMapper;
 
@@ -47,7 +47,7 @@ public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
 
     private SerializableConsumer<AjaxRequestTarget> onChange;
 
-    public AbstractDomainPanel(String id, String entityName, IModel<Long> model,
+    public AbstractDomainInput(String id, String entityName, IModel<Long> model,
                                SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id, model);
 
@@ -60,7 +60,7 @@ public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
         inputId = new HiddenField<>("inputId", new LoadableDetachableModel<Long>() {
             @Override
             protected Long load() {
-                return AbstractDomainPanel.this.getModel().getObject();
+                return AbstractDomainInput.this.getModel().getObject();
             }
         }, Long.class);
         inputId.setConvertEmptyInputStringToNull(true);
@@ -75,7 +75,7 @@ public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
                 error = false;
 
                 if (errorRendered){
-                    target.appendJavaScript(JQuery.$(AbstractDomainPanel.this)
+                    target.appendJavaScript(JQuery.$(AbstractDomainInput.this)
                             .closest(".has-error")
                             .chain(new Function("removeClass", "has-error"))
                             .build());
@@ -94,15 +94,15 @@ public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
         autoCompleteTextField = new AutoCompleteTextField<Domain>("input", new LoadableDetachableModel<Domain>() {
             @Override
             protected Domain load() {
-                Long objectId = AbstractDomainPanel.this.getModel().getObject();
+                Long objectId = AbstractDomainInput.this.getModel().getObject();
 
-                return objectId != null ? AbstractDomainPanel.this.getDomain(objectId) : null;
+                return objectId != null ? AbstractDomainInput.this.getDomain(objectId) : null;
             }
         }, Domain.class,
                 new AbstractAutoCompleteTextRenderer<Domain>() {
                     @Override
                     protected String getTextValue(Domain domain) {
-                        return AbstractDomainPanel.this.getTextValue(domain);
+                        return AbstractDomainInput.this.getTextValue(domain);
                     }
 
                     @Override
@@ -166,13 +166,13 @@ public abstract class AbstractDomainPanel extends FormComponentPanel<Long> {
 
             @Override
             public IModel<String> getLabel() {
-                return AbstractDomainPanel.this.getLabel();
+                return AbstractDomainInput.this.getLabel();
             }
         };
         add(autoCompleteTextField);
     }
 
-    public AbstractDomainPanel(String id, String entityName, IModel<Long> model){
+    public AbstractDomainInput(String id, String entityName, IModel<Long> model){
         this(id, entityName, model, null);
     }
 

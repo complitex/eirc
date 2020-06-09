@@ -52,14 +52,14 @@
 
     <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="true" keyProperty="id">
-        insert into `${entityName}` (object_id, start_date, end_date, `status`, permission_id,
+        insert into "${entityName}" (object_id, start_date, end_date, "status", permission_id,
           user_id)
-        value (#{objectId}, #{startDate}, #{endDate}, #{status}, #{permissionId}, #{userId})
+        values (#{objectId}, #{startDate}, #{endDate}, #{status}, #{permissionId}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->
     <update id="updateDomainObjectId" parameterType="ru.complitex.domain.entity.Domain">
-        update `${entityName}` set object_id = #{objectId} where id = #{id}
+        update "${entityName}" set object_id = #{objectId} where id = #{id}
     </update>
 
     <sql id="selectDomainSelect">
@@ -74,9 +74,9 @@
         select d.*, '${entityName}' entity_name,
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainSelect"/>
 
-        from `${entityName}` d
-        left join `${entityName}_attribute` a on a.domain_id = d.id and a.status = 1
-        left join `${entityName}_value` v on v.attribute_id = a.id
+        from "${entityName}" d
+        left join "${entityName}_attribute" a on a.domain_id = d.id and a.status = 1
+        left join "${entityName}_value" v on v.attribute_id = a.id
     </sql>
 
     <!--suppress SqlResolve -->
@@ -86,14 +86,14 @@
         <if test="attributes != null and !attributes.isEmpty">
             <foreach collection="attributes" index="i" item="a">
                 <if test="a.text != null or a.number != null">
-                    left join `${entityName}_attribute` a${i}
+                    left join "${entityName}_attribute" a${i}
                     on (a${i}.domain_id = d.id and a${i}.entity_attribute_id = #{a.entityAttributeId})
                 </if>
             </foreach>
         </if>
 
         <where>
-            <if test="objectId != null">and d.object_id = #{objectId} and d.`status` > 0</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d."status" > 0</if>
             <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
                     <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
@@ -115,9 +115,9 @@
 
     <!--suppress SqlResolve -->
     <select id="selectDomainObjectId" parameterType="ru.complitex.domain.entity.Domain" resultType="long">
-        select d.object_id from `${entityName}` d
-            left join `${entityName}_attribute` a on a.domain_id = d.id
-            left join `${entityName}_value` v on v.attribute_id = a.id
+        select d.object_id from "${entityName}" d
+            left join "${entityName}_attribute" a on a.domain_id = d.id
+            left join "${entityName}_value" v on v.attribute_id = a.id
         <where>
             <foreach collection="attributes" item="i" separator="and">
               <foreach collection="i.values" item="j" separator="and">
@@ -131,21 +131,21 @@
     </select>
 
     <sql id="selectDomainsFrom">
-        from `${object.entityName}` d
+        from "${object.entityName}" d
     </sql>
 
     <sql id="selectDomainsFromFilter">
         <foreach collection="object.attributes" index="i" item="a">
             <if test="a.text != null or a.number != null or a.date != null or (a.values != null and !a.values.empty)">
-                left join `${object.entityName}_attribute` a${i} on (a${i}.domain_id = d.id
+                left join "${object.entityName}_attribute" a${i} on (a${i}.domain_id = d.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
-                left join `${object.entityName}_value` v${i} on (v${i}.attribute_id = a${i}.id
+                left join "${object.entityName}_value" v${i} on (v${i}.attribute_id = a${i}.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
 
                <!-- <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
                     <if test="a.entityAttribute.referenceEntityAttributes != null">
                         <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
-                            left join `${ra.entityName}` d${i}_${j}_ref
+                            left join "${ra.entityName}" d${i}_${j}_ref
 
                             <if test="a.entityAttribute.valueType.id == 10">
                                 on d${i}_${j}_ref.object_id = v${i}.number
@@ -155,9 +155,9 @@
                                 on d${i}_${j}_ref.object_id = a${i}.number
                             </if>
 
-                            left join `${ra.entityName}_attribute` a${i}_${j}_ref on a${i}_${j}_ref.domain_id = d${i}_${j}_ref.id
+                            left join "${ra.entityName}_attribute" a${i}_${j}_ref on a${i}_${j}_ref.domain_id = d${i}_${j}_ref.id
                                 and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1
-                            left join `${ra.entityName}_value` v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
+                            left join "${ra.entityName}_value" v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
                         </foreach>
                     </if>
                 </if>-->
@@ -166,16 +166,16 @@
         <if test="object.map.attributes != null">
             <foreach collection="object.map.attributes" index="i" item="b">
                 <if test="b.text != null or b.number != null or b.date != null">
-                    left join `${object.entityName}_attribute` b${i} on b${i}.domain_id = d.id
+                    left join "${object.entityName}_attribute" b${i} on b${i}.domain_id = d.id
                         and b${i}.entity_attribute_id = #{b.entityAttributeId} and b${i}.status = 1
-                    left join `${object.entityName}_value` bv${i} on bv${i}.attribute_id = b${i}.id
+                    left join "${object.entityName}_value" bv${i} on bv${i}.attribute_id = b${i}.id
                 </if>
             </foreach>
         </if>
         <if test="object.map.notAttributes != null">
             <foreach collection="object.map.notAttributes" index="i" item="c">
                 <if test="c.text != null or c.number != null or c.date != null">
-                    left join `${object.entityName}_attribute` c${i} on (c${i}.domain_id = d.id
+                    left join "${object.entityName}_attribute" c${i} on (c${i}.domain_id = d.id
                         and c${i}.entity_attribute_id = #{c.entityAttributeId} and c${i}.status = 1)
                 </if>
             </foreach>
@@ -190,7 +190,7 @@
                         d.object_id = #{object.objectId}
                     </when>
                     <otherwise>
-                        d.object_id like concat('%', #{object.objectId}, '%')
+                        d.object_id ilike concat('%', #{object.objectId}, '%')
                     </otherwise>
                 </choose>
 
@@ -215,7 +215,7 @@
                                 <otherwise> and </otherwise>
                             </choose>
 
-                            (a${i}.text like concat('%', #{a.text}, '%') or v${i}.text like concat('%', #{a.text}, '%'))
+                            (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
                         </otherwise>
                     </choose>
                 </if>
@@ -315,7 +315,7 @@
                 <when test="sort.key == 'text'">, sort_a.text</when>
                 <when test="sort.key == 'number'">, sort_a.number</when>
                 <when test="sort.key == 'date'">, sort_a.date</when>
-                <when test="sort.key == 'value'">, sort_v.text</when>
+                <when test="sort.key == 'values'">, sort_v.text</when>
                 <when test="sort.key == 'entity'">, sort_rv.text</when>
             </choose>
         </if>
@@ -323,32 +323,32 @@
 
     <sql id="selectDomainsFromSort">
         <if test="sort != null">
-            <if test="sort.key in {'text', 'number', 'date', 'value', 'entity', 'entity_value'}">
-                left join `${object.entityName}_attribute` sort_a
+            <if test="sort.key in {'text', 'number', 'date', 'values', 'entity', 'entity_value'}">
+                left join "${object.entityName}_attribute" sort_a
                   on sort_a.domain_id = d.id
-                    and sort_a.entity_attribute_id = #{sort.value.entityAttributeId}
+                    and sort_a.entity_attribute_id = #{sort.values.entityAttributeId}
                     and sort_a.status = 1
 
-                <if test="sort.key in {'value', 'entity_value'}">
-                    left join `${object.entityName}_value` sort_v on sort_v.attribute_id = sort_a.id
+                <if test="sort.key in {'values', 'entity_value'}">
+                    left join "${object.entityName}_value" sort_v on sort_v.attribute_id = sort_a.id
                 </if>
 
                 <!--
-                <if test="sort.key == 'entity' and sort.value != null and sort.value.referenceEntityAttribute != null">
-                    left join `${sort.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                <if test="sort.key == 'entity' and sort.values != null and sort.values.referenceEntityAttribute != null">
+                    left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
                       on sort_ra.object_id = sort_a.number
-                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.entity_attribute_id = #{sort.values.referenceEntityAttribute.entityAttributeId}
                         and sort_ra.status = 1
-                    left join `${sort.value.referenceEntityAttribute.entityName}_value` sort_rv
+                    left join "${sort.values.referenceEntityAttribute.entityName}_value" sort_rv
                       on sort_rv.attribute_id = sort_ra.id
                 </if>
 
-                <if test="sort.key == 'entity_value' and sort.value != null and sort.value.referenceEntityAttribute != null">
-                    left join `${sort.value.referenceEntityAttribute.entityName}_attribute` sort_ra
+                <if test="sort.key == 'entity_value' and sort.values != null and sort.values.referenceEntityAttribute != null">
+                    left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
                       on sort_ra.object_id = sort_v.number
-                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.entity_attribute_id = #{sort.values.referenceEntityAttribute.entityAttributeId}
                         and sort_ra.status = 1
-                    left join `${sort.value.referenceEntityAttribute.entityName}_value` sort_rv
+                    left join "${sort.values.referenceEntityAttribute.entityName}_value" sort_rv
                       on sort_rv.attribute_id = sort_ra.id
                 </if>
                 -->
@@ -363,9 +363,9 @@
                 <when test="sort.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
                 <when test="sort.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
                 <when test="sort.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
-                <when test="sort.key == 'value'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
+                <when test="sort.key == 'values'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
                 <!--
-                <when test="sort.key in {'entity', 'entity_value'} and sort.value != null and sort.value.referenceEntityAttribute != null">
+                <when test="sort.key in {'entity', 'entity_value'} and sort.values != null and sort.values.referenceEntityAttribute != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
                 </when>
                 -->
@@ -397,15 +397,15 @@
           ) dd
           ${limit}
         ) o
-        left join `${object.entityName}` d on d.id = o.dd_id
-        left join `${object.entityName}_attribute` a on a.domain_id = d.id and a.status = 1
+        left join "${object.entityName}" d on d.id = o.dd_id
+        left join "${object.entityName}_attribute" a on a.domain_id = d.id and a.status = 1
             <if test="!entityAttributeIds.empty">
                 and a.entity_attribute_id in
                     <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
                         ${i}
                     </foreach>
             </if>
-        left join `${object.entityName}_value` v on v.attribute_id = a.id
+        left join "${object.entityName}_value" v on v.attribute_id = a.id
         <include refid="selectDomainsFromSort"/>
         group by d.id, a.id, v.id
         <include refid="selectDomainsOrderSort"/>
@@ -424,6 +424,6 @@
 
     <!--suppress SqlResolve -->
     <update id="updateDomain" parameterType="ru.complitex.domain.entity.Domain">
-        update `${entityName}` set  `status` = #{status}, end_date = #{endDate} where id = #{id}
+        update "${entityName}" set  "status" = #{status}, end_date = #{endDate} where id = #{id}
     </update>
 </mapper>

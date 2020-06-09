@@ -114,7 +114,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
         company.setAltName(sync.getAltName());
         company.setShortName(sync.getAdditionalName());
         company.setAltShortName(sync.getAltAdditionalName());
-        company.setEdrpou(sync.getAdditionalParentId());
+        company.setEDRPOU(sync.getAdditionalParentId());
         company.setCode(sync.getAdditionalExternalId());
 
     }

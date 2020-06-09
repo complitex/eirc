@@ -28,11 +28,11 @@ public class Company extends ShortNameDomain<Company> {
         setNumber(PARENT, parentId);
     }
 
-    public String getEdrpou(){
+    public String getEDRPOU(){
         return getText(EDRPOU);
     }
 
-    public void setEdrpou(String edrpou){
+    public void setEDRPOU(String edrpou){
         setText(EDRPOU, edrpou);
     }
 
