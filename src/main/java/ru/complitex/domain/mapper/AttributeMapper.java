@@ -88,7 +88,7 @@ public class AttributeMapper extends BaseMapper {
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
-    public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
+    public String getTextValue(String entityName, Long objectId, int entityAttributeId){
         return sqlSession().selectOne("selectAttributeTextValue", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }

@@ -124,62 +124,62 @@ public class DomainMapper extends BaseMapper {
     }
 
     public Boolean hasDomain(String entityName, int entityAttributeId, String text){
-        Domain domain = new Domain();
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return sqlSession().selectOne("hasDomain", domain);
     }
 
-    public Domain getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
+    public Domain<?> getDomain(String entityName, Long objectId, boolean useDateAttribute, boolean useNumberValue){
         if (objectId == null){
             return null;
         }
 
-        Domain domain = new Domain();
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setObjectId(objectId);
 
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, Long objectId){
+    public Domain<?> getDomain(String entityName, Long objectId){
         return getDomain(entityName, objectId, false, false);
     }
 
-    public Domain getDomain(String entityName, int entityAttributeId, String text){
-        Domain domain = new Domain();
+    public Domain<?> getDomain(String entityName, int entityAttributeId, String text){
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setText(entityAttributeId, text);
 
         return getDomain(domain);
     }
 
-    public Domain getDomain(String entityName, int entityAttributeId, Long number){
-        Domain domain = new Domain();
+    public Domain<?> getDomain(String entityName, int entityAttributeId, Long number){
+        Domain<?> domain = new Domain<>();
         domain.setEntityName(entityName);
         domain.setNumber(entityAttributeId, number);
 
         return getDomain(domain);
     }
 
-    private Domain getDomain(Domain domain){
+    private Domain<?> getDomain(Domain<?> domain){
         return sqlSession().selectOne("selectDomain", domain);
     }
 
-    public List<Domain> getDomains(FilterWrapper<? extends Domain> filterWrapper){
+    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
         return sqlSession().selectList("selectDomains", filterWrapper);
     }
 
-    public Long getDomainsCount(FilterWrapper<? extends Domain> filterWrapper){
+    public Long getDomainsCount(FilterWrapper<? extends Domain<?>> filterWrapper){
         return sqlSession().selectOne("selectDomainsCount", filterWrapper);
     }
 
-    public Long getDomainObjectId(Domain domain){
+    public Long getDomainObjectId(Domain<?> domain){
         return sqlSession().selectOne("selectDomainObjectId", domain);
     }
 
-    public void delete(Domain domain){
+    public void delete(Domain<?> domain){
         domain.setStatus(Status.ARCHIVE);
 
         sqlSession().update("updateDomain", domain);

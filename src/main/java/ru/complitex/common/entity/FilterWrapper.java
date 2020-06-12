@@ -68,6 +68,13 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return this;
     }
 
+    public FilterWrapper<T> limit(Long count){
+        this.first = 0L;
+        this.count = count;
+
+        return this;
+    }
+
     public FilterWrapper<T> sort(String key, Object value){
         this.sort = new Sort(key, value);
 

@@ -29,32 +29,6 @@ public class DomainService implements Serializable {
     @Inject
     private EntityService entityService;
 
-    public <T extends Domain<T>> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
-        return domainMapper.getDomains(filterWrapper).stream()
-                .map(d -> Domains.newObject(domainClass, d))
-                .collect(Collectors.toList());
-    }
-
-    public <T extends Domain<T>> Long getDomainsCount(FilterWrapper<T> filterWrapper){
-        return domainMapper.getDomainsCount(filterWrapper);
-    }
-
-    public Domain<?> getDomain(String entityName, Long objectId){
-        return domainMapper.getDomain(entityName, objectId);
-    }
-
-    public <T extends Domain<T>> T getDomain(Class<T> domainClass, Long objectId){
-        return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId));
-    }
-
-    public String getEntityName(int entityId){
-        return entityService.getEntity(entityId).getName();
-    }
-
-    public Domain<?> getDomainRef(int referenceId, Long objectId){
-        return domainMapper.getDomain(getEntityName(referenceId), objectId);
-    }
-
     public void save(Domain<?> domain){
         if (domain.getObjectId() != null){
             domainMapper.update(domain);
@@ -93,6 +67,36 @@ public class DomainService implements Serializable {
         domainMapper.update(domain);
     }
 
+    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
+        return domainMapper.getDomains(filterWrapper);
+    }
+
+    public <T extends Domain<T>> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
+        return domainMapper.getDomains(filterWrapper).stream()
+                .map(d -> Domains.newObject(domainClass, d))
+                .collect(Collectors.toList());
+    }
+
+    public <T extends Domain<T>> Long getDomainsCount(FilterWrapper<T> filterWrapper){
+        return domainMapper.getDomainsCount(filterWrapper);
+    }
+
+    public Domain<?> getDomain(String entityName, Long objectId){
+        return domainMapper.getDomain(entityName, objectId);
+    }
+
+    public <T extends Domain<T>> T getDomain(Class<T> domainClass, Long objectId){
+        return Domains.newObject(domainClass, domainMapper.getDomain(Domains.getEntityName(domainClass), objectId));
+    }
+
+    public String getEntityName(int entityId){
+        return entityService.getEntity(entityId).getName();
+    }
+
+    public Domain<?> getDomainRef(int referenceId, Long objectId){
+        return domainMapper.getDomain(getEntityName(referenceId), objectId);
+    }
+
     public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
         return attributeMapper.getNumber(entityName, objectId, entityAttributeId);
     }
@@ -111,7 +115,7 @@ public class DomainService implements Serializable {
         return s != null ? s : "";
     }
 
-    public String getTextValue(String entityName, Long objectId, Long entityAttributeId){
+    public String getTextValue(String entityName, Long objectId, int entityAttributeId){
         return attributeMapper.getTextValue(entityName, objectId, entityAttributeId);
     }
 

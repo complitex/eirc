@@ -1,66 +1,67 @@
 package ru.complitex.domain.component.form;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.domain.entity.Attribute;
+import ru.complitex.common.component.form.AbstractAutoComplete;
+import ru.complitex.common.entity.FilterWrapper;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
-import ru.complitex.domain.util.Attributes;
-import ru.complitex.domain.util.Locales;
 
 import javax.inject.Inject;
+import java.util.Iterator;
 
 /**
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainInput extends AbstractDomainInput {
+public class DomainInput extends AbstractAutoComplete<Domain<?>> {
     @Inject
     private EntityService entityService;
 
-    private EntityAttribute entityAttribute;
+    @Inject
+    private DomainService domainService;
 
-    public DomainInput(String id, EntityAttribute entityAttribute,
-                       IModel<Long> model, SerializableConsumer<AjaxRequestTarget> onChange) {
-        super(id, entityAttribute.getEntityName(), model, onChange);
+    private final EntityAttribute entityAttribute;
 
-        this.entityAttribute = entityAttribute;
-    }
+    private final Domain<?> domain;
 
     public DomainInput(String id, EntityAttribute entityAttribute, IModel<Long> model) {
-        this(id, entityAttribute,  model, null);
+        super(id, model);
+
+        this.entityAttribute = entityAttribute;
+
+        domain = new Domain<>(entityAttribute.getEntityName());
     }
 
     public DomainInput(String id, String entityName, int entityAttributeId, IModel<Long> model) {
-        super(id, entityName, model, null);
+        super(id, model);
 
-        this.entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
+        entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
+
+        domain = new Domain<>(entityAttribute.getEntityName());
     }
 
-    protected Domain getFilterObject(String input){
-        Domain domain = new Domain(entityAttribute.getEntityName());
-        domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId()).setText(input);
-
-        return domain;
+    @Override
+    protected String getTextValue(Domain<?> object) {
+        return domainService.getTextValue(entityAttribute.getEntityName(), object.getObjectId(),
+                entityAttribute.getEntityAttributeId());
     }
 
-    protected String getTextValue(Domain domain) {
-        Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
+    @Override
+    protected Iterator<Domain<?>> getChoices(String input) {
+        domain.setText(entityAttribute.getEntityAttributeId(), input);
 
-        switch (entityAttribute.getValueTypeId()){
-            case ValueType.TEXT_LIST:
-                String textValue = attribute.getOrCreateValue(Locales.getSystemLocaleId()).getText();
+        return domainService.getDomains(FilterWrapper.of(domain).setFilter("search").limit(10L)).iterator();
+    }
 
-                return Attributes.displayText(entityAttribute, textValue);
-            case ValueType.TEXT:
-                return attribute.getText();
-            case ValueType.NUMBER:
-                return attribute.getNumber() + "";
-        }
+    @Override
+    protected Long getId(Domain<?> object) {
+        return object.getObjectId();
+    }
 
-        return null;
+    @Override
+    protected Domain<?> getObject(Long id) {
+        return domainService.getDomain(entityAttribute.getEntityName(), id);
     }
 }
