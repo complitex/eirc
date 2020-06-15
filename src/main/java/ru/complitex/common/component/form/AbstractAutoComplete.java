@@ -1,6 +1,7 @@
 package ru.complitex.common.component.form;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
@@ -8,7 +9,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
 
@@ -25,18 +25,31 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
     private final AutoCompleteTextField<T> nameField;
 
+    private boolean required;
+
+    private IModel<String> placeholder;
+
     public AbstractAutoComplete(String id, IModel<Long> model) {
         super(id);
 
-        idField = new HiddenField<>("id", new Model<>(), Long.class);
+        setOutputMarkupId(true);
+
+        idField = new HiddenField<>("id", model, Long.class){
+            @Override
+            public boolean isRequired() {
+                return required;
+            }
+        };
 
         idField.setConvertEmptyInputStringToNull(true);
         idField.setOutputMarkupId(true);
 
+        idField.add(OnChangeAjaxBehavior.onChange(this::onChange));
+
         add(idField);
 
         nameField = new AutoCompleteTextField<T>("name",
-                new Model<T>(){
+                new IModel<T>(){
                     @Override
                     public T getObject() {
                         return AbstractAutoComplete.this.getObject(model.getObject());
@@ -44,8 +57,6 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
                     @Override
                     public void setObject(T object) {
-                        super.setObject(object);
-
                         model.setObject(getId(object));
                     }
                 }, null,
@@ -72,7 +83,13 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
             protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
 
-                tag.put("autocomplete", "off");
+                tag.put("autocomplete", "chrome-off");
+
+                IModel<String> placeholder = AbstractAutoComplete.this.getPlaceholder();
+
+                if (placeholder != null){
+                    tag.put("placeholder", placeholder.getObject());
+                }
             }
 
             @Override
@@ -120,5 +137,21 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
     protected void onChange(AjaxRequestTarget target){
 
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public IModel<String> getPlaceholder() {
+        return placeholder;
+    }
+
+    public void setPlaceholder(IModel<String> placeholder) {
+        this.placeholder = placeholder;
     }
 }

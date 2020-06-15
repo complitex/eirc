@@ -2,7 +2,7 @@ package ru.complitex.domain.component.form;
 
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.component.form.AbstractAutoComplete;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
@@ -24,14 +24,14 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
 
     private final EntityAttribute entityAttribute;
 
-    private final Domain<?> domain;
+    private final Filter<Domain<?>> filter;
 
     public DomainInput(String id, EntityAttribute entityAttribute, IModel<Long> model) {
         super(id, model);
 
         this.entityAttribute = entityAttribute;
 
-        domain = new Domain<>(entityAttribute.getEntityName());
+        filter = newFilter();
     }
 
     public DomainInput(String id, String entityName, int entityAttributeId, IModel<Long> model) {
@@ -39,7 +39,16 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
 
         entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);
 
-        domain = new Domain<>(entityAttribute.getEntityName());
+        filter = newFilter();
+    }
+
+    protected Filter<Domain<?>> newFilter(){
+        Filter<Domain<?>> filter = Filter.of(new Domain<>(entityAttribute.getEntityName()));
+
+        filter.setFilter("search");
+        filter.limit(10L);
+
+        return filter;
     }
 
     @Override
@@ -48,11 +57,17 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
                 entityAttribute.getEntityAttributeId());
     }
 
+    protected void onFilter(Filter<Domain<?>> filter){
+
+    }
+
     @Override
     protected Iterator<Domain<?>> getChoices(String input) {
-        domain.setText(entityAttribute.getEntityAttributeId(), input);
+        filter.getObject().setText(entityAttribute.getEntityAttributeId(), input);
 
-        return domainService.getDomains(FilterWrapper.of(domain).setFilter("search").limit(10L)).iterator();
+        onFilter(filter);
+
+        return domainService.getDomains(filter).iterator();
     }
 
     @Override

@@ -4,7 +4,7 @@ import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.District;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -42,7 +42,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
                 Long.valueOf(parentSync.getAdditionalParentId()))));
 
         if (cityTypeSyncs.isEmpty()){
@@ -54,7 +54,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(FilterWrapper.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync domainSync, Long organizationId){
@@ -95,7 +95,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
         district.setName(sync.getName());
         district.setAltName(sync.getAltName());
 
-        return domainService.getDomains(District.class, FilterWrapper.of(district).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(District.class, Filter.of(district).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

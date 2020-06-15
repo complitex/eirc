@@ -2,7 +2,7 @@ package ru.complitex.sync.handler;
 
 import ru.complitex.address.entity.CityType;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -69,7 +69,7 @@ public class CityTypeSyncHandler implements ISyncHandler<CityType> {
         cityType.setName(sync.getName());
         cityType.setAltName(sync.getAltName());
 
-        return domainService.getDomains(CityType.class, FilterWrapper.of(cityType).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(CityType.class, Filter.of(cityType).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

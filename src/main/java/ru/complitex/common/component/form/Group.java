@@ -20,6 +20,8 @@ import java.util.Objects;
 public class Group extends Border {
     private Label info;
 
+    private boolean required;
+
     public Group(String id, IModel<String> labelModel) {
         super(id);
 
@@ -84,7 +86,11 @@ public class Group extends Border {
 
     }
 
-    protected boolean isRequired(){
-        return false;
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
     }
 }

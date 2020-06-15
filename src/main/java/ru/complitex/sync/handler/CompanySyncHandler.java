@@ -1,7 +1,7 @@
 package ru.complitex.sync.handler;
 
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
@@ -91,7 +91,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
         company.setShortName(sync.getAdditionalName());
         company.setAltShortName(sync.getAltAdditionalName());
 
-        return domainService.getDomains(Company.class, FilterWrapper.of(company).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(Company.class, Filter.of(company).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

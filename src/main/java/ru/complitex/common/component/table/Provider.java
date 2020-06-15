@@ -4,7 +4,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilt
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
@@ -16,29 +16,29 @@ import java.util.List;
  * 28.11.2017 16:57
  */
 public abstract class Provider<T extends Serializable> extends SortableDataProvider<T, Sort>
-        implements IFilterStateLocator<FilterWrapper<T>> {
-    private FilterWrapper<T> filterWrapper;
+        implements IFilterStateLocator<Filter<T>> {
+    private Filter<T> filter;
 
-    public Provider(FilterWrapper<T> filterWrapper) {
-        this.filterWrapper = filterWrapper;
+    public Provider(Filter<T> filter) {
+        this.filter = filter;
     }
 
-    public FilterWrapper<T> getFilterWrapper() {
-        return filterWrapper;
+    public Filter<T> getFilter() {
+        return filter;
     }
 
-    public void setFilterWrapper(FilterWrapper<T> filterWrapper) {
-        this.filterWrapper = filterWrapper;
-    }
-
-    @Override
-    public FilterWrapper<T> getFilterState() {
-        return filterWrapper;
+    public void setFilter(Filter<T> filter) {
+        this.filter = filter;
     }
 
     @Override
-    public void setFilterState(FilterWrapper<T> filterState) {
-        this.filterWrapper = filterState;
+    public Filter<T> getFilterState() {
+        return filter;
+    }
+
+    @Override
+    public void setFilterState(Filter<T> filterState) {
+        this.filter = filterState;
     }
 
     @Override
@@ -48,11 +48,11 @@ public abstract class Provider<T extends Serializable> extends SortableDataProvi
 
     @Override
     public Iterator<? extends T> iterator(long first, long count) {
-        FilterWrapper<T> filterWrapper = getFilterState().limit(first, count);
+        Filter<T> filter = getFilterState().limit(first, count);
 
         if (getSort() != null){
-            filterWrapper.setSort(getSort().getProperty());
-            filterWrapper.setAscending(getSort().isAscending());
+            filter.setSort(getSort().getProperty());
+            filter.setAscending(getSort().isAscending());
         }
 
         return data().iterator();

@@ -197,43 +197,45 @@
             </if>
 
             and (
+                <choose>
+                    <when test="filter == 'search'"> false </when>
+                    <otherwise> true </otherwise>
+                </choose>
 
-            <choose>
-                <when test="filter == 'search'"> false </when>
-                <otherwise> true </otherwise>
-            </choose>
+                <foreach collection="object.attributes" index="i" item="a">
+                    <if test="a.text != null">
+                        <choose>
+                            <when test="filter == 'equal'">
+                                and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                            </when>
+                            <otherwise>
+                                <choose>
+                                    <when test="filter == 'search'"> or </when>
+                                    <otherwise> and </otherwise>
+                                </choose>
+
+                                (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
+                            </otherwise>
+                        </choose>
+                    </if>
+                </foreach>
+            )
 
             <foreach collection="object.attributes" index="i" item="a">
-                <if test="a.text != null">
+                <if test="a.number != null">
                     <choose>
-                        <when test="filter == 'equal'">
-                            and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                        <when test="a.number == -1">
+                            and a${i}.number is null
+                        </when>
+                        <when test="a.number == -2">
+                            and a${i}.number is not null
                         </when>
                         <otherwise>
-                            <choose>
-                                <when test="filter == 'search'"> or </when>
-                                <otherwise> and </otherwise>
-                            </choose>
-
-                            (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
+                            and (
+                                a${i}.number = #{a.number} or v${i}.number = #{a.number}
+                            )
                         </otherwise>
                     </choose>
-                </if>
-
-                <if test="a.number != null">
-                   <choose>
-                       <when test="a.number == -1">
-                           and a${i}.number is null
-                       </when>
-                       <when test="a.number == -2">
-                           and a${i}.number is not null
-                       </when>
-                       <otherwise>
-                           and (
-                               a${i}.number = #{a.number} or v${i}.number = #{a.number}
-                            )
-                       </otherwise>
-                   </choose>
                 </if>
 
                 <if test="a.date != null">
@@ -264,7 +266,6 @@
                     </foreach>
                 </if>
             </foreach>
-            )
 
             <if test="object.map.attributes != null">
                 <foreach collection="object.map.attributes" index="i" item="b">
@@ -381,7 +382,7 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomains" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="domainResultMapJoin">
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMapJoin">
         select '${object.entityName}' entity_name, d.*,
         <include refid="selectDomainsSelect"/>
         from (
@@ -412,7 +413,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
         select count(distinct dd.d_id)
         from (
           select d.id d_id

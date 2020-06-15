@@ -50,7 +50,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectHistoryAttributesFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="attributeResultMap">
+    <select id="selectHistoryAttributesFilter" parameterType="ru.complitex.common.entity.Filter" resultMap="attributeResultMap">
         select '${object.entityName}' entity_name, a.* from ${object.entityName}_attribute a
             left join ${object.entityName} d on a.domain_id = d.id
         where d.object_id = #{object.objectId}
@@ -62,7 +62,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectHistoryAttributesCountFilter" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+    <select id="selectHistoryAttributesCountFilter" parameterType="ru.complitex.common.entity.Filter" resultType="long">
         select count(a.id) from ${object.entityName}_attribute a
             left join ${object.entityName} d on a.domain_id = d.id
         where d.object_id = #{object.objectId}

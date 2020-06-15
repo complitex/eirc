@@ -16,7 +16,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.common.component.table.Provider;
@@ -55,7 +55,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private Entity entity;
 
-    private FilterWrapper<T> filterWrapper;
+    private Filter<T> filter;
 
     private WebMarkupContainer container;
 
@@ -85,21 +85,21 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         container.add(notification);
 
 
-        filterWrapper = newFilterWrapper();
+        filter = newFilter();
 
-        Provider<T> provider = new Provider<T>(filterWrapper) {
+        Provider<T> provider = new Provider<T>(filter) {
             @Override
             protected List<T> data() {
-                return getDomains(getFilterWrapper());
+                return getDomains(getFilter());
             }
 
             @Override
             public long size() {
-                return getDomainsCount(getFilterWrapper());
+                return getDomainsCount(getFilter());
             }
         };
 
-        TableForm<T> form = new TableForm<>("form", filterWrapper);
+        TableForm<T> form = new TableForm<>("form", filter);
         container.add(form);
 
 
@@ -175,8 +175,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return Model.of(getEntity().getValue().getText());
     }
 
-    protected FilterWrapper<T> newFilterWrapper() {
-        return FilterWrapper.of(Domains.newObject(domainClass));
+    protected Filter<T> newFilter() {
+        return Filter.of(Domains.newObject(domainClass));
     }
 
     protected DomainModal<T> newDomainModal(String componentId) {
@@ -234,12 +234,12 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         }
     }
 
-    protected List<T> getDomains(FilterWrapper<T> filterWrapper) {
-        return domainService.getDomains(domainClass, filterWrapper);
+    protected List<T> getDomains(Filter<T> filter) {
+        return domainService.getDomains(domainClass, filter);
     }
 
-    protected Long getDomainsCount(FilterWrapper<T> filterWrapper) {
-        return domainService.getDomainsCount(filterWrapper);
+    protected Long getDomainsCount(Filter<T> filter) {
+        return domainService.getDomainsCount(filter);
     }
 
     protected List<EntityAttribute> getListEntityAttributes(){
@@ -255,8 +255,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return list;
     }
 
-    public FilterWrapper<T> getFilterWrapper() {
-        return filterWrapper;
+    public Filter<T> getFilter() {
+        return filter;
     }
 
     public WebMarkupContainer getContainer() {

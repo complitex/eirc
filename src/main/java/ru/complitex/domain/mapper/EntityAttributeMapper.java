@@ -9,7 +9,7 @@ import ru.complitex.domain.entity.EntityAttribute;
  * 06.12.2017 18:09
  */
 public class EntityAttributeMapper extends BaseMapper {
-    public EntityAttribute getEntityAttribute(String entityName, Long entityAttributeId){
+    public EntityAttribute getEntityAttribute(String entityName, int entityAttributeId){
         return sqlSession().selectOne("selectEntityAttribute", Maps.of("entityName", entityName,
                 "entityAttributeId", entityAttributeId));
     }

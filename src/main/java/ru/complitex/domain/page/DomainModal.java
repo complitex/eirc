@@ -93,12 +93,8 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
                 Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
                 attribute.setEntityAttribute(entityAttribute);
 
-                Group group = new Group("group", Model.of(entityAttribute.getValue().getText())){
-                    @Override
-                    protected boolean isRequired() {
-                        return entityAttribute.isRequired();
-                    }
-                };
+                Group group = new Group("group", Model.of(entityAttribute.getValue().getText()));
+                group.setRequired(entityAttribute.isRequired());
 
                 FormComponent input1 = null;
                 FormComponent input2 = null;

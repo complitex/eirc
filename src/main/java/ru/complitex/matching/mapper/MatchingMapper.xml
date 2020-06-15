@@ -66,14 +66,14 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectMatchingList" parameterType="ru.complitex.common.entity.FilterWrapper" resultMap="matchingResultMap">
+    <select id="selectMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="matchingResultMap">
         select c.*, '${object.entityName}' entity_name from "${object.entityName}_matching" c
         <include refid="selectMatchingWhere"/>
         ${limit}
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.FilterWrapper" resultType="long">
+    <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
         select count(*) from "${object.entityName}_matching" c
         <include refid="selectMatchingWhere"/>
     </select>

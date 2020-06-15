@@ -3,7 +3,7 @@ package ru.complitex.sync.handler;
 
 import ru.complitex.address.entity.Country;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -66,7 +66,7 @@ public class CountrySyncHandler implements ISyncHandler<Country> {
         country.setName(sync.getName());
         country.setAltName(sync.getAltName());
 
-        return domainService.getDomains(Country.class, FilterWrapper.of(country).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(Country.class, Filter.of(country).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

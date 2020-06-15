@@ -1,7 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import org.mybatis.cdi.Transactional;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.domain.entity.Attribute;
 import ru.complitex.domain.entity.Domain;
@@ -167,12 +167,12 @@ public class DomainMapper extends BaseMapper {
         return sqlSession().selectOne("selectDomain", domain);
     }
 
-    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
-        return sqlSession().selectList("selectDomains", filterWrapper);
+    public List<Domain<?>> getDomains(Filter<? extends Domain<?>> filter){
+        return sqlSession().selectList("selectDomains", filter);
     }
 
-    public Long getDomainsCount(FilterWrapper<? extends Domain<?>> filterWrapper){
-        return sqlSession().selectOne("selectDomainsCount", filterWrapper);
+    public Long getDomainsCount(Filter<? extends Domain<?>> filter){
+        return sqlSession().selectOne("selectDomainsCount", filter);
     }
 
     public Long getDomainObjectId(Domain<?> domain){

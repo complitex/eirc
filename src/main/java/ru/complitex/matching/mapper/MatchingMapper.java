@@ -1,6 +1,6 @@
 package ru.complitex.matching.mapper;
 
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.matching.entity.Matching;
 
@@ -14,12 +14,12 @@ import java.util.List;
 @RequestScoped
 public class MatchingMapper extends BaseMapper {
 
-    public List<Matching> getMatchingList(FilterWrapper<Matching> filterWrapper){
-        return sqlSession().selectList("selectMatchingList", filterWrapper);
+    public List<Matching> getMatchingList(Filter<Matching> filter){
+        return sqlSession().selectList("selectMatchingList", filter);
     }
 
-    public Long getMatchingListCount(FilterWrapper<Matching> filterWrapper){
-        return sqlSession().selectOne("selectMatchingListCount", filterWrapper);
+    public Long getMatchingListCount(Filter<Matching> filter){
+        return sqlSession().selectOne("selectMatchingListCount", filter);
     }
 
     public List<Matching> getMatchingList(String entityName, Long companyId){
@@ -28,7 +28,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setEntityName(entityName);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(FilterWrapper.of(matching));
+        return getMatchingList(Filter.of(matching));
     }
 
     public List<Matching> getMatchingListByExternalId(String entityName, Long externalId, Long companyId){
@@ -38,7 +38,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setExternalId(externalId);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(FilterWrapper.of(matching));
+        return getMatchingList(Filter.of(matching));
     }
 
     public List<Matching> getMatchingListByObjectId(String entityName, Long objectId, Long companyId){
@@ -48,7 +48,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setObjectId(objectId);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(FilterWrapper.of(matching));
+        return getMatchingList(Filter.of(matching));
     }
 
     public Matching insert(Matching matching){

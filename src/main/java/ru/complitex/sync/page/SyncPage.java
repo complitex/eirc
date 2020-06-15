@@ -8,7 +8,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.TableForm;
@@ -47,17 +47,17 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         T domain = Domains.newObject(domainClass);
 
-        FilterWrapper<Sync> filterWrapper = FilterWrapper.of(new Sync(domain.getEntityId()));
+        Filter<Sync> filter = Filter.of(new Sync(domain.getEntityId()));
 
-        Provider<Sync> provider = new Provider<>(filterWrapper) {
+        Provider<Sync> provider = new Provider<>(filter) {
             @Override
             protected List<Sync> data() {
-                return syncMapper.getSyncs(filterWrapper);
+                return syncMapper.getSyncs(filter);
             }
 
             @Override
             public long size() {
-                return syncMapper.getSyncsCount(filterWrapper);
+                return syncMapper.getSyncsCount(filter);
             }
         };
 
@@ -80,7 +80,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
             }
         });
 
-        TableForm<Sync> form = new TableForm<>("form", filterWrapper);
+        TableForm<Sync> form = new TableForm<>("form", filter);
         container.add(form);
 
         Table<Sync> table = new Table<>("table", provider, columns, form, 10, "syncPage" + domain.getEntityName());

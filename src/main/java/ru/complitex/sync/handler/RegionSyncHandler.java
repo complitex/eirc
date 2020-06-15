@@ -3,7 +3,7 @@ package ru.complitex.sync.handler;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -46,7 +46,7 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(FilterWrapper.of(new Sync(Country.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(Country.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long organizationId){
@@ -87,7 +87,7 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
         region.setName(sync.getName());
         region.setAltName(sync.getAltName());
 
-        return domainService.getDomains(Region.class, FilterWrapper.of(region).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(Region.class, Filter.of(region).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

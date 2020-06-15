@@ -2,7 +2,7 @@ package ru.complitex.sync.handler;
 
 import ru.complitex.address.entity.StreetType;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -73,7 +73,7 @@ public class StreetTypeSyncHandler implements ISyncHandler<StreetType> {
         streetType.setShortName(sync.getAdditionalName());
         streetType.setAltShortName(sync.getAltAdditionalName());
 
-        return domainService.getDomains(StreetType.class, FilterWrapper.of(streetType).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(StreetType.class, Filter.of(streetType).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

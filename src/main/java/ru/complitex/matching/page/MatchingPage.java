@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.Provider;
@@ -53,17 +53,17 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         T domain = Domains.newObject(domainClass);
 
-        FilterWrapper<Matching> filterWrapper = FilterWrapper.of(new Matching(domain.getEntityName()));
+        Filter<Matching> filter = Filter.of(new Matching(domain.getEntityName()));
 
-        Provider<Matching> provider = new Provider<Matching>(filterWrapper) {
+        Provider<Matching> provider = new Provider<Matching>(filter) {
             @Override
             protected List<Matching> data() {
-                return matchingMapper.getMatchingList(filterWrapper);
+                return matchingMapper.getMatchingList(filter);
             }
 
             @Override
             public long size() {
-                return matchingMapper.getMatchingListCount(filterWrapper);
+                return matchingMapper.getMatchingListCount(filter);
             }
         };
 
@@ -105,7 +105,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             }
         });
 
-        TableForm<Matching> form = new TableForm<>("form", filterWrapper);
+        TableForm<Matching> form = new TableForm<>("form", filter);
         container.add(form);
 
         Table<Matching> table = new Table<>("table", provider, columns, form, 10, MatchingPage.class.getName());

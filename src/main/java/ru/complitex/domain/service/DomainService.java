@@ -1,6 +1,6 @@
 package ru.complitex.domain.service;
 
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.mapper.AttributeMapper;
@@ -67,18 +67,18 @@ public class DomainService implements Serializable {
         domainMapper.update(domain);
     }
 
-    public List<Domain<?>> getDomains(FilterWrapper<? extends Domain<?>> filterWrapper){
-        return domainMapper.getDomains(filterWrapper);
+    public List<Domain<?>> getDomains(Filter<? extends Domain<?>> filter){
+        return domainMapper.getDomains(filter);
     }
 
-    public <T extends Domain<T>> List<T> getDomains(Class<T> domainClass, FilterWrapper<T> filterWrapper){
-        return domainMapper.getDomains(filterWrapper).stream()
+    public <T extends Domain<T>> List<T> getDomains(Class<T> domainClass, Filter<T> filter){
+        return domainMapper.getDomains(filter).stream()
                 .map(d -> Domains.newObject(domainClass, d))
                 .collect(Collectors.toList());
     }
 
-    public <T extends Domain<T>> Long getDomainsCount(FilterWrapper<T> filterWrapper){
-        return domainMapper.getDomainsCount(filterWrapper);
+    public <T extends Domain<T>> Long getDomainsCount(Filter<T> filter){
+        return domainMapper.getDomainsCount(filter);
     }
 
     public Domain<?> getDomain(String entityName, Long objectId){
@@ -97,19 +97,19 @@ public class DomainService implements Serializable {
         return domainMapper.getDomain(getEntityName(referenceId), objectId);
     }
 
-    public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
+    public Long getNumber(String entityName, Long objectId, int entityAttributeId){
         return attributeMapper.getNumber(entityName, objectId, entityAttributeId);
     }
 
-    public List<Long> getNumberValues(String entityName, Long objectId, Long entityAttributeId){
+    public List<Long> getNumberValues(String entityName, Long objectId, int entityAttributeId){
         return attributeMapper.getNumberValues(entityName, objectId, entityAttributeId);
     }
 
-    public String getText(String entityName, Long objectId, Long entityAttributeId){
+    public String getText(String entityName, Long objectId, int entityAttributeId){
         return attributeMapper.getText(entityName, objectId, entityAttributeId);
     }
 
-    public String getTextOrEmpty(String entityName, Long objectId, Long entityAttributeId){
+    public String getTextOrEmpty(String entityName, Long objectId, int entityAttributeId){
         String s =  attributeMapper.getText(entityName, objectId, entityAttributeId);
 
         return s != null ? s : "";

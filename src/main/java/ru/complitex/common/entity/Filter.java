@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Anatoly A. Ivanov
  * 29.11.2017 16:46
  */
-public class FilterWrapper<T extends Serializable> implements Serializable {
+public class Filter<T extends Serializable> implements Serializable {
     public static final String FILTER_EQUAL = "equal";
     public static final String FILTER_SEARCH = "search";
 
@@ -29,66 +29,66 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
 
     private List<Long> entityAttributeIds = new ArrayList<>();
 
-    public FilterWrapper() {
+    public Filter() {
     }
 
-    public FilterWrapper(T object) {
+    public Filter(T object) {
         this.object = object;
     }
 
-    public FilterWrapper(T object, Long first, Long count) {
+    public Filter(T object, Long first, Long count) {
         this.object = object;
         this.first = first;
         this.count = count;
     }
 
-    public FilterWrapper(Long first, Long count) {
+    public Filter(Long first, Long count) {
         this.first = first;
         this.count = count;
     }
 
-    public static <T extends Serializable> FilterWrapper<T> of(T object){
-        return new FilterWrapper<>(object);
+    public static <T extends Serializable> Filter<T> of(T object){
+        return new Filter<>(object);
     }
 
-    public static <T extends Serializable> FilterWrapper<T> of(T object, long first, long count){
-        return new FilterWrapper<>(object, first, count);
+    public static <T extends Serializable> Filter<T> of(T object, long first, long count){
+        return new Filter<>(object, first, count);
     }
 
-    public FilterWrapper<T> put(String key, Object value){
+    public Filter<T> put(String key, Object value){
         map.put(key, value);
 
         return this;
     }
 
-    public FilterWrapper<T> limit(Long first, Long count){
+    public Filter<T> limit(Long first, Long count){
         this.first = first;
         this.count = count;
 
         return this;
     }
 
-    public FilterWrapper<T> limit(Long count){
+    public Filter<T> limit(Long count){
         this.first = 0L;
         this.count = count;
 
         return this;
     }
 
-    public FilterWrapper<T> sort(String key, Object value){
+    public Filter<T> sort(String key, Object value){
         this.sort = new Sort(key, value);
 
         return this;
     }
 
-    public FilterWrapper<T> sort(String key, Object value, boolean ascending){
+    public Filter<T> sort(String key, Object value, boolean ascending){
         this.sort = new Sort(key, value);
         this.ascending = ascending;
 
         return this;
     }
 
-    public FilterWrapper<T> sort(String key, boolean ascending){
+    public Filter<T> sort(String key, boolean ascending){
         this.sort = new Sort(key);
         this.ascending = ascending;
 
@@ -159,7 +159,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return filter;
     }
 
-    public FilterWrapper<T> setFilter(String filter) {
+    public Filter<T> setFilter(String filter) {
         this.filter = filter;
 
         return this;
@@ -169,7 +169,7 @@ public class FilterWrapper<T extends Serializable> implements Serializable {
         return status;
     }
 
-    public FilterWrapper<T> setStatus(String status) {
+    public Filter<T> setStatus(String status) {
         this.status = status;
 
         return this;

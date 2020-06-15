@@ -5,7 +5,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.entity.Street;
 import ru.complitex.address.entity.StreetType;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.eirc.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
@@ -44,7 +44,7 @@ public class StreetSyncHandler implements ISyncHandler<Street> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
                 Long.valueOf(parentSync.getAdditionalParentId()))));
 
         if (cityTypeSyncs.isEmpty()){
@@ -56,7 +56,7 @@ public class StreetSyncHandler implements ISyncHandler<Street> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(FilterWrapper.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long organizationId){
@@ -112,7 +112,7 @@ public class StreetSyncHandler implements ISyncHandler<Street> {
         street.setName(sync.getName());
         street.setAltName(sync.getAltName());
 
-        return domainService.getDomains(Street.class, FilterWrapper.of(street).setFilter(FilterWrapper.FILTER_EQUAL));
+        return domainService.getDomains(Street.class, Filter.of(street).setFilter(Filter.FILTER_EQUAL));
     }
 
     @Override

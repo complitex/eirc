@@ -26,7 +26,7 @@ public class TextFieldGroup<T extends Serializable> extends FormComponentPanel<T
 
         Group group = new Group("group", label){
             @Override
-            protected boolean isRequired() {
+            public boolean isRequired() {
                 return TextFieldGroup.this.isRequired();
             }
         };
@@ -42,7 +42,7 @@ public class TextFieldGroup<T extends Serializable> extends FormComponentPanel<T
             protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
 
-                tag.put("autocomplete", "off");
+                tag.put("autocomplete", "chrome-off");
 
                 onTextFieldTag(tag);
             }

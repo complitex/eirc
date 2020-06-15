@@ -1,7 +1,7 @@
 package ru.complitex.domain.mapper;
 
 import org.mybatis.cdi.Transactional;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.common.util.Maps;
 import ru.complitex.domain.entity.Attribute;
@@ -60,30 +60,30 @@ public class AttributeMapper extends BaseMapper {
                 "objectId", objectId));
     }
 
-    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, Long entityAttributeId){
+    public List<Attribute> getHistoryAttributes(String entityName, Long objectId, int entityAttributeId){
         return sqlSession().selectList("selectHistoryAttributes", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
-    public List<Attribute> getHistoryAttributes(FilterWrapper<Attribute> filterWrapper){
-        return sqlSession().selectList("selectHistoryAttributesFilter", filterWrapper);
+    public List<Attribute> getHistoryAttributes(Filter<Attribute> filter){
+        return sqlSession().selectList("selectHistoryAttributesFilter", filter);
     }
 
-    public Long getHistoryAttributesCount(FilterWrapper<Attribute> filterWrapper){
-        return sqlSession().selectOne("selectHistoryAttributesCountFilter", filterWrapper);
+    public Long getHistoryAttributesCount(Filter<Attribute> filter){
+        return sqlSession().selectOne("selectHistoryAttributesCountFilter", filter);
     }
 
-    public Long getNumber(String entityName, Long objectId, Long entityAttributeId){
+    public Long getNumber(String entityName, Long objectId, int entityAttributeId){
         return sqlSession().selectOne("selectAttributeNumber", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
-    public List<Long> getNumberValues(String entityName, Long objectId, Long entityAttributeId){
+    public List<Long> getNumberValues(String entityName, Long objectId, int entityAttributeId){
         return sqlSession().selectList("selectAttributeNumberValues", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
 
-    public String getText(String entityName, Long objectId, Long entityAttributeId){
+    public String getText(String entityName, Long objectId, int entityAttributeId){
         return sqlSession().selectOne("selectAttributeText", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }

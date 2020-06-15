@@ -114,7 +114,10 @@ public class MatchingModal extends Modal<Matching> {
     }
 
     private void clear(){
-        container.visitChildren(FormComponent.class, (c, v) -> ((FormComponent<?>) c).clearInput());
+        container.visitChildren(FormComponent.class, (c, v) -> {
+            ((FormComponent<?>) c).clearInput();
+            ((FormComponent<?>) c).setModelObject(null);
+        });
     }
 
 

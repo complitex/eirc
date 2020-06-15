@@ -1,6 +1,6 @@
 package ru.complitex.sync.mapper;
 
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.sync.entity.Sync;
 
@@ -25,16 +25,16 @@ public class SyncMapper extends BaseMapper {
         return sqlSession().selectOne("selectSync", id);
     }
 
-    public List<Sync> getSyncs(FilterWrapper<Sync> filterWrapper){
-        return sqlSession().selectList("selectSyncs", filterWrapper);
+    public List<Sync> getSyncs(Filter<Sync> filter){
+        return sqlSession().selectList("selectSyncs", filter);
     }
 
-    public Long getSyncsCount(FilterWrapper<Sync> filterWrapper){
-        return sqlSession().selectOne("selectSyncsCount", filterWrapper);
+    public Long getSyncsCount(Filter<Sync> filter){
+        return sqlSession().selectOne("selectSyncsCount", filter);
     }
 
     public boolean isExist(Sync domainSync){
-        return getSyncsCount(FilterWrapper.of(domainSync)) > 0;
+        return getSyncsCount(Filter.of(domainSync)) > 0;
     }
 
     public void delete(Long id){

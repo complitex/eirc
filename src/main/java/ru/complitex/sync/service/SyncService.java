@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.address.entity.*;
 import ru.complitex.common.entity.Cursor;
-import ru.complitex.common.entity.FilterWrapper;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.service.BroadcastService;
 import ru.complitex.common.util.Dates;
 import ru.complitex.common.util.Exceptions;
@@ -186,7 +186,7 @@ public class SyncService {
     }
 
     private List<Sync> getSyncs(int entityId, int syncStatusId, Long externalId) {
-        List<Sync> syncs = syncMapper.getSyncs(FilterWrapper.of(new Sync(entityId, syncStatusId, externalId)));
+        List<Sync> syncs = syncMapper.getSyncs(Filter.of(new Sync(entityId, syncStatusId, externalId)));
 
         if (entityId == Company.ENTITY_ID) {
             Map<Long, Sync> map = syncs.stream().collect(Collectors.toMap(Sync::getExternalId, s -> s));
