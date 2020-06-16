@@ -32,6 +32,13 @@ public class DomainGroup extends Panel {
             protected void onChange(AjaxRequestTarget target) {
                 DomainGroup.this.onChange(target);
             }
+
+            @Override
+            protected String getTextValue(Domain<?> object) {
+                return DomainGroup.this.getTextValue(object, super.getTextValue(object));
+            }
+
+
         });
     }
 
@@ -41,5 +48,9 @@ public class DomainGroup extends Panel {
 
     protected void onChange(AjaxRequestTarget target){
 
+    }
+
+    protected String getTextValue(Domain<?> object, String textValue){
+        return textValue;
     }
 }

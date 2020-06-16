@@ -51,14 +51,14 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
         return filter;
     }
 
+    protected void onFilter(Filter<Domain<?>> filter){
+
+    }
+
     @Override
     protected String getTextValue(Domain<?> object) {
         return domainService.getTextValue(entityAttribute.getEntityName(), object.getObjectId(),
                 entityAttribute.getEntityAttributeId());
-    }
-
-    protected void onFilter(Filter<Domain<?>> filter){
-
     }
 
     @Override
@@ -72,7 +72,7 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
 
     @Override
     protected Long getId(Domain<?> object) {
-        return object.getObjectId();
+        return object != null ? object.getObjectId() : null;
     }
 
     @Override

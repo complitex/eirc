@@ -20,10 +20,13 @@ public class RegionGroup extends Panel {
     @Inject
     private DomainService domainService;
 
-    private final DomainGroup country, region;
+    private final DomainGroup country;
+    private final DomainGroup region;
 
     public RegionGroup(String id, IModel<Long> regionModel, boolean required) {
         super(id);
+
+        setOutputMarkupId(true);
 
         IModel<Long> countryModel = new IModel<>(){
             private Long countryId;
@@ -43,12 +46,14 @@ public class RegionGroup extends Panel {
             }
         };
 
-        country = new DomainGroup("country", Country.ENTITY_NAME, Country.NAME, countryModel, required){
+        country = new DomainGroup("country", Country.ENTITY_NAME, Country.NAME, countryModel, false){
             @Override
             protected void onChange(AjaxRequestTarget target) {
                 regionModel.setObject(null);
 
                 target.add(region);
+
+                RegionGroup.this.onChange(target);
             }
         };
         add(country);
@@ -64,8 +69,14 @@ public class RegionGroup extends Panel {
                 countryModel.setObject(null);
 
                 target.add(country);
+
+                RegionGroup.this.onChange(target);
             }
         };
         add(region);
+    }
+
+    protected void onChange(AjaxRequestTarget target){
+
     }
 }

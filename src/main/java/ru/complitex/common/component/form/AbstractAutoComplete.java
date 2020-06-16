@@ -119,6 +119,10 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         add(nameField);
     }
 
+    protected void onChange(AjaxRequestTarget target){
+
+    }
+
     protected HiddenField<Long> getIdField() {
         return idField;
     }
@@ -134,10 +138,6 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
     protected abstract Long getId(T object);
 
     protected abstract T getObject(Long id);
-
-    protected void onChange(AjaxRequestTarget target){
-
-    }
 
     public boolean isRequired() {
         return required;
