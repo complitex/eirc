@@ -33,7 +33,7 @@ public class DistrictGroup extends Panel {
                 districtModel.getObject(), District.CITY));
 
         city = new CityGroup("city", cityModel, false){
-            @Override
+
             protected void onChange(AjaxRequestTarget target) {
                 districtModel.setObject(null);
 

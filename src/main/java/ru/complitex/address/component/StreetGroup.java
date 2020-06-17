@@ -36,7 +36,7 @@ public class StreetGroup extends Panel {
                 streetModel.getObject(), Street.CITY));
 
         city = new CityGroup("city", cityModel, false){
-            @Override
+
             protected void onChange(AjaxRequestTarget target) {
                 streetModel.setObject(null);
 
