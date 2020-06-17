@@ -222,6 +222,10 @@ public class Domain<T> implements Serializable{
         return getAttribute(entityAttributeId).getValues().stream().anyMatch(v -> v.getText().equals(value));
     }
 
+    public boolean hasValueText(int entityAttributeId){
+        return getTextValue(entityAttributeId) != null;
+    }
+
     public Map<String, String> getStringMap(int entityAttributeId){
         if (getAttribute(entityAttributeId) == null || getAttribute(entityAttributeId).getValues().isEmpty()){
             return null;

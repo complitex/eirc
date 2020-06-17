@@ -98,6 +98,10 @@ public class DomainService implements Serializable {
     }
 
     public Long getNumber(String entityName, Long objectId, int entityAttributeId){
+        if (objectId == null){
+            return null;
+        }
+
         return attributeMapper.getNumber(entityName, objectId, entityAttributeId);
     }
 

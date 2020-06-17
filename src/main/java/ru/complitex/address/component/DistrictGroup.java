@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.District;
 import ru.complitex.common.entity.Filter;
+import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
@@ -28,23 +29,8 @@ public class DistrictGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        IModel<Long> cityModel = new IModel<Long>() {
-            private Long cityId;
-
-            @Override
-            public Long getObject() {
-                if (cityId == null && districtModel.getObject() != null){
-                    cityId = domainService.getNumber(District.ENTITY_NAME, districtModel.getObject(), District.CITY);
-                }
-
-                return cityId;
-            }
-
-            @Override
-            public void setObject(Long object) {
-                cityId = object;
-            }
-        };
+        IModel<Long> cityModel = LoadableModel.of(() -> domainService.getNumber(District.ENTITY_NAME,
+                districtModel.getObject(), District.CITY));
 
         city = new CityGroup("city", cityModel, false){
             @Override

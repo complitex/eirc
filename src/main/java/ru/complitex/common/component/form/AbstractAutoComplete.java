@@ -15,6 +15,7 @@ import org.apache.wicket.util.convert.IConverter;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.UUID;
 
 /**
  * @author Anatoly Ivanov
@@ -41,8 +42,8 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
             }
         };
 
-        idField.setConvertEmptyInputStringToNull(true);
         idField.setOutputMarkupId(true);
+        idField.setConvertEmptyInputStringToNull(true);
 
         idField.add(OnChangeAjaxBehavior.onChange(this::onChange));
 
@@ -57,7 +58,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
                     @Override
                     public void setObject(T object) {
-                        model.setObject(getId(object));
+
                     }
                 }, null,
                 new AbstractAutoCompleteTextRenderer<>() {
@@ -74,16 +75,18 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
                                 " $('#" + idField.getMarkupId() + "').change();" +
                                 " input";
                     }
-                }, new AutoCompleteSettings()
-                .setAdjustInputWidth(true)
-                .setShowListOnFocusGain(true)
-                .setPreselect(true)
+                }, new AutoCompleteSettings().setPreselect(true).setAdjustInputWidth(true)
         ) {
+            private final String inputName = UUID.randomUUID().toString();
+
+            @Override
+            public String getInputName() {
+                return inputName;
+            }
+
             @Override
             protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
-
-                tag.put("autocomplete", "chrome-off");
 
                 IModel<String> placeholder = AbstractAutoComplete.this.getPlaceholder();
 
@@ -103,7 +106,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
                 return (IConverter<C>) new IConverter<T>() {
                     @Override
                     public T convertToObject(String value, Locale locale) throws ConversionException {
-                        return getObject(idField.getConvertedInput());
+                        return null;
                     }
 
                     @Override
@@ -115,6 +118,14 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         };
 
         nameField.setType(Object.class);
+
+        nameField.add(OnChangeAjaxBehavior.onChange(target -> {
+            if (nameField.getInput().isEmpty()){
+                model.setObject(null);
+
+                target.add(idField);
+            }
+        }));
 
         add(nameField);
     }

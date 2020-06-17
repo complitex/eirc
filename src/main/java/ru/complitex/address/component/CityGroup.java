@@ -7,6 +7,7 @@ import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
 import ru.complitex.common.entity.Filter;
+import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
@@ -29,23 +30,8 @@ public class CityGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        IModel<Long> regionModel = new IModel<Long>() {
-            private Long regionId;
-
-            @Override
-            public Long getObject() {
-                if (regionId == null && cityModel.getObject() != null){
-                    regionId = domainService.getNumber(City.ENTITY_NAME, cityModel.getObject(), City.REGION);
-                }
-
-                return regionId;
-            }
-
-            @Override
-            public void setObject(Long object) {
-                regionId = object;
-            }
-        };
+        IModel<Long> regionModel = LoadableModel.of(() -> domainService.getNumber(City.ENTITY_NAME,
+                cityModel.getObject(), City.REGION));
 
         region = new RegionGroup("region", regionModel, false){
             @Override
@@ -81,8 +67,8 @@ public class CityGroup extends Panel {
 
             @Override
             protected String getTextValue(Domain<?> object, String textValue) {
-                return domainService.getTextValue(CityType.ENTITY_NAME, object.getNumber(City.CITY_TYPE), CityType.SHORT_NAME) +
-                         " " + textValue;
+                return domainService.getTextValue(CityType.ENTITY_NAME, object.getNumber(City.CITY_TYPE),
+                        CityType.SHORT_NAME) + " " + textValue;
             }
         };
         add(city);

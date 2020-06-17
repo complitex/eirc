@@ -6,6 +6,7 @@ import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.Filter;
+import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
@@ -28,23 +29,8 @@ public class RegionGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        IModel<Long> countryModel = new IModel<>(){
-            private Long countryId;
-
-            @Override
-            public Long getObject() {
-                if (countryId == null && regionModel.getObject() != null){
-                    countryId = domainService.getNumber(Region.ENTITY_NAME, regionModel.getObject(), Region.COUNTRY);
-                }
-
-                return countryId;
-            }
-
-            @Override
-            public void setObject(Long object) {
-                countryId = object;
-            }
-        };
+        IModel<Long> countryModel = LoadableModel.of(() -> domainService.getNumber(Region.ENTITY_NAME,
+                regionModel.getObject(), Region.COUNTRY));
 
         country = new DomainGroup("country", Country.ENTITY_NAME, Country.NAME, countryModel, false){
             @Override

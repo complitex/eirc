@@ -5,7 +5,9 @@ import org.apache.wicket.markup.html.panel.IMarkupSourcingStrategy;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Street;
+import ru.complitex.address.entity.StreetType;
 import ru.complitex.common.entity.Filter;
+import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
@@ -20,6 +22,8 @@ public class StreetGroup extends Panel {
     @Inject
     private DomainService domainService;
 
+    private final IModel<Long> cityModel;
+
     private final CityGroup city;
     private final DomainGroup street;
 
@@ -28,23 +32,8 @@ public class StreetGroup extends Panel {
 
         setOutputMarkupId(true);
 
-        IModel<Long> cityModel = new IModel<Long>() {
-            private Long cityId;
-
-            @Override
-            public Long getObject() {
-                if (cityId == null && streetModel.getObject() != null){
-                    cityId = domainService.getNumber(Street.ENTITY_NAME, streetModel.getObject(), Street.CITY);
-                }
-
-                return cityId;
-            }
-
-            @Override
-            public void setObject(Long object) {
-                cityId = object;
-            }
-        };
+        cityModel = LoadableModel.of(() -> domainService.getNumber(Street.ENTITY_NAME,
+                streetModel.getObject(), Street.CITY));
 
         city = new CityGroup("city", cityModel, false){
             @Override
@@ -77,11 +66,25 @@ public class StreetGroup extends Panel {
 
                 StreetGroup.this.onChange(target);
             }
+
+            @Override
+            protected String getTextValue(Domain<?> object, String textValue) {
+                return domainService.getTextValue(StreetType.ENTITY_NAME, object.getNumber(Street.STREET_TYPE),
+                        StreetType.SHORT_NAME) + " " + textValue;
+            }
         };
         city.add(street);
     }
 
     protected void onChange(AjaxRequestTarget target){
 
+    }
+
+    public IModel<Long> getCityModel() {
+        return cityModel;
+    }
+
+    public CityGroup getCity() {
+        return city;
     }
 }
