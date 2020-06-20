@@ -32,6 +32,7 @@ $GLASSFISH_ASADMIN create-jdbc-connection-pool \
   --driverclassname oracle.jdbc.OracleDriver \
   --restype java.sql.Driver --property url=jdbc\:oracle\:thin\:@10.50.4.15\:1521\:cnreal:user=export:password=export:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true:connectionCollation=utf8_unicode_ci:autoReconnect=true eircRemotePool
 
+
 echo
 echo Create a JDBC resource with the specified JNDI name
 $GLASSFISH_ASADMIN create-jdbc-resource --connectionpoolid eircRemotePool jdbc/eircRemoteResource
