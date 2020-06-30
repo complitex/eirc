@@ -19,6 +19,6 @@ public class RegionMatchingPage extends MatchingPage<Region> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new RegionGroup(componentId, PropertyModel.of(model, "objectId"), true);
+        return new RegionGroup(componentId, PropertyModel.of(model, "objectId")).setRegionRequired(true);
     }
 }

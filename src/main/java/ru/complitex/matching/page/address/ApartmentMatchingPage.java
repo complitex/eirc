@@ -19,6 +19,6 @@ public class ApartmentMatchingPage extends MatchingPage<Apartment> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new ApartmentGroup(componentId, PropertyModel.of(model, "objectId"), true);
+        return new ApartmentGroup(componentId, PropertyModel.of(model, "objectId")).setApartmentRequired(true);
     }
 }

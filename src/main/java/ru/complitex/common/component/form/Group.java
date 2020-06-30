@@ -2,23 +2,23 @@ package ru.complitex.common.component.form;
 
 import de.agilecoders.wicket.jquery.JQuery;
 import de.agilecoders.wicket.jquery.function.Function;
+import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
 
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Anatoly A. Ivanov
  * 23.02.2019 22:34
  */
-public class Group extends Border {
-    private Label info;
+public class Group extends Panel {
+    private final Label info;
 
     private boolean required;
 
@@ -27,12 +27,12 @@ public class Group extends Border {
 
         setOutputMarkupId(true);
 
-        addToBorder(new Label("label", labelModel){
+        add(new Label("label", labelModel){
             @Override
             protected void onComponentTag(ComponentTag tag) {
-                if (isRequired()){
-                    super.onComponentTag(tag);
+                super.onComponentTag(tag);
 
+                if (isRequired()){
                     tag.put("required", "required");
                 }
             }
@@ -41,11 +41,27 @@ public class Group extends Border {
         info = new Label("info", new Model<>());
         info.setOutputMarkupId(true);
 
-        addToBorder(info);
+        add(info);
     }
 
-    public Group(String id) {
-        this(id, new ResourceModel(id));
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+
+        streamChildren()
+                .filter(c -> c instanceof FormComponent)
+                .forEach(c -> {
+                   c.add(new ClassAttributeModifier() {
+                       @Override
+                       protected Set<String> update(Set<String> oldClasses) {
+                           if (info.getDefaultModelObject() != null){
+                               oldClasses.add("is-invalid");
+                           }
+
+                           return oldClasses;
+                       }
+                   });
+                });
     }
 
     @Override
@@ -54,30 +70,22 @@ public class Group extends Border {
 
         info.setDefaultModelObject(null);
 
-        getBodyContainer().streamChildren()
+        streamChildren()
                 .filter(c -> c instanceof FormComponent)
-                .map(c -> c.getFeedbackMessages().first(FeedbackMessage.ERROR))
-                .filter(Objects::nonNull)
-                .findAny()
-                .ifPresent(m -> {
-                    info.setDefaultModelObject(m.getMessage());
-                    m.markRendered();
+                .forEach(c -> {
+                    FeedbackMessage message = c.getFeedbackMessages().first(FeedbackMessage.ERROR);
+
+                    if (message != null){
+                        info.setDefaultModelObject(message.getMessage());
+                        message.markRendered();
+                    }
                 });
-    }
-
-    @Override
-    protected void onComponentTag(ComponentTag tag) {
-        super.onComponentTag(tag);
-
-        if (info.getDefaultModelObject() != null) {
-            tag.put("class", "has-error");
-        }
     }
 
     public String getRemoveErrorJs(){
         return JQuery.$(this)
-                .closest(".has-error")
-                .chain(new Function("removeClass", "has-error"))
+                .closest(".is-invalid")
+                .chain(new Function("removeClass", "is-invalid"))
                 .build() + "; " +
 
                 JQuery.$(info)
@@ -90,7 +98,9 @@ public class Group extends Border {
         return required;
     }
 
-    public void setRequired(boolean required) {
+    public Group setRequired(boolean required) {
         this.required = required;
+
+        return this;
     }
 }

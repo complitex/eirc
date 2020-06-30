@@ -1,4 +1,4 @@
-package ru.complitex.address.component.model;
+package ru.complitex.address.model;
 
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.model.IModel;

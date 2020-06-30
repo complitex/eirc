@@ -5,29 +5,27 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.common.component.form.Group;
-import ru.complitex.domain.component.form.DomainInput;
-import ru.complitex.domain.entity.*;
-import ru.complitex.domain.model.DecimalAttributeModel;
-import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.common.component.form.DateGroup;
+import ru.complitex.common.component.form.TextGroup;
+import ru.complitex.common.component.form.TextValueGroup;
+import ru.complitex.domain.component.form.DomainGroup;
+import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
+import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.entity.ValueType;
+import ru.complitex.domain.model.*;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
@@ -67,6 +65,7 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
 
         setBackdrop(Backdrop.FALSE);
         setCloseOnEscapeKey(false);
+        size(Size.Large);
 
         entity = entityService.getEntity(domainClass);
 
@@ -83,81 +82,10 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
                 .setOutputMarkupId(true);
         container.add(notification);
 
-        listView = new ListView<>("attributes",
-                entityAttributes != null ? entityAttributes : entity.getAttributes()) {
+        listView = new ListView<>("attributes", entityAttributes) {
             @Override
             protected void populateItem(ListItem<EntityAttribute> item) {
-                EntityAttribute entityAttribute = item.getModelObject();
-                T domain = DomainModal.this.getModelObject();
-
-                Attribute attribute = domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId());
-                attribute.setEntityAttribute(entityAttribute);
-
-                Group group = new Group("group", Model.of(entityAttribute.getValue().getText()));
-                group.setRequired(entityAttribute.isRequired());
-
-                FormComponent input1 = null;
-                FormComponent input2 = null;
-
-                Component component = newComponent("component", domain, entityAttribute);
-
-                if (component == null) {
-                    switch (entityAttribute.getValueTypeId()){
-                        case ValueType.DECIMAL:
-                            input1 = new TextField<>("input1", DecimalAttributeModel.of(attribute), BigDecimal.class);
-
-                            break;
-                        case ValueType.TEXT:
-                        case ValueType.REFERENCE_LIST:
-                            input1 = new TextField<>("input1", new TextAttributeModel(attribute, entityAttribute.getStringType()));
-                            break;
-                        case ValueType.DATE:
-                            input1 = new DateTextField("input1",
-                                    new PropertyModel<>(attribute, "date"),
-                                    new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
-                            break;
-                        case ValueType.REFERENCE:
-                            EntityAttribute referenceEntityAttribute = entityService.getReferenceEntityAttribute(entityAttribute);
-
-                            component = new DomainInput("component", referenceEntityAttribute,
-                                    new PropertyModel<>(attribute, "number"));
-                            break;
-                        case ValueType.BOOLEAN:
-                        case ValueType.NUMBER:
-                            input1 = new TextField<>("input1", new PropertyModel<>(attribute, "number"));
-                            break;
-                        case ValueType.TEXT_LIST:
-                            input1 = new TextField<>("input1", new TextAttributeModel(attribute.getOrCreateValue(
-                                    Locales.getLocaleId(Locales.RU)), entityAttribute.getStringType()));
-                            input1.add(new AttributeModifier("placeholder", getString("RU")));
-
-                            input2 = new TextField<>("input2", new TextAttributeModel(attribute.getOrCreateValue(
-                                    Locales.getLocaleId(Locales.UA)), entityAttribute.getStringType()));
-                            input2.add(new AttributeModifier("placeholder", getString("UA")));
-
-                            break;
-                    }
-                }
-
-                IModel<String> labelModel = Model.of(entityAttribute.getValue().getText());
-
-                if (input1 != null){
-                    input1.setLabel(labelModel);
-                    input1.setRequired(entityAttribute.isRequired());
-                }
-                if (input2 != null){
-                    input2.setLabel(labelModel);
-                }
-                if (component instanceof FormComponent){
-                    ((FormComponent)component).setLabel(labelModel);
-                    ((FormComponent) component).setRequired(entityAttribute.isRequired());
-                }
-
-                group.add(input1 != null ? input1 : new EmptyPanel("input1").setVisible(false));
-                group.add(input2 != null ? input2 : new EmptyPanel("input2").setVisible(false));
-                group.add(component != null ? component : new EmptyPanel("component").setVisible(false));
-
-                item.add(group);
+                item.add(newGroup("group",  item.getModelObject()));
             }
         };
         listView.setReuseItems(true);
@@ -183,8 +111,45 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
         }.setLabel(new ResourceModel("cancel")));
     }
 
-    protected Component newComponent(String componentId, T domain, EntityAttribute entityAttribute){
-        return null;
+    protected Component newGroup(String groupId, EntityAttribute entityAttribute){
+        IModel<String> labelModel = Model.of(entityAttribute.getValue().getText());
+
+        int entityAttributeId = entityAttribute.getEntityAttributeId();
+        boolean required  = entityAttribute.isRequired();
+
+        switch (entityAttribute.getValueTypeId()){
+            case ValueType.NUMBER:
+                return new TextGroup<>(groupId, labelModel, NumberModel.of(getModel(), entityAttributeId), Long.class)
+                        .setRequired(required);
+
+            case ValueType.DECIMAL:
+                return new TextGroup<>(groupId, labelModel, DecimalModel.of(getModel(), entityAttributeId), BigDecimal.class)
+                        .setRequired(required);
+
+            case ValueType.TEXT:
+                return new TextGroup<>(groupId, labelModel, TextModel.of(getModel(), entityAttributeId))
+                        .setRequired(required);
+
+            case ValueType.DATE:
+                return new DateGroup(groupId, labelModel, DateModel.of(getModel(), entityAttributeId))
+                        .setRequired(required);
+
+            case ValueType.REFERENCE:
+                EntityAttribute reference = entityService.getReferenceEntityAttribute(entityAttribute);
+
+                return new DomainGroup(groupId, labelModel, reference.getEntityName(), reference.getEntityAttributeId(),
+                        NumberModel.of(getModel(), entityAttributeId))
+                        .setRequired(true);
+
+            case ValueType.TEXT_VALUE:
+                return new TextValueGroup<>(groupId, labelModel,
+                        TextValueModel.of(getModel(), entityAttributeId, Locales.RU_ID),
+                        TextValueModel.of(getModel(), entityAttributeId, Locales.UA_ID))
+                        .setRequired(required);
+
+            default:
+                throw new RuntimeException(entityAttribute.toString());
+        }
     }
 
     public void edit(T domain, AjaxRequestTarget target){

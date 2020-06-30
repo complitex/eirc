@@ -1,12 +1,14 @@
 package ru.complitex.company.page;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import ru.complitex.company.entity.Company;
-import ru.complitex.domain.component.form.DomainInput;
+import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.EntityAttribute;
+import ru.complitex.domain.model.NumberModel;
 import ru.complitex.domain.page.DomainPage;
 
-import static ru.complitex.domain.model.NumberAttributeModel.of;
 
 /**
  * @author Anatoly Ivanov
@@ -14,15 +16,21 @@ import static ru.complitex.domain.model.NumberAttributeModel.of;
  */
 public class CompanyPage extends DomainPage<Company> {
     public CompanyPage() {
-        super(Company.class, Company.NAME);
+        super(Company.class);
     }
 
     @Override
-    protected Component newEditComponent(String componentId, Company company, EntityAttribute entityAttribute) {
+    protected int[] getRequiredEntityAttributeIds() {
+        return new int[]{Company.NAME};
+    }
+
+    @Override
+    protected Component newGroup(String groupId, IModel<Company> domainModel, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == Company.PARENT){
-             return new DomainInput(componentId, Company.ENTITY_NAME, Company.NAME, of(company, Company.PARENT));
+             return new DomainGroup(groupId, new ResourceModel("_parent"), Company.ENTITY_NAME, Company.NAME,
+                     NumberModel.of(domainModel, Company.PARENT));
         }
 
-        return super.newEditComponent(componentId, company, entityAttribute);
+        return super.newGroup(groupId, domainModel, entityAttribute);
     }
 }

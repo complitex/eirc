@@ -1,20 +1,19 @@
-download Payara Server 5.201+
-    https://www.payara.fish/products/downloads/all-downloads/
+setup Payara Server 5
 
 edit /opt/payara5/glassfish/config/asenv.conf
-    AS_JAVA=/opt/java/jdk-11.0.6
+    AS_JAVA=/opt/java/jdk-11.0.7
 
-edit /opt/payara5/glassfish/config/domain.xml
-    name="JMS_PROVIDER_PORT" value="17676"
-    jmx-connector port="18686"
-    protocol="http-listener-1" port="18080"
-    protocol="http-listener-2" port="18181"
-    protocol="admin-listener" port="14848"
+edit /opt/payara5/glassfish/domains/domain1/config/domain.xml
+    name="JMS_PROVIDER_PORT" value="7676"
+    jmx-connector port="8686"
+    protocol="http-listener-1" port="8080"
+    protocol="http-listener-2" port="8181"
+    protocol="admin-listener" port="4848"
 
 copy /opt/payara5/glassfish/lib
-    mysql-connector-java-8.0.18+.jar
-    ojdbc7+.jar
+    postgresql-42.2.13.jar
+    ojdbc7.jar
 
-export JAVA_HOME=/opt/java/jdk-11.0.6
+export JAVA_HOME=/opt/java/jdk-11.0.7
 mvn -version
 mvn clean install

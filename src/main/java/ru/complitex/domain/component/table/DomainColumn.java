@@ -9,15 +9,16 @@ import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.component.form.InputPanel;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.domain.entity.*;
-import ru.complitex.domain.model.DateAttributeModel;
-import ru.complitex.domain.model.DecimalAttributeModel;
-import ru.complitex.domain.model.NumberAttributeModel;
-import ru.complitex.domain.model.TextAttributeModel;
+import ru.complitex.domain.model.DateModel;
+import ru.complitex.domain.model.DecimalModel;
+import ru.complitex.domain.model.NumberModel;
+import ru.complitex.domain.model.TextModel;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Attributes;
@@ -67,27 +68,24 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     @Override
     public Component newFilter(String componentId, TableForm<T> tableForm) {
+        IModel<T> domainModel = Model.of(tableForm.getModelObject().getObject());
+
         int entityAttributeId = entityAttribute.getEntityAttributeId();
-
-        @SuppressWarnings("unchecked")
-        Domain<T> domain = tableForm.getModelObject().getObject();
-
-        domain.getOrCreateAttribute(entityAttributeId).setEntityAttribute(entityAttribute);
 
         switch (entityAttribute.getValueTypeId()){
             case ValueType.NUMBER:
                 return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new NumberAttributeModel(domain, entityAttributeId), Long.class));
+                        new NumberModel<>(domainModel, entityAttributeId), Long.class));
             case ValueType.DECIMAL:
                 return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new DecimalAttributeModel(domain, entityAttributeId), BigDecimal.class));
+                        new DecimalModel<>(domainModel, entityAttributeId), BigDecimal.class));
             case ValueType.DATE:
                 return new InputPanel(componentId, new DateTextField(InputPanel.ID,
-                        new DateAttributeModel(domain, entityAttributeId),
+                        new DateModel<>(domainModel, entityAttributeId),
                         new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
             default:
                 return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new TextAttributeModel(domain, entityAttributeId, StringType.DEFAULT)));
+                        new TextModel<>(domainModel, entityAttributeId, StringType.DEFAULT)));
         }
     }
 
@@ -100,7 +98,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
         switch (entityAttribute.getValueTypeId()){
-            case ValueType.TEXT_LIST:
+            case ValueType.TEXT_VALUE:
                 List<Value> values = attribute.getValues();
 
                 if (values != null && !values.isEmpty()) {
@@ -136,7 +134,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
                 break;
 
-            case ValueType.REFERENCE_LIST:
+            case ValueType.REFERENCE_VALUE:
                 if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null){
                     EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
@@ -188,7 +186,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                     case ValueType.REFERENCE:
                         text = displayEntity(referenceEntityAttribute, refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()));
                         break;
-                    case ValueType.TEXT_LIST:
+                    case ValueType.TEXT_VALUE:
                         text = refDomain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
                         break;
                     case ValueType.TEXT:

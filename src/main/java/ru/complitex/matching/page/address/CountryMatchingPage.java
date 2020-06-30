@@ -37,8 +37,8 @@ public class CountryMatchingPage extends MatchingPage<Country> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new DomainGroup(componentId, Country.ENTITY_NAME, Country.NAME,
-                PropertyModel.of(model, "objectId"), true);
+        return new DomainGroup(componentId, Country.ENTITY_NAME, Country.NAME, PropertyModel.of(model, "objectId"))
+                .setRequired(true);
     }
 
     @Override

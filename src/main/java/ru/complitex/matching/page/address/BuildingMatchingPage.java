@@ -19,6 +19,6 @@ public class BuildingMatchingPage extends MatchingPage<Building> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new BuildingGroup(componentId, PropertyModel.of(model, "objectId"), true);
+        return new BuildingGroup(componentId, PropertyModel.of(model, "objectId")).setBuildingRequired(true);
     }
 }

@@ -1,92 +1,46 @@
 package ru.complitex.address.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.panel.IMarkupSourcingStrategy;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Building;
-import ru.complitex.address.entity.District;
+import ru.complitex.address.model.AddressModel;
 import ru.complitex.common.entity.Filter;
-import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.service.DomainService;
-
-import javax.inject.Inject;
 
 /**
  * @author Anatoly Ivanov
  * 16.06.2020 22:27
  */
-public class BuildingGroup extends Panel {
-    @Inject
-    private DomainService domainService;
+public class BuildingGroup extends DistrictStreetGroup {
+    private final IModel<Long> buildingModel;
 
-    private final StreetGroup street;
-    private final DomainGroup district;
     private final DomainGroup building;
 
-    public BuildingGroup(String id, IModel<Long> buildingModel, boolean required) {
-        super(id);
+    private boolean buildingRequired;
 
-        setOutputMarkupId(true);
+    public BuildingGroup(String id, IModel<Long> buildingModel) {
+        super(id, new AddressModel(Building.ENTITY_NAME, buildingModel, Building.DISTRICT),
+                new AddressModel(Building.ENTITY_NAME, buildingModel, Building.STREET));
 
-        IModel<Long> streetModel = LoadableModel.of(() -> domainService.getNumber(Building.ENTITY_NAME,
-                buildingModel.getObject(), Building.STREET));
+        this.buildingModel = buildingModel;
 
-        IModel<Long> districtModel = LoadableModel.of(() -> domainService.getNumber(Building.ENTITY_NAME,
-                buildingModel.getObject(), Building.DISTRICT));
-
-        street = new StreetGroup("street", streetModel, false){
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                districtModel.setObject(null);
-                buildingModel.setObject(null);
-
-                target.add(district, building);
-
-                BuildingGroup.this.onChange(target);
-            }
-
-            @Override
-            protected IMarkupSourcingStrategy newMarkupSourcingStrategy() {
-                return null;
-            }
-        };
-        add(street);
-
-        district = new DomainGroup("district", District.ENTITY_NAME, District.NAME, districtModel, false){
+        building = new DomainGroup("building", Building.ENTITY_NAME, Building.NAME, buildingModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(District.CITY, street.getCityModel().getObject());
+                filter.getObject().setNumber(Building.DISTRICT, getDistrictModel().getObject());
+                filter.getObject().setNumber(Building.STREET, getStreetModel().getObject());
             }
 
             @Override
             protected void onChange(AjaxRequestTarget target) {
-                buildingModel.setObject(null);
+                updateDistrict(target);
+                updateStreet(target);
+                updateCity(target);
+                updateRegion(target);
+                updateCountry(target);
 
-                target.add(building);
-
-                BuildingGroup.this.onChange(target);
-            }
-        };
-        street.getCity().add(district);
-
-        building = new DomainGroup("building", Building.ENTITY_NAME, Building.NAME, buildingModel, required){
-            @Override
-            protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(Building.DISTRICT, districtModel.getObject());
-                filter.getObject().setNumber(Building.STREET, streetModel.getObject());
-            }
-
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                districtModel.setObject(null);
-                streetModel.setObject(null);
-
-                target.add(district, street);
-
-                BuildingGroup.this.onChange(target);
+                onBuildingChange(target);
             }
 
             @Override
@@ -103,11 +57,44 @@ public class BuildingGroup extends Panel {
 
                 return buildingTextValue;
             }
+
+            @Override
+            public boolean isRequired() {
+                return isBuildingRequired();
+            }
         };
-        street.getCity().add(building);
+
+        add(building);
     }
 
-    protected void onChange(AjaxRequestTarget target){
+    public IModel<Long> getBuildingModel() {
+        return buildingModel;
+    }
 
+    public boolean isBuildingRequired() {
+        return buildingRequired;
+    }
+
+    public BuildingGroup setBuildingRequired(boolean buildingRequired) {
+        this.buildingRequired = buildingRequired;
+
+        return this;
+    }
+
+    @Override
+    protected void onDistrictStreetChange(AjaxRequestTarget target) {
+        updateBuilding(target);
+    }
+
+    protected void onBuildingChange(AjaxRequestTarget target){
+
+    }
+
+    protected void updateBuilding(AjaxRequestTarget target) {
+        if (buildingModel.getObject() != null){
+            buildingModel.setObject(null);
+
+            target.add(building);
+        }
     }
 }

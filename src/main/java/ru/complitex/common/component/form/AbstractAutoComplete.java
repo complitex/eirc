@@ -38,7 +38,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         idField = new HiddenField<>("id", model, Long.class){
             @Override
             public boolean isRequired() {
-                return required;
+                return AbstractAutoComplete.this.isRequired();
             }
         };
 

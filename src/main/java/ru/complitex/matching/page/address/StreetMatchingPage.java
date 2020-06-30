@@ -19,6 +19,6 @@ public class StreetMatchingPage extends MatchingPage<Street> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new StreetGroup(componentId, PropertyModel.of(model, "objectId"), true);
+        return new StreetGroup(componentId, PropertyModel.of(model, "objectId")).setStreetRequired(true);
     }
 }

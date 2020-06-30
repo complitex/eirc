@@ -16,14 +16,14 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.common.entity.Sort;
-import ru.complitex.common.component.table.TableForm;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
+import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.entity.Filter;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.table.AbstractDomainColumn;
-import ru.complitex.domain.component.table.DomainColumn;
 import ru.complitex.domain.component.table.DomainActionColumn;
+import ru.complitex.domain.component.table.DomainColumn;
 import ru.complitex.domain.component.table.DomainIdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
@@ -65,12 +65,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private DomainModal<T> domainModal;
 
-    private Integer[] requiredEntityAttributeIds;
-
-    public DomainPage(Class<T> domainClass, Integer... requiredEntityAttributeIds) {
+    public DomainPage(Class<T> domainClass) {
         this.domainClass = domainClass;
-
-        this.requiredEntityAttributeIds = requiredEntityAttributeIds;
 
         this.entity = entityService.getEntity(domainClass);
 
@@ -187,13 +183,15 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             }
 
             @Override
-            protected Component newComponent(String componentId, T domain, EntityAttribute entityAttribute) {
-                return DomainPage.this.newEditComponent(componentId, domain, entityAttribute);
+            protected Component newGroup(String groupId, EntityAttribute entityAttribute) {
+                Component group = DomainPage.this.newGroup(groupId, getModel(), entityAttribute);
+
+                return group != null ? group : super.newGroup(groupId, entityAttribute);
             }
         };
     }
 
-    protected Component newEditComponent(String componentId, T domain, EntityAttribute entityAttribute) {
+    protected Component newGroup(String groupId, IModel<T> domainModel, EntityAttribute entityAttribute) {
         return null;
     }
 
@@ -242,17 +240,26 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return domainService.getDomainsCount(filter);
     }
 
+    protected int[] getRequiredEntityAttributeIds(){
+        return new int[]{};
+    }
+
     protected List<EntityAttribute> getListEntityAttributes(){
         return getEntity().getAttributes();
     }
 
     protected List<EntityAttribute> getEditEntityAttributes(){
-        List<EntityAttribute> list = getListEntityAttributes();
-        Set<Integer> set = new HashSet<>(Arrays.asList(requiredEntityAttributeIds));
+        List<EntityAttribute> entityAttributes = getListEntityAttributes();
 
-        list.forEach(a -> a.setRequired(set.contains(a.getEntityAttributeId())));
+        Set<Integer> required = new HashSet<>();
 
-        return list;
+        for (int id : getRequiredEntityAttributeIds()){
+            required.add(id);
+        }
+
+        entityAttributes.forEach(a -> a.setRequired(required.contains(a.getEntityAttributeId())));
+
+        return entityAttributes;
     }
 
     public Filter<T> getFilter() {

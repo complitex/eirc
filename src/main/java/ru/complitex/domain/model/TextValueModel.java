@@ -2,37 +2,40 @@ package ru.complitex.domain.model;
 
 import org.apache.wicket.model.IModel;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.util.Attributes;
+import ru.complitex.domain.entity.StringType;
 
 /**
- * @author Anatoly A. Ivanov
- * 28.12.2018 19:24
+ * @author Anatoly Ivanov
+ * 30.06.2020 5:48
  */
-public class TextValueModel implements IModel<String> {
-    private IModel<? extends Domain> domainModel;
-    private int entityAttributeId;
-    private int localeId;
+public class TextValueModel<T extends Domain<T>> extends TextModel<T>{
+    private final int localeId;
 
-    public TextValueModel(IModel<? extends Domain> domainModel, int entityAttributeId, int localeId) {
-        this.domainModel = domainModel;
-        this.entityAttributeId = entityAttributeId;
+    public TextValueModel(IModel<T> domainModel, int entityAttributeId, StringType stringType, int localeId) {
+        super(domainModel, entityAttributeId, stringType);
+
         this.localeId = localeId;
     }
 
     @Override
     public String getObject() {
-        return Attributes.capitalize(domainModel.getObject().getOrCreateAttribute(entityAttributeId)
-                .getOrCreateValue(localeId).getText());
+        return getDomainModel().getObject().getTextValue(getEntityAttributeId(), localeId);
     }
 
     @Override
-    public void setObject(String object) {
-        if (object != null){
-            object = object.trim();
+    public void setObject(String text) {
+        if (text != null){
+            text = text.trim();
 
-            object = object.toUpperCase();
+            if (StringType.UPPER_CASE.equals(getStringType())) {
+                text = text.toUpperCase();
+            }
         }
 
-        domainModel.getObject().getOrCreateAttribute(entityAttributeId).getOrCreateValue(localeId).setText(object);
+        getDomainModel().getObject().setTextValue(getEntityAttributeId(), text, localeId);
+    }
+
+    public static <T extends Domain<T>> TextValueModel<T> of(IModel<T> domainModel, int entityAttributeId, int localeId){
+        return new TextValueModel<>(domainModel, entityAttributeId, StringType.UPPER_CASE, localeId);
     }
 }

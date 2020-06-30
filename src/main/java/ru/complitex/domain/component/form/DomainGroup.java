@@ -1,7 +1,6 @@
 package ru.complitex.domain.component.form;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.component.form.Group;
@@ -12,17 +11,16 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly Ivanov
  * 20.05.2020 00:22
  */
-public class DomainGroup extends Panel {
-    public DomainGroup(String id, String entityName, int entityAttributeId, IModel<Long> model, boolean required) {
-        super(id);
+public class DomainGroup extends Group {
+    public DomainGroup(String id, IModel<String> labelModel, String entityName, int entityAttributeId, IModel<Long> model) {
+        super(id, labelModel);
 
-        setOutputMarkupId(true);
+        add(new DomainInput("input", entityName, entityAttributeId, model){
+            @Override
+            public boolean isRequired() {
+                return DomainGroup.this.isRequired();
+            }
 
-        Group group = new Group("group", new ResourceModel("_" + id));
-        group.setRequired(required);
-        add(group);
-
-        group.add(new DomainInput("autocomplete", entityName, entityAttributeId, model){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 DomainGroup.this.onFilter(filter);
@@ -37,9 +35,11 @@ public class DomainGroup extends Panel {
             protected String getTextValue(Domain<?> object) {
                 return DomainGroup.this.getTextValue(object, super.getTextValue(object));
             }
-
-
         });
+    }
+
+    public DomainGroup(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+        this(id, new ResourceModel("_" + id), entityName, entityAttributeId, model);
     }
 
     protected void onFilter(Filter<Domain<?>> filter) {

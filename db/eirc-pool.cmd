@@ -1,6 +1,6 @@
 @ECHO off
 
-SET GLASSFISH_ASADMIN=C:\payara5\bin\asadmin.bat --port 4848
+SET GLASSFISH_ASADMIN=C:\payara5\bin\asadmin.bat
 
 ECHO ---------------------------------------------------
 ECHO Local database and Realm
@@ -20,7 +20,7 @@ ECHO.
 ECHO Add the named authentication realm
 call %GLASSFISH_ASADMIN% create-auth-realm ^
     --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm ^
-    --property jaas-context=jdbcRealm:datasource-jndi=jdbc/eircResource:user-table=user:user-name-column=login:password-column=password:group-table=user_group:group-name-column=group_name:charset=UTF-8:digest-algorithm=SHA-256 eircRealm
+    --property jaas-context=jdbcRealm:datasource-jndi=jdbc/eircResource:user-table=eirc.user:user-name-column=login:password-column=password:group-table=user_group:group-name-column=group_name:charset=UTF-8:digest-algorithm=SHA-256 eircRealm
  
 ECHO.
 ECHO ---------------------------------------------------

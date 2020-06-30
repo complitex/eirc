@@ -1,90 +1,82 @@
 package ru.complitex.address.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.panel.IMarkupSourcingStrategy;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Street;
-import ru.complitex.address.entity.StreetType;
+import ru.complitex.address.model.AddressModel;
 import ru.complitex.common.entity.Filter;
-import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.service.DomainService;
-
-import javax.inject.Inject;
 
 /**
  * @author Anatoly Ivanov
  * 16.06.2020 22:26
  */
-public class StreetGroup extends Panel {
-    @Inject
-    private DomainService domainService;
+public class StreetGroup extends CityGroup {
+    private final IModel<Long> streetModel;
 
-    private final IModel<Long> cityModel;
-
-    private final CityGroup city;
     private final DomainGroup street;
 
-    public StreetGroup(String id, IModel<Long> streetModel, boolean required) {
-        super(id);
+    private boolean streetRequired;
 
-        setOutputMarkupId(true);
+    public StreetGroup(String id, IModel<Long> streetModel) {
+        super(id, new AddressModel(Street.ENTITY_NAME, streetModel, Street.CITY));
 
-        cityModel = LoadableModel.of(() -> domainService.getNumber(Street.ENTITY_NAME,
-                streetModel.getObject(), Street.CITY));
+        this.streetModel = streetModel;
 
-        city = new CityGroup("city", cityModel, false){
-
-            protected void onChange(AjaxRequestTarget target) {
-                streetModel.setObject(null);
-
-                target.add(street);
-
-                StreetGroup.this.onChange(target);
-            }
-
-            @Override
-            protected IMarkupSourcingStrategy newMarkupSourcingStrategy() {
-                return null;
-            }
-        };
-        add(city);
-
-        street = new DomainGroup("street", Street.ENTITY_NAME, Street.NAME, streetModel, required){
+        street = new DomainGroup("street", Street.ENTITY_NAME, Street.NAME, streetModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(Street.CITY, cityModel.getObject());
+                filter.getObject().setNumber(Street.CITY, getCityModel().getObject());
             }
 
             @Override
             protected void onChange(AjaxRequestTarget target) {
-                cityModel.setObject(null);
+                updateCountry(target);
+                updateRegion(target);
+                updateCity(target);
 
-                target.add(city);
-
-                StreetGroup.this.onChange(target);
+                onStreetChange(target);
             }
 
             @Override
-            protected String getTextValue(Domain<?> object, String textValue) {
-                return domainService.getTextValue(StreetType.ENTITY_NAME, object.getNumber(Street.STREET_TYPE),
-                        StreetType.SHORT_NAME) + " " + textValue;
+            public boolean isRequired() {
+                return isStreetRequired();
             }
         };
-        city.add(street);
+        add(street);
     }
 
-    protected void onChange(AjaxRequestTarget target){
+    public IModel<Long> getStreetModel() {
+        return streetModel;
+    }
+
+    public boolean isStreetRequired() {
+        return streetRequired;
+    }
+
+    public StreetGroup setStreetRequired(boolean streetRequired) {
+        this.streetRequired = streetRequired;
+
+        return this;
+    }
+
+    @Override
+    protected void onCityChange(AjaxRequestTarget target) {
+        onStreetChange(target);
+
+        updateStreet(target);
+    }
+
+    protected void onStreetChange(AjaxRequestTarget target){
 
     }
 
-    public IModel<Long> getCityModel() {
-        return cityModel;
-    }
+    protected void updateStreet(AjaxRequestTarget target) {
+        if (streetModel.getObject() != null){
+            streetModel.setObject(null);
 
-    public CityGroup getCity() {
-        return city;
+            target.add(street);
+        }
     }
 }

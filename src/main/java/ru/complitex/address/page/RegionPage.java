@@ -12,6 +12,11 @@ import ru.complitex.eirc.security.EircRoles;
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
 public class RegionPage extends DomainPage<Region> {
     public RegionPage() {
-        super(Region.class, Region.COUNTRY, Region.NAME);
+        super(Region.class);
+    }
+
+    @Override
+    protected int[] getRequiredEntityAttributeIds() {
+        return new int[]{Region.COUNTRY, Region.NAME};
     }
 }

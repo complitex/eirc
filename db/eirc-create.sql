@@ -130,9 +130,9 @@ INSERT INTO "entity_value_type" ("id", "value_type") VALUES (3, 'decimal');
 INSERT INTO "entity_value_type" ("id", "value_type") VALUES (4, 'text');
 INSERT INTO "entity_value_type" ("id", "value_type") VALUES (5, 'date');
 INSERT INTO "entity_value_type" ("id", "value_type") VALUES (6, 'reference');
-INSERT INTO "entity_value_type" ("id", "value_type") VALUES (7, 'number_list');
-INSERT INTO "entity_value_type" ("id", "value_type") VALUES (8, 'text_list');
-INSERT INTO "entity_value_type" ("id", "value_type") VALUES (9, 'reference_list');
+INSERT INTO "entity_value_type" ("id", "value_type") VALUES (7, 'number_value');
+INSERT INTO "entity_value_type" ("id", "value_type") VALUES (8, 'text_value');
+INSERT INTO "entity_value_type" ("id", "value_type") VALUES (9, 'reference_value');
 
 
 -- ------------------------------

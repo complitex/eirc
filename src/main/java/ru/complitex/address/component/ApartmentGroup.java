@@ -1,67 +1,52 @@
 package ru.complitex.address.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.entity.Apartment;
+import ru.complitex.address.model.AddressModel;
 import ru.complitex.common.entity.Filter;
-import ru.complitex.common.model.LoadableModel;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.service.DomainService;
-
-import javax.inject.Inject;
 
 /**
  * @author Anatoly Ivanov
  * 17.06.2020 17:20
  */
-public class ApartmentGroup extends Panel {
-    @Inject
-    private DomainService domainService;
+public class ApartmentGroup extends BuildingGroup {
 
-    private final BuildingGroup building;
     private final DomainGroup apartment;
 
-    public ApartmentGroup(String id, IModel<Long> apartmentModel, boolean required) {
-        super(id);
+    private boolean apartmentRequired;
 
-        setOutputMarkupId(true);
+    public ApartmentGroup(String id, IModel<Long> apartmentModel) {
+        super(id, new AddressModel(Apartment.ENTITY_NAME, apartmentModel, Apartment.BUILDING));
 
-        IModel<Long> buildingModel = LoadableModel.of(() -> domainService.getNumber(Apartment.ENTITY_NAME,
-                apartmentModel.getObject(), Apartment.BUILDING));
-
-        building = new BuildingGroup("building", buildingModel, false){
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                apartmentModel.setObject(null);
-
-                target.add(apartment);
-
-                ApartmentGroup.this.onChange(target);
-            }
-        };
-        add(building);
-
-        apartment = new DomainGroup("apartment", Apartment.ENTITY_NAME, Apartment.NAME, apartmentModel, required){
+        apartment = new DomainGroup("apartment", Apartment.ENTITY_NAME, Apartment.NAME, apartmentModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(Apartment.BUILDING, buildingModel.getObject());
+                filter.getObject().setNumber(Apartment.BUILDING, getBuildingModel().getObject());
             }
 
             @Override
             protected void onChange(AjaxRequestTarget target) {
-                buildingModel.setObject(null);
+                updateBuilding(target);
+            }
 
-                target.add(building);
-
-                ApartmentGroup.this.onChange(target);
+            @Override
+            public boolean isRequired() {
+                return isApartmentRequired();
             }
         };
         add(apartment);
     }
 
-    protected void onChange(AjaxRequestTarget target){
+    public boolean isApartmentRequired() {
+        return apartmentRequired;
+    }
 
+    public ApartmentGroup setApartmentRequired(boolean apartmentRequired) {
+        this.apartmentRequired = apartmentRequired;
+
+        return this;
     }
 }
