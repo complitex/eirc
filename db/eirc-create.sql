@@ -395,7 +395,7 @@ BEGIN
           "company_id" BIGINT,  -- ''Идентификатор компании''
           "user_company_id" BIGINT,  -- ''Идентификатор компании пользователя''
           PRIMARY KEY ("id"),
-          UNIQUE ("external_id", "additional_external_id", "company_id", "user_company_id"));');
+          CONSTRAINT "fk_', entityName, '_id" FOREIGN KEY ("object_id") REFERENCES "', entityName, '_id" ("object_id"));');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_matching IS ''', entityDescription, ' - Соответствия'';');
 END;
