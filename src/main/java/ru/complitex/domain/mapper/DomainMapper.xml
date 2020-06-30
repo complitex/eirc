@@ -51,10 +51,14 @@
     </resultMap>
 
     <!--suppress SqlResolve -->
+    <insert id="insertId" parameterType="ru.complitex.domain.entity.Id" useGeneratedKeys="true" keyProperty="objectId">
+        insert into "${entityName}_id" (uuid) values ('${uuid}')
+    </insert>
+
+    <!--suppress SqlResolve -->
     <insert id="insertDomain" parameterType="ru.complitex.domain.entity.Domain" useGeneratedKeys="true" keyProperty="id">
-        insert into "${entityName}" (object_id, start_date, end_date, "status", permission_id,
-          user_id)
-        values (#{objectId}, #{startDate}, #{endDate}, #{status}, #{permissionId}, #{userId})
+        insert into "${entityName}" (object_id, start_date, end_date, "status", permission_id, user_id)
+            values (#{objectId}, #{startDate}, #{endDate}, #{status}, #{permissionId}, #{userId})
     </insert>
 
     <!--suppress SqlResolve -->

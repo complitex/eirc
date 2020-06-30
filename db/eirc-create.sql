@@ -162,6 +162,15 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     EXECUTE CONCAT('
+        CREATE TABLE "', entityName, '_id"
+        (
+            "object_id"        BIGSERIAL,  -- ''Идентификатор объекта''
+            "date"             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- ''Дата''
+            "uuid"             UUID NOT NULL,  -- ''Уникальный идентификатор''
+            PRIMARY KEY ("object_id")
+        );');
+
+    EXECUTE CONCAT('
         CREATE TABLE "', entityName, '"
         (
             "id"               BIGSERIAL,  -- ''Идентификатор''
@@ -172,7 +181,7 @@ BEGIN
             "permission_id"    BIGINT,  -- ''Права доступа к объекту''
             "user_id"          BIGINT,  -- ''Идентифитактор пользователя''
             PRIMARY KEY ("id"),
-            UNIQUE ("object_id", "start_date", "status"),
+            CONSTRAINT "fk_', entityName, '_id" FOREIGN KEY ("object_id") REFERENCES "', entityName, '_id" ("object_id"),
             CONSTRAINT "fk_', entityName, '__user" FOREIGN KEY ("user_id") REFERENCES "user" ("id")
         );');
 
@@ -282,6 +291,7 @@ BEGIN
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_value"');
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_attribute"');
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '"');
+    EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_id"');
 
     CALL create_domain_tables(entityName, entityDescriptionRU);
     CALL create_entity(entityId, entityName, entityDescriptionRU, entityDescriptionUA);

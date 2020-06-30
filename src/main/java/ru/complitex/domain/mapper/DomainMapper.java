@@ -3,17 +3,14 @@ package ru.complitex.domain.mapper;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
-import ru.complitex.domain.entity.Attribute;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.entity.Status;
-import ru.complitex.domain.entity.Value;
+import ru.complitex.domain.entity.*;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.UUID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -24,14 +21,16 @@ public class DomainMapper extends BaseMapper {
     @Inject
     private AttributeMapper attributeMapper;
 
-    private static AtomicLong tmpId = new AtomicLong(-1);
-
     @Transactional
     public void insert(Domain<?> domain){
         domain.setId(null);
 
         if (domain.getObjectId() == null){
-            domain.setObjectId(tmpId.decrementAndGet());
+            Id id = new Id(domain.getEntityName(), UUID.randomUUID().toString());
+
+            sqlSession().insert("insertId", id);
+
+            domain.setObjectId(id.getObjectId());
         }
 
         if (domain.getStartDate() == null){
