@@ -15,5 +15,7 @@ public class TableForm<T extends Serializable> extends Form<Filter<T>> {
         super(id, Model.of(filter));
 
         setOutputMarkupId(true);
+
+
     }
 }

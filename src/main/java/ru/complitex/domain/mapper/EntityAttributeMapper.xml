@@ -11,7 +11,7 @@
         <result column="reference_entity_id" property="referenceEntityId"/>
         <result column="reference_entity_attribute_id" property="referenceEntityAttributeId"/>
         <result column="entity_name" property="entityName"/>
-        <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="values"
+        <collection column="entityId = entity_id, entityAttributeId = entity_attribute_id" property="entityValues"
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
     </resultMap>
 
@@ -19,9 +19,13 @@
         select a.*, '${entityName}' entity_name from entity_attribute a where entity_id = #{entityId}
     </select>
 
-    <select id="selectEntityAttribute" parameterType="map" resultMap="entityAttributeResultMap">
+    <select id="selectEntityAttributeByEntityId" parameterType="map" resultMap="entityAttributeResultMap">
+        select a.*, e.name as entity_name from entity_attribute a left join entity e on a.entity_id = e.id
+        where e.id = #{entityId} and a.entity_attribute_id = #{entityAttributeId}
+    </select>
+
+    <select id="selectEntityAttributeByEntityName" parameterType="map" resultMap="entityAttributeResultMap">
         select a.*, e.name as entity_name from entity_attribute a left join entity e on a.entity_id = e.id
           where e.name = #{entityName} and a.entity_attribute_id = #{entityAttributeId}
     </select>
-
 </mapper>

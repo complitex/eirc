@@ -1,8 +1,8 @@
 package ru.complitex.address.page;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import ru.complitex.domain.page.DomainPage;
 import ru.complitex.address.entity.Region;
+import ru.complitex.domain.page.DomainPage;
 import ru.complitex.eirc.security.EircRoles;
 
 /**

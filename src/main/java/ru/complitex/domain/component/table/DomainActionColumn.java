@@ -1,5 +1,6 @@
 package ru.complitex.domain.component.table;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeIconType;
@@ -40,9 +41,9 @@ public abstract class DomainActionColumn<T extends Domain<T>> extends AbstractDo
 
     @Override
     public Component newFilter(String componentId, TableForm<T> tableForm) {
-        return new LinkPanel(componentId, new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
+        return new LinkPanel(componentId, new BootstrapAjaxButton(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link){
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target) {
                 target.add(tableForm);
             }
         }.setIconType(FontAwesomeIconType.search));

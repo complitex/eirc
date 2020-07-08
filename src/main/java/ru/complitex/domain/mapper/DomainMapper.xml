@@ -146,25 +146,16 @@
                 left join "${object.entityName}_value" v${i} on (v${i}.attribute_id = a${i}.id
                     and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
 
-               <!-- <if test="a.entityAttribute != null and a.entityAttribute.valueType.id in {10, 11}">
-                    <if test="a.entityAttribute.referenceEntityAttributes != null">
-                        <foreach collection="a.entityAttribute.referenceEntityAttributes" index="j" item="ra">
-                            left join "${ra.entityName}" d${i}_${j}_ref
-
-                            <if test="a.entityAttribute.valueType.id == 10">
-                                on d${i}_${j}_ref.object_id = v${i}.number
-                            </if>
-
-                            <if test="a.entityAttribute.valueType.id == 11">
-                                on d${i}_${j}_ref.object_id = a${i}.number
-                            </if>
-
-                            left join "${ra.entityName}_attribute" a${i}_${j}_ref on a${i}_${j}_ref.domain_id = d${i}_${j}_ref.id
-                                and a${i}.entity_attribute_id = ${a.entityAttributeId} and a${i}.status = 1
-                            left join "${ra.entityName}_value" v${i}_${j}_ref on v${i}_${j}_ref.attribute_id = a${i}_${j}_ref.id
-                        </foreach>
-                    </if>
-                </if>-->
+               <if test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
+                   left join "${a.entityAttribute.referenceEntityAttribute.entityName}" d${i}_ref
+                       on d${i}_ref.object_id = a${i}.number
+                   left join "${a.entityAttribute.referenceEntityAttribute.entityName}_attribute" a${i}_ref
+                       on a${i}_ref.domain_id = d${i}_ref.id
+                           and a${i}_ref.entity_attribute_id = ${a.entityAttribute.referenceEntityAttribute.entityAttributeId}
+                           and a${i}.status = 1
+                   left join "${a.entityAttribute.referenceEntityAttribute.entityName}_value" v${i}_ref
+                       on v${i}_ref.attribute_id = a${i}_ref.id
+                </if>
             </if>
         </foreach>
         <if test="object.map.attributes != null">
@@ -209,16 +200,23 @@
                 <foreach collection="object.attributes" index="i" item="a">
                     <if test="a.text != null">
                         <choose>
-                            <when test="filter == 'equal'">
-                                and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                            <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
+                                and (a${i}_ref.text ilike concat('%', #{a.text}, '%') or v${i}_ref.text ilike concat('%', #{a.text}, '%'))
                             </when>
                             <otherwise>
                                 <choose>
-                                    <when test="filter == 'search'"> or </when>
-                                    <otherwise> and </otherwise>
-                                </choose>
+                                    <when test="filter == 'equal'">
+                                        and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                                    </when>
+                                    <otherwise>
+                                        <choose>
+                                            <when test="filter == 'search'"> or </when>
+                                            <otherwise> and </otherwise>
+                                        </choose>
 
-                                (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
+                                        (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
+                                    </otherwise>
+                                </choose>
                             </otherwise>
                         </choose>
                     </if>
@@ -378,31 +376,27 @@
         </if>
     </sql>
 
+    <!--suppress SqlResolve -->
     <sql id="selectDomainsSelect">
+        select '${object.entityName}' entity_name, d.*,
         a.id a_id, a.domain_id a_domain_id, a.entity_attribute_id a_entity_attribute_id, a.text a_text,
         a.number a_number, a.date a_date, a.start_date a_start_date, a.end_date a_end_date, a.status a_status,
-        a.user_id a_user_id, '${object.entityName}' a_entity_name, v.id v_id, v.attribute_id v_attribute_id,
-        v.locale_id v_locale_id, v.text v_text, v.number v_number
+        a.user_id a_user_id, '${object.entityName}' a_entity_name,
+        v.id v_id, v.attribute_id v_attribute_id, v.locale_id v_locale_id, v.text v_text, v.number v_number
     </sql>
 
     <!--suppress SqlResolve -->
     <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMapJoin">
-        select '${object.entityName}' entity_name, d.*,
         <include refid="selectDomainsSelect"/>
-        from (
-          select (dd.d_id) dd_id
-          from (
-            select d.id d_id
+        from (select d.id
             <include refid="selectDomainsFrom"/>
             <include refid="selectDomainsFromFilter"/>
             <include refid="selectDomainsFromSort"/>
             <include refid="selectDomainsWhere"/>
-            group by d.id
             <include refid="selectDomainsOrderSort"/>
-          ) dd
-          ${limit}
+            ${limit}
         ) o
-        left join "${object.entityName}" d on d.id = o.dd_id
+        left join "${object.entityName}" d on d.id = o.id
         left join "${object.entityName}_attribute" a on a.domain_id = d.id and a.status = 1
             <if test="!entityAttributeIds.empty">
                 and a.entity_attribute_id in
@@ -411,9 +405,6 @@
                     </foreach>
             </if>
         left join "${object.entityName}_value" v on v.attribute_id = a.id
-        <include refid="selectDomainsFromSort"/>
-        group by d.id, a.id, v.id
-        <include refid="selectDomainsOrderSort"/>
     </select>
 
     <!--suppress SqlResolve -->

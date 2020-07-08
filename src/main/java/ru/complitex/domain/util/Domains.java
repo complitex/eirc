@@ -1,6 +1,7 @@
 package ru.complitex.domain.util;
 
 import ru.complitex.domain.entity.Domain;
+import ru.complitex.domain.entity.Entity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,20 @@ public class Domains {
     public static <T extends Domain<T>> T newObject(Class<T> domainClass){
         try {
             return domainClass.getConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("error create new object " + e);
+        }
+    }
+
+    public static <T extends Domain<T>> T newObject(Class<T> domainClass, Entity entity){
+        try {
+            T domain =  domainClass.getConstructor().newInstance();
+
+            entity.getEntityAttributes().forEach(entityAttribute ->
+                    domain.getOrCreateAttribute(entityAttribute.getEntityAttributeId())
+                            .setEntityAttribute(entityAttribute));
+
+            return domain;
         } catch (Exception e) {
             throw new RuntimeException("error create new object " + e);
         }

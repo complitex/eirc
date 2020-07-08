@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 20.12.2017 3:20
  */
-public abstract class AbstractDomainColumn<T extends Domain<T>>  extends AbstractColumn<T, Sort>
+public abstract class AbstractDomainColumn<T extends Domain<T>> extends AbstractColumn<T, Sort>
         implements IFilterColumn<T, Sort>, Serializable {
     private String columnKey;
 

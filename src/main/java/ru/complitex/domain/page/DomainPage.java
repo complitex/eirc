@@ -103,8 +103,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         columns.add(new DomainIdColumn<>());
 
-        getListEntityAttributes().forEach(a -> columns.add(newDomainColumn(a)));
-
+        newColumns(columns);
 
         if (isEditEnabled()) {
             columns.add(new DomainActionColumn<T>() {
@@ -172,7 +171,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected Filter<T> newFilter() {
-        return Filter.of(Domains.newObject(domainClass));
+        return Filter.of(Domains.newObject(domainClass, entity));
     }
 
     protected DomainModal<T> newDomainModal(String componentId) {
@@ -207,8 +206,12 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return Domains.newObject(domainClass);
     }
 
-    protected AbstractDomainColumn<T> newDomainColumn(EntityAttribute a) {
+    protected AbstractDomainColumn<T> newColumn(EntityAttribute a) {
         return new DomainColumn<>(a);
+    }
+
+    protected void newColumns(List<IColumn<T, Sort>> columns) {
+        getListEntityAttributes().forEach(a -> columns.add(newColumn(a)));
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
@@ -245,7 +248,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected List<EntityAttribute> getListEntityAttributes(){
-        return getEntity().getAttributes();
+        return getEntity().getEntityAttributes();
     }
 
     protected List<EntityAttribute> getEditEntityAttributes(){

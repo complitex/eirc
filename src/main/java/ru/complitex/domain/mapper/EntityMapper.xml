@@ -8,10 +8,10 @@
 
         <result column="name" property="name"/>
 
-        <collection column="entityId = id" property="values"
+        <collection column="entityId = id" property="entityValues"
                     select="ru.complitex.domain.mapper.EntityValueMapper.selectEntityValues"/>
 
-        <collection column="entityId = id, entityName = name" property="attributes"
+        <collection column="entityId = id, entityName = name" property="entityAttributes"
                     select="ru.complitex.domain.mapper.EntityAttributeMapper.selectEntityAttributes"/>
     </resultMap>
 

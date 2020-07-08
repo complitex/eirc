@@ -12,18 +12,18 @@ import java.util.List;
 public class Entity implements Serializable {
     private int id;
     private String name;
-    private List<EntityValue> values;
+    private List<EntityValue> entityValues;
 
-    private List<EntityAttribute> attributes;
+    private List<EntityAttribute> entityAttributes;
 
     public EntityAttribute getEntityAttribute(int entityAttributesId){
-        return attributes.stream().filter(a -> a.getEntityAttributeId() == entityAttributesId).findAny()
+        return entityAttributes.stream().filter(a -> a.getEntityAttributeId() == entityAttributesId).findAny()
                 .orElseThrow(() -> new RuntimeException(String.format("EntityAttribute not found by id '%s' for '%s'",
                         entityAttributesId, name)));
     }
 
     public EntityValue getValue(){
-        return values.stream().filter(v -> v.getLocaleId() == Locales.getSystemLocaleId()).findAny().orElse(null);
+        return entityValues.stream().filter(v -> v.getLocaleId() == Locales.getSystemLocaleId()).findAny().orElse(null);
     }
 
     public int getId() {
@@ -42,19 +42,19 @@ public class Entity implements Serializable {
         this.name = name;
     }
 
-    public List<EntityValue> getValues() {
-        return values;
+    public List<EntityValue> getEntityValues() {
+        return entityValues;
     }
 
-    public void setValues(List<EntityValue> values) {
-        this.values = values;
+    public void setEntityValues(List<EntityValue> entityValues) {
+        this.entityValues = entityValues;
     }
 
-    public List<EntityAttribute> getAttributes() {
-        return attributes;
+    public List<EntityAttribute> getEntityAttributes() {
+        return entityAttributes;
     }
 
-    public void setAttributes(List<EntityAttribute> attributes) {
-        this.attributes = attributes;
+    public void setEntityAttributes(List<EntityAttribute> entityAttributes) {
+        this.entityAttributes = entityAttributes;
     }
 }

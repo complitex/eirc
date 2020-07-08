@@ -21,13 +21,15 @@ public class EntityAttribute implements Serializable {
     private Integer referenceEntityId;
     private Integer referenceEntityAttributeId;
 
-    private List<EntityValue> values;
+    private List<EntityValue> entityValues;
 
     private String entityName;
 
     private StringType stringType = StringType.CAPITALIZE;
 
     private boolean required;
+
+    private EntityAttribute referenceEntityAttribute;
 
     public EntityAttribute() {
     }
@@ -46,12 +48,15 @@ public class EntityAttribute implements Serializable {
         this.valueTypeId = entityAttribute.getValueTypeId();
         this.referenceEntityId = entityAttribute.getReferenceEntityId();
         this.referenceEntityAttributeId = entityAttribute.getReferenceEntityAttributeId();
-        this.values = entityAttribute.getValues();
+        this.entityValues = entityAttribute.getEntityValues();
         this.entityName = entityAttribute.getEntityName();
     }
 
     public EntityValue getValue(){
-        return values.stream().filter(v -> v.getLocaleId() == Locales.getSystemLocaleId()).findAny().orElse(null);
+        return entityValues.stream()
+                .filter(v -> v.getLocaleId() == Locales.getSystemLocaleId())
+                .findAny()
+                .orElse(null);
     }
 
     public String getValueText(){
@@ -128,12 +133,12 @@ public class EntityAttribute implements Serializable {
         this.referenceEntityAttributeId = referenceEntityAttributeId;
     }
 
-    public List<EntityValue> getValues() {
-        return values;
+    public List<EntityValue> getEntityValues() {
+        return entityValues;
     }
 
-    public void setValues(List<EntityValue> values) {
-        this.values = values;
+    public void setEntityValues(List<EntityValue> entityValues) {
+        this.entityValues = entityValues;
     }
 
     public String getEntityName() {
@@ -164,6 +169,14 @@ public class EntityAttribute implements Serializable {
         return this;
     }
 
+    public EntityAttribute getReferenceEntityAttribute() {
+        return referenceEntityAttribute;
+    }
+
+    public void setReferenceEntityAttribute(EntityAttribute referenceEntityAttribute) {
+        this.referenceEntityAttribute = referenceEntityAttribute;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this).omitNullValues()
@@ -175,7 +188,7 @@ public class EntityAttribute implements Serializable {
                 .add("valueTypeId", valueTypeId)
                 .add("referenceEntityId", referenceEntityId)
                 .add("referenceEntityAttributeId", referenceEntityAttributeId)
-                .add("values", values)
+                .add("values", entityValues)
                 .add("entityName", entityName)
                 .add("stringType", stringType)
                 .add("required", required)
