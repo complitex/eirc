@@ -1,5 +1,7 @@
 package ru.complitex.common.entity;
 
+import ru.complitex.domain.util.Locales;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,18 +18,26 @@ public class Filter<T extends Serializable> implements Serializable {
 
     public static final String STATUS_ACTIVE_AND_ARCHIVE = "active_and_archive";
 
+    public static final String OPERATOR_AND = "and";
+    public static final String OPERATOR_OR = "or";
+
     private T object;
     private Long first = 0L;
     private Long count = 0L;
     private Sort sort;
     private boolean ascending = false;
+
     private Map<String, Object> map = new HashMap<>();
 
-    private String filter;
+    private String filter = FILTER_SEARCH;
 
     private String status;
 
+    private String operator = OPERATOR_AND;
+
     private List<Long> entityAttributeIds = new ArrayList<>();
+
+    private int localeId = Locales.getSystemLocaleId();
 
     public Filter() {
     }
@@ -135,8 +145,10 @@ public class Filter<T extends Serializable> implements Serializable {
         return sort;
     }
 
-    public void setSort(Sort sort) {
+    public Filter<T> setSort(Sort sort) {
         this.sort = sort;
+
+        return this;
     }
 
     public boolean isAscending() {
@@ -175,11 +187,25 @@ public class Filter<T extends Serializable> implements Serializable {
         return this;
     }
 
+    public String getOperator() {
+        return operator;
+    }
+
+    public Filter<T> setOperator(String operator) {
+        this.operator = operator;
+
+        return this;
+    }
+
     public List<Long> getEntityAttributeIds() {
         return entityAttributeIds;
     }
 
     public void setEntityAttributeIds(List<Long> entityAttributeIds) {
         this.entityAttributeIds = entityAttributeIds;
+    }
+
+    public int getLocaleId() {
+        return localeId;
     }
 }

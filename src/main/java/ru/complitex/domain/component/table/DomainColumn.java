@@ -3,16 +3,21 @@ package ru.complitex.domain.component.table;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextFieldConfig;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.danekja.java.util.function.serializable.SerializableConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.component.form.InputPanel;
+import ru.complitex.common.component.form.TextField;
+import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.domain.entity.*;
 import ru.complitex.domain.model.DateModel;
@@ -33,7 +38,7 @@ import java.util.stream.Collectors;
  * @author Anatoly A. Ivanov
  * 19.12.2017 7:55
  */
-public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public class DomainColumn<T extends Domain<T>> extends Column<T> {
     private static Logger log = LoggerFactory.getLogger(DomainColumn.class);
 
     @Inject
@@ -44,10 +49,18 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
     private EntityAttribute entityAttribute;
 
+    private SerializableConsumer<AjaxRequestTarget> onChange;
+
     public DomainColumn(EntityAttribute entityAttribute) {
-        super(entityAttribute);
+        super(Model.of(entityAttribute.getValueText()), new EntityAttributeSort(entityAttribute));
 
         this.entityAttribute = entityAttribute;
+    }
+
+    public DomainColumn(EntityAttribute entityAttribute, SerializableConsumer<AjaxRequestTarget> onChange) {
+        this(entityAttribute);
+
+        this.onChange = onChange;
     }
 
     public EntityService getEntityService() {
@@ -72,24 +85,33 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
 
         int entityAttributeId = entityAttribute.getEntityAttributeId();
 
+        FormComponent<?> component;
+
         switch (entityAttribute.getValueTypeId()){
             case ValueType.NUMBER:
-                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new NumberModel<>(domainModel, entityAttributeId), Long.class));
+                component = new TextField<>(InputPanel.ID, new NumberModel<>(domainModel, entityAttributeId),
+                        Long.class);
             case ValueType.DECIMAL:
-                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new DecimalModel<>(domainModel, entityAttributeId), BigDecimal.class));
+                component = new TextField<>(InputPanel.ID, new DecimalModel<>(domainModel, entityAttributeId),
+                        BigDecimal.class);
             case ValueType.DATE:
-                return new InputPanel(componentId, new DateTextField(InputPanel.ID,
+                component = new DateTextField(InputPanel.ID,
                         new DateModel<>(domainModel, entityAttributeId),
-                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true)));
+                        new DateTextFieldConfig().withFormat("dd.MM.yyyy").withLanguage("ru").autoClose(true));
             default:
-                return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                        new TextModel<>(domainModel, entityAttributeId, StringType.DEFAULT)));
+                component = new TextField<>(InputPanel.ID, new TextModel<>(domainModel, entityAttributeId,
+                        StringType.DEFAULT));
+
         }
+
+        if (onChange != null){
+            component.add(OnChangeAjaxBehavior.onChange(onChange));
+        }
+
+        return InputPanel.of(componentId, component);
     }
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     @Override
     public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
@@ -130,7 +152,7 @@ public class DomainColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
                 break;
 
             case ValueType.DATE:
-                text = attribute.getDate() != null ? dateFormat.format(attribute.getDate()) : "";
+                text = attribute.getDate() != null ? DATE_FORMAT.format(attribute.getDate()) : "";
 
                 break;
 

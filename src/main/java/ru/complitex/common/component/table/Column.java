@@ -3,47 +3,28 @@ package ru.complitex.common.component.table;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.component.form.InputPanel;
 
 import java.io.Serializable;
 
 /**
- * @author Anatoly A. Ivanov
- * 15.03.2019 22:50
+ * @author Anatoly Ivanov
+ * 13.07.2020 19:03
  */
-public class Column<T extends Serializable> extends AbstractColumn<T, Sort>
-        implements IFilterColumn<T, Sort> {
-    private String columnKey;
-
+public abstract class Column<T extends Serializable> extends AbstractColumn<T, Sort> implements IFilterColumn<T, Sort>{
     private String cssClass;
 
-    public Column(String columnKey) {
-        super(new ResourceModel(columnKey), new Sort(columnKey));
-
-        this.columnKey = columnKey;
+    public Column(IModel<String> displayModel, Sort sortProperty) {
+        super(displayModel, sortProperty);
     }
 
     @Override
-    public Component newFilter(String componentId, TableForm<T> tableForm) {
-        return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                new PropertyModel<>(tableForm.getModel(),"map." + columnKey)));
-    }
+    public abstract Component newFilter(String componentId, TableForm<T> tableForm);
 
     @Override
-    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new Label(componentId, newItemModel(rowModel)));
-    }
-
-    protected IModel<?> newItemModel(IModel<T> rowModel){
-        return PropertyModel.of(rowModel, columnKey);
-    }
+    public abstract void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel);
 
     @Override
     public String getCssClass() {

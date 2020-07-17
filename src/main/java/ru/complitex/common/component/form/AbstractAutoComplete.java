@@ -11,11 +11,12 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.convert.ConversionException;
 import org.apache.wicket.util.convert.IConverter;
+import ru.complitex.common.util.Ids;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * @author Anatoly Ivanov
@@ -77,7 +78,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
                     }
                 }, new AutoCompleteSettings().setPreselect(true).setAdjustInputWidth(true)
         ) {
-            private final String inputName = UUID.randomUUID().toString();
+            private final String inputName = Ids.randomUUID();
 
             @Override
             public String getInputName() {
@@ -120,10 +121,11 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         nameField.setType(Object.class);
 
         nameField.add(OnChangeAjaxBehavior.onChange(target -> {
-            if (nameField.getInput().isEmpty()){
+            if (nameField.getInput().isEmpty() || (model.getObject() != null &&
+                    !Objects.equals(getTextValue(getObject(model.getObject())), nameField.getInput()))){
                 model.setObject(null);
 
-                target.add(idField);
+                target.appendJavaScript(String.format("Wicket.DOM.get('%s').value = null;", idField.getMarkupId()));
             }
         }));
 
@@ -164,5 +166,9 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
     public void setPlaceholder(IModel<String> placeholder) {
         this.placeholder = placeholder;
+    }
+
+    public String getInputText(){
+        return nameField.getInput();
     }
 }

@@ -45,7 +45,6 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
     protected Filter<Domain<?>> newFilter(){
         Filter<Domain<?>> filter = Filter.of(new Domain<>(entityAttribute.getEntityName()));
 
-        filter.setFilter("search");
         filter.limit(10L);
 
         return filter;

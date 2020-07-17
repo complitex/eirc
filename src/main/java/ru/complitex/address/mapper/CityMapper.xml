@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.CityMapper">
+    <resultMap id="cityResultMap" type="ru.complitex.address.entity.City"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap"/>
+
+    <sql id="selectCitiesJoinSql">
+
+    </sql>
+
+    <sql id="selectCitiesWhereSql">
+
+    </sql>
+
+    <sql id="selectCitiesSortSql">
+
+    </sql>
+
+    <select id="selectCities" parameterType="ru.complitex.common.entity.Filter" resultMap="cityResultMap">
+
+    </select>
+
+    <select id="selectCitiesCount" parameterType="ru.complitex.common.entity.Filter">
+
+    </select>
+</mapper>

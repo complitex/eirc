@@ -10,7 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.KeyColumn;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
@@ -63,17 +63,17 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<Sync, Sort>> columns = new ArrayList<>();
 
-        columns.add(new Column<Sync>("id").setCssClass("domain-id-column"));
-        columns.add(new Column<>("name"));
-        columns.add(new Column<>("additionalName"));
-        columns.add(new Column<>("altName"));
-        columns.add(new Column<>("altAdditionalName"));
-        columns.add(new Column<>("parentId"));
-        columns.add(new Column<>("additionalParentId"));
-        columns.add(new Column<>("externalId"));
-        columns.add(new Column<>("additionalExternalId"));
-        columns.add(new Column<>("date"));
-        columns.add(new Column<>("status"){
+        columns.add(new KeyColumn<Sync>("id").setCssClass("id-column"));
+        columns.add(new KeyColumn<>("name"));
+        columns.add(new KeyColumn<>("additionalName"));
+        columns.add(new KeyColumn<>("altName"));
+        columns.add(new KeyColumn<>("altAdditionalName"));
+        columns.add(new KeyColumn<>("parentId"));
+        columns.add(new KeyColumn<>("additionalParentId"));
+        columns.add(new KeyColumn<>("externalId"));
+        columns.add(new KeyColumn<>("additionalExternalId"));
+        columns.add(new KeyColumn<>("date"));
+        columns.add(new KeyColumn<>("status"){
             @Override
             protected IModel<?> newItemModel(IModel<Sync> rowModel) {
                 return new ResourceModel("syncStatus." + rowModel.getObject().getStatus());

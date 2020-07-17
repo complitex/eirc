@@ -3,6 +3,7 @@ package ru.complitex.domain.mapper;
 import org.mybatis.cdi.Transactional;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
+import ru.complitex.common.util.Ids;
 import ru.complitex.domain.entity.*;
 
 import javax.enterprise.context.RequestScoped;
@@ -10,7 +11,6 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @author Anatoly A. Ivanov
@@ -26,7 +26,7 @@ public class DomainMapper extends BaseMapper {
         domain.setId(null);
 
         if (domain.getObjectId() == null){
-            Id id = new Id(domain.getEntityName(), UUID.randomUUID().toString());
+            Id id = new Id(domain.getEntityName(), Ids.randomUUID());
 
             sqlSession().insert("insertId", id);
 

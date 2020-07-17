@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,10 +22,9 @@ import ru.complitex.common.component.table.Table;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.domain.component.table.AbstractDomainColumn;
-import ru.complitex.domain.component.table.DomainActionColumn;
+import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.component.table.DomainColumn;
-import ru.complitex.domain.component.table.DomainIdColumn;
+import ru.complitex.domain.component.table.IdColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -101,12 +101,16 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<T, Sort>> columns = new ArrayList<>();
 
-        columns.add(new DomainIdColumn<>());
+        IdColumn<T> idColumn = new IdColumn<>(t -> table.update(t));
 
-        newColumns(columns);
+        columns.add(idColumn);
+
+        provider.setSort(idColumn.getSortProperty(), SortOrder.DESCENDING);
+
+        getListEntityAttributes().forEach(entityAttribute -> addColumn(columns, entityAttribute));
 
         if (isEditEnabled()) {
-            columns.add(new DomainActionColumn<T>() {
+            columns.add(new ActionColumn<T>() {
                 @Override
                 protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
                     onEdit(rowModel.getObject(), target);
@@ -120,7 +124,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         }
 
 
-        table = new Table<T>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()){
+        table = new Table<>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()){
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -206,12 +210,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return Domains.newObject(domainClass);
     }
 
-    protected AbstractDomainColumn<T> newColumn(EntityAttribute a) {
-        return new DomainColumn<>(a);
-    }
-
-    protected void newColumns(List<IColumn<T, Sort>> columns) {
-        getListEntityAttributes().forEach(a -> columns.add(newColumn(a)));
+    protected void addColumn(List<IColumn<T, Sort>> columns, EntityAttribute entityAttribute) {
+        columns.add(new DomainColumn<>(entityAttribute, t -> table.update(t)));
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {

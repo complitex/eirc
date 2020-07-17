@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
 <mapper namespace="ru.complitex.domain.mapper.DomainMapper">
 <!--    <cache/>-->
 
@@ -97,7 +96,8 @@
         </if>
 
         <where>
-            <if test="objectId != null">and d.object_id = #{objectId} and d."status" > 0</if>
+            <if test="objectId != null">and d.object_id = #{objectId} and d."status" = 1</if>
+
             <if test="attributes != null and !attributes.isEmpty">
                 <foreach collection="attributes" index="i" item="a">
                     <if test="a.text != null">and (a${i}.text = #{a.text} and a${i}.status = 1)</if>
@@ -135,16 +135,16 @@
     </select>
 
     <sql id="selectDomainsFrom">
-        from "${object.entityName}" d
+
     </sql>
 
-    <sql id="selectDomainsFromFilter">
+    <sql id="selectDomainsJoinFilter">
         <foreach collection="object.attributes" index="i" item="a">
             <if test="a.text != null or a.number != null or a.date != null or (a.values != null and !a.values.empty)">
-                left join "${object.entityName}_attribute" a${i} on (a${i}.domain_id = d.id
-                    and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
-                left join "${object.entityName}_value" v${i} on (v${i}.attribute_id = a${i}.id
-                    and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1)
+                left join "${object.entityName}_attribute" a${i} on a${i}.domain_id = d.id
+                    and a${i}.entity_attribute_id = #{a.entityAttributeId} and a${i}.status = 1
+                left join "${object.entityName}_value" v${i} on v${i}.attribute_id = a${i}.id
+                    and v${i}.locale_id = #{localeId}
 
                <if test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
                    left join "${a.entityAttribute.referenceEntityAttribute.entityName}" d${i}_ref
@@ -154,11 +154,11 @@
                            and a${i}_ref.entity_attribute_id = ${a.entityAttribute.referenceEntityAttribute.entityAttributeId}
                            and a${i}.status = 1
                    left join "${a.entityAttribute.referenceEntityAttribute.entityName}_value" v${i}_ref
-                       on v${i}_ref.attribute_id = a${i}_ref.id
+                       on v${i}_ref.attribute_id = a${i}_ref.id and v${i}_ref.locale_id = #{localeId}
                 </if>
             </if>
         </foreach>
-        <if test="object.map.attributes != null">
+       <!-- <if test="object.map.attributes != null">
             <foreach collection="object.map.attributes" index="i" item="b">
                 <if test="b.text != null or b.number != null or b.date != null">
                     left join "${object.entityName}_attribute" b${i} on b${i}.domain_id = d.id
@@ -174,68 +174,61 @@
                         and c${i}.entity_attribute_id = #{c.entityAttributeId} and c${i}.status = 1)
                 </if>
             </foreach>
-        </if>
+        </if>-->
     </sql>
 
     <sql id="selectDomainsWhere">
         <where>
             <if test="object.objectId != null">
-                <choose>
-                    <when test="filter == 'equal'">
-                        d.object_id = #{object.objectId}
-                    </when>
-                    <otherwise>
-                        d.object_id ilike concat('%', #{object.objectId}, '%')
-                    </otherwise>
-                </choose>
-
+                d.object_id = #{object.objectId}
             </if>
 
-            and (
-                <choose>
-                    <when test="filter == 'search'"> false </when>
-                    <otherwise> true </otherwise>
-                </choose>
-
-                <foreach collection="object.attributes" index="i" item="a">
-                    <if test="a.text != null">
-                        <choose>
-                            <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
-                                and (a${i}_ref.text ilike concat('%', #{a.text}, '%') or v${i}_ref.text ilike concat('%', #{a.text}, '%'))
-                            </when>
-                            <otherwise>
-                                <choose>
-                                    <when test="filter == 'equal'">
-                                        and (a${i}.text = #{a.text} or v${i}.text = #{a.text})
-                                    </when>
-                                    <otherwise>
-                                        <choose>
-                                            <when test="filter == 'search'"> or </when>
-                                            <otherwise> and </otherwise>
-                                        </choose>
-
-                                        (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
-                                    </otherwise>
-                                </choose>
-                            </otherwise>
-                        </choose>
-                    </if>
-                </foreach>
-            )
-
             <foreach collection="object.attributes" index="i" item="a">
-                <if test="a.number != null">
+                <if test="a.text != null">
                     <choose>
-                        <when test="a.number == -1">
-                            and a${i}.number is null
-                        </when>
-                        <when test="a.number == -2">
-                            and a${i}.number is not null
+                        <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
+                            <if test="a.entityAttribute.referenceEntityAttribute.valueTypeId == 4">
+                                <if test="filter == 'search'">
+                                    ${operator} (a${i}_ref.text ilike concat('%', #{a.text}, '%')
+                                </if>
+                            </if>
+
+                            <if test="a.entityAttribute.referenceEntityAttribute.valueTypeId == 8">
+                                <if test="filter == 'search'">
+                                    ${operator} v${i}_ref.text ilike concat('%', #{a.text}, '%')
+                                </if>
+                            </if>
                         </when>
                         <otherwise>
-                            and (
-                                a${i}.number = #{a.number} or v${i}.number = #{a.number}
-                            )
+                            <if test="filter == 'equal'">
+                                ${operator} (a${i}.text = #{a.text} or v${i}.text = #{a.text})
+                            </if>
+                            <if test="filter == 'search'">
+                                ${operator} (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
+                            </if>
+                        </otherwise>
+                    </choose>
+                </if>
+
+                <if test="a.number != null">
+                    <choose>
+                        <when test="a.entityAttribute != null and a.entityAttribute.valueTypeId == 6">
+                            ${operator} a${i}.number = #{a.number}
+                        </when>
+                        <otherwise>
+                            <choose>
+                                <when test="a.number == -1">
+                                    and a${i}.number is null
+                                </when>
+                                <when test="a.number == -2">
+                                    and a${i}.number is not null
+                                </when>
+                                <otherwise>
+                                    and (
+                                        a${i}.number = #{a.number} or v${i}.number = #{a.number}
+                                    )
+                                </otherwise>
+                            </choose>
                         </otherwise>
                     </choose>
                 </if>
@@ -269,7 +262,7 @@
                 </if>
             </foreach>
 
-            <if test="object.map.attributes != null">
+            <!--<if test="object.map.attributes != null">
                 <foreach collection="object.map.attributes" index="i" item="b">
                     <if test="b.number != null">
                         and (b${i}.number = #{b.number} or bv${i}.number = #{b.number})
@@ -285,7 +278,7 @@
                         ]]>
                     </if>
                 </foreach>
-            </if>
+            </if>-->
 
             <if test="object.map.excludeObjectIds != null">
                 and d.object_id not in
@@ -324,27 +317,33 @@
         </if>
     </sql>
 
-    <sql id="selectDomainsFromSort">
+    <sql id="selectDomainsJoinSort">
         <if test="sort != null">
-            <if test="sort.key in {'text', 'number', 'date', 'values', 'entity', 'entity_value'}">
-                left join "${object.entityName}_attribute" sort_a
-                  on sort_a.domain_id = d.id
-                    and sort_a.entity_attribute_id = #{sort.values.entityAttributeId}
-                    and sort_a.status = 1
+            <if test="sort.key == 'entity_attribute'">
+                left join "${object.entityName}_attribute" sort_a on sort_a.domain_id = d.id
+                    and sort_a.entity_attribute_id = #{sort.value.entityAttributeId} and sort_a.status = 1
 
-                <if test="sort.key in {'values', 'entity_value'}">
+                <if test="sort.value.valueTypeId == 6">
+                    left join "${sort.value.referenceEntityAttribute.entityName}" sort_r
+                        on sort_r.object_id = sort_a.number and sort_r.status = 1
+
+                    left join "${sort.value.referenceEntityAttribute.entityName}_attribute" sort_ra
+                      on sort_ra.domain_id = sort_r.id
+                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
+                        and sort_ra.status = 1
+
+                    <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
+                        left join "${sort.value.referenceEntityAttribute.entityName}_value" sort_rv
+                            on sort_rv.attribute_id = sort_ra.id and sort_rv.locale_id = #{localeId}
+                    </if>
+                </if>
+
+                <if test="sort.value.valueTypeId == 8">
                     left join "${object.entityName}_value" sort_v on sort_v.attribute_id = sort_a.id
+                        and sort_v.locale_id = #{localeId}
                 </if>
 
                 <!--
-                <if test="sort.key == 'entity' and sort.values != null and sort.values.referenceEntityAttribute != null">
-                    left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
-                      on sort_ra.object_id = sort_a.number
-                        and sort_ra.entity_attribute_id = #{sort.values.referenceEntityAttribute.entityAttributeId}
-                        and sort_ra.status = 1
-                    left join "${sort.values.referenceEntityAttribute.entityName}_value" sort_rv
-                      on sort_rv.attribute_id = sort_ra.id
-                </if>
 
                 <if test="sort.key == 'entity_value' and sort.values != null and sort.values.referenceEntityAttribute != null">
                     left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
@@ -359,14 +358,31 @@
         </if>
     </sql>
 
-    <sql id="selectDomainsOrderSort">
+    <sql id="selectDomainsSort">
         <if test="sort != null">
             <choose>
-                <when test="sort.key == 'id'">order by d.id ${asc}</when>
+                <when test="sort.key == 'object_id'">
+                    order by d.object_id ${asc}
+                </when>
+                <when test="sort.key == 'entity_attribute'">
+                    <choose>
+                        <when test="sort.value.valueTypeId == 6">
+                            <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
+                                order by sort_rv.text ${asc}
+                            </if>
+                        </when>
+                        <when test="sort.value.valueTypeId == 8">
+                            order by sort_v.text ${asc}
+                        </when>
+                    </choose>
+                </when>
+
+
+                <!--<when test="sort.key == 'id'">order by d.id ${asc}</when>
                 <when test="sort.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
                 <when test="sort.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
                 <when test="sort.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
-                <when test="sort.key == 'values'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>
+                <when test="sort.key == 'values'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>-->
                 <!--
                 <when test="sort.key in {'entity', 'entity_value'} and sort.values != null and sort.values.referenceEntityAttribute != null">
                     order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
@@ -388,12 +404,11 @@
     <!--suppress SqlResolve -->
     <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMapJoin">
         <include refid="selectDomainsSelect"/>
-        from (select d.id
-            <include refid="selectDomainsFrom"/>
-            <include refid="selectDomainsFromFilter"/>
-            <include refid="selectDomainsFromSort"/>
+        from (select d.id from "${object.entityName}" d
+            <include refid="selectDomainsJoinFilter"/>
+            <include refid="selectDomainsJoinSort"/>
             <include refid="selectDomainsWhere"/>
-            <include refid="selectDomainsOrderSort"/>
+            <include refid="selectDomainsSort"/>
             ${limit}
         ) o
         left join "${object.entityName}" d on d.id = o.id
@@ -405,17 +420,15 @@
                     </foreach>
             </if>
         left join "${object.entityName}_value" v on v.attribute_id = a.id
+        <include refid="selectDomainsJoinSort"/>
+        <include refid="selectDomainsSort"/>
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct dd.d_id)
-        from (
-          select d.id d_id
-          <include refid="selectDomainsFrom"/>
-          <include refid="selectDomainsFromFilter"/>
-          <include refid="selectDomainsWhere"/>
-        ) dd
+        select count(distinct d.id) from "${object.entityName}" d
+        <include refid="selectDomainsJoinFilter"/>
+        <include refid="selectDomainsWhere"/>
     </select>
 
     <!--suppress SqlResolve -->

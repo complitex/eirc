@@ -13,7 +13,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
-import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.KeyColumn;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
 import ru.complitex.common.component.table.TableForm;
@@ -69,7 +69,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
-        columns.add(new Column<Matching>("id").setCssClass("domain-id-column"));
+        columns.add(new KeyColumn<Matching>("id").setCssClass("id-column"));
         columns.add(newObjectId("objectId"));
 
         if (isParentIdVisible()) {
@@ -77,17 +77,17 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         }
 
         if (isAdditionalParentIdVisible()) {
-            columns.add(new Column<>("additionalParentId"));
+            columns.add(new KeyColumn<>("additionalParentId"));
         }
 
-        columns.add(new Column<>("externalId"));
-        columns.add(new Column<>("additionalExternalId"));
-        columns.add(new Column<>("name"));
-        columns.add(new Column<>("additionalName"));
-        columns.add(new Column<>("startDate"));
-        columns.add(new Column<>("endDate"));
+        columns.add(new KeyColumn<>("externalId"));
+        columns.add(new KeyColumn<>("additionalExternalId"));
+        columns.add(new KeyColumn<>("name"));
+        columns.add(new KeyColumn<>("additionalName"));
+        columns.add(new KeyColumn<>("startDate"));
+        columns.add(new KeyColumn<>("endDate"));
 
-        columns.add(new Column<>("companyId"){
+        columns.add(new KeyColumn<>("companyId"){
             @Override
             protected IModel<?> newItemModel(IModel<Matching> rowModel) {
                 Long companyId = rowModel.getObject().getCompanyId();
@@ -96,7 +96,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             }
         });
 
-        columns.add(new Column<>("userCompanyId"){
+        columns.add(new KeyColumn<>("userCompanyId"){
             @Override
             protected IModel<?> newItemModel(IModel<Matching> rowModel) {
                 Long userCompanyId = rowModel.getObject().getUserCompanyId();
@@ -154,8 +154,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         });
     }
 
-    protected Column<Matching> newObjectId(String columnKey) {
-        return new Column<>(columnKey);
+    protected KeyColumn<Matching> newObjectId(String columnKey) {
+        return new KeyColumn<>(columnKey);
     }
 
     protected Component newObjectId(String componentId, IModel<Matching> model) {
@@ -166,8 +166,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected Column<Matching> newParentId(String columnKey) {
-        return new Column<>(columnKey);
+    protected KeyColumn<Matching> newParentId(String columnKey) {
+        return new KeyColumn<>(columnKey);
     }
 
     protected Component newParentId(String componentId, IModel<Matching> model) {
@@ -178,8 +178,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected Column<Matching> newAdditionalParentId(String columnKey) {
-        return new Column<>(columnKey);
+    protected KeyColumn<Matching> newAdditionalParentId(String columnKey) {
+        return new KeyColumn<>(columnKey);
     }
 
 }

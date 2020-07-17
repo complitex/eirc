@@ -13,7 +13,9 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Response;
 import ru.complitex.common.component.form.LinkPanel;
+import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.TableForm;
 import ru.complitex.domain.entity.Domain;
 
@@ -21,23 +23,34 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly A. Ivanov
  * 26.02.2019 20:22
  */
-public abstract class DomainActionColumn<T extends Domain<T>> extends AbstractDomainColumn<T> {
+public abstract class ActionColumn<T extends Domain<T>> extends Column<T> {
 
-    private AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
+    private final AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender(){
         @Override
-        protected String getSpanClass() {
-            return super.getSpanClass();
+        public void afterRender(final Component component){
+            Response r = component.getResponse();
+
+            r.write("<span class=\"");
+            r.write(getSpanClass());
+            r.write("\" ");
+            r.write("style=\"display: none\"");
+            r.write("id=\"");
+            r.write(getMarkupId());
+            r.write("\">");
+            r.write("<img src=\"");
+            r.write(getIndicatorUrl());
+            r.write("\" alt=\"\"/></span>");
         }
     };
 
-    public DomainActionColumn() {
-        super(Model.of(""));
+    public ActionColumn() {
+        super(Model.of(""), null);
     }
 
-//    @Override
-//    public Component getHeader(String componentId) {
-//        return super.getHeader(componentId).add(ajaxIndicatorAppender);
-//    }
+    @Override
+    public Component getHeader(String componentId) {
+        return super.getHeader(componentId).add(ajaxIndicatorAppender);
+    }
 
     @Override
     public Component newFilter(String componentId, TableForm<T> tableForm) {
@@ -57,7 +70,7 @@ public abstract class DomainActionColumn<T extends Domain<T>> extends AbstractDo
         repeatingView.add(new LinkPanel(repeatingView.newChildId(), new BootstrapAjaxLink<>(LinkPanel.LINK_COMPONENT_ID, Buttons.Type.Link) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                DomainActionColumn.this.onAction(rowModel, target);
+                ActionColumn.this.onAction(rowModel, target);
             }
 
             @Override
@@ -75,7 +88,7 @@ public abstract class DomainActionColumn<T extends Domain<T>> extends AbstractDo
 
     @Override
     public String getCssClass() {
-        return "domain-action-column";
+        return "action-column";
     }
 
     public AjaxIndicatorAppender getAjaxIndicatorAppender() {

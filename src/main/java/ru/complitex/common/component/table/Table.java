@@ -1,6 +1,7 @@
 package ru.complitex.common.component.table;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
@@ -8,6 +9,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.domain.component.table.ActionColumn;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,12 +28,17 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
                  TableForm<T> form, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
 
-//        ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof DomainActionColumn)
-//                .findAny()
-//                .map(c -> ((DomainActionColumn) c).getAjaxIndicatorAppender())
-//                .orElse(null);
+        ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof ActionColumn)
+                .findAny()
+                .map(c -> ((ActionColumn<?>) c).getAjaxIndicatorAppender())
+                .orElse(null);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<Sort>(this, provider){
+        getBody().setOutputMarkupId(true);
+
+        getBottomToolbars().setOutputMarkupId(true);
+        getBottomToolbars().setOutputMarkupPlaceholderTag(true);
+
+        addTopToolbar(new AjaxFallbackHeadersToolbar<>(this, provider){
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;
@@ -70,14 +77,6 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
         }
     }
 
-    public AjaxIndicatorAppender getAjaxIndicatorAppender() {
-        return ajaxIndicatorAppender;
-    }
-
-    public void setAjaxIndicatorAppender(AjaxIndicatorAppender ajaxIndicatorAppender) {
-        this.ajaxIndicatorAppender = ajaxIndicatorAppender;
-    }
-
     public boolean isHideOnEmpty() {
         return hideOnEmpty;
     }
@@ -86,14 +85,8 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
         this.hideOnEmpty = hideOnEmpty;
     }
 
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
-
-//        getColumns().forEach(c -> {
-//            if (c instanceof DomainColumn){
-//                NonContextual.of(DomainColumn.class).inject((DomainColumn) c);
-//            }
-//        });
+    public void update(AjaxRequestTarget target){
+        target.add(getBody());
+        target.add(getBottomToolbars());
     }
 }

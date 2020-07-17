@@ -5,7 +5,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.address.entity.Country;
-import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.KeyColumn;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.matching.entity.Matching;
@@ -26,8 +26,8 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     }
 
     @Override
-    protected Column<Matching> newObjectId(String columnKey) {
-        return new Column<>(columnKey){
+    protected KeyColumn<Matching> newObjectId(String columnKey) {
+        return new KeyColumn<>(columnKey){
             @Override
             protected IModel<?> newItemModel(IModel<Matching> rowModel) {
                 return Model.of(domainService.getDomain(Country.class, rowModel.getObject().getObjectId()).getName());

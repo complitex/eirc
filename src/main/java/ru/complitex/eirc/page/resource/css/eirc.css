@@ -77,11 +77,11 @@
     padding-bottom: 57px;
 }
 
-.domain-id-column{
+.id-column{
     width: 60px
 }
 
-.domain-action-column{
+.action-column{
     width: 60px;
     display: table-cell;
 }
@@ -160,10 +160,14 @@ td .btn{
     opacity: 0.65;
 }
 
-[hidden]{
-    display: none;
-}
-
 form label[required=required]:after{
     content: "*";
+}
+
+.wicket_orderDown{
+    text-decoration: underline;
+}
+
+.wicket_orderUp{
+    text-decoration: underline;
 }
