@@ -164,9 +164,9 @@ BEGIN
     EXECUTE CONCAT('
         CREATE TABLE "', entityName, '_id"
         (
-            "object_id"        BIGSERIAL,  -- ''Идентификатор объекта''
-            "date"             TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- ''Дата''
+            "object_id"        BIGSERIAL,  -- ''Идентификатор''
             "uuid"             UUID NOT NULL,  -- ''Уникальный идентификатор''
+            "timestamp"        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- ''Время создания''
             PRIMARY KEY ("object_id")
         );');
 
@@ -174,15 +174,13 @@ BEGIN
         CREATE TABLE "', entityName, '"
         (
             "id"               BIGSERIAL,  -- ''Идентификатор''
-            "object_id"        BIGINT NOT NULL,  -- ''Идентификатор объекта''
+            "object_id"        BIGINT NOT NULL REFERENCES "', entityName, '_id" ON DELETE CASCADE,  -- ''Идентификатор объекта''
             "start_date"       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- ''Дата начала периода действия объекта''
             "end_date"         TIMESTAMP,  -- ''Дата окончания периода действия объекта''
             "status"           INT  NOT NULL DEFAULT 1,  -- ''Статус''
             "permission_id"    BIGINT,  -- ''Права доступа к объекту''
-            "user_id"          BIGINT,  -- ''Идентифитактор пользователя''
-            PRIMARY KEY ("id"),
-            CONSTRAINT "fk_', entityName, '_id" FOREIGN KEY ("object_id") REFERENCES "', entityName, '_id" ("object_id"),
-            CONSTRAINT "fk_', entityName, '__user" FOREIGN KEY ("user_id") REFERENCES "user" ("id")
+            "user_id"          BIGINT REFERENCES "user",  -- ''Идентифитактор пользователя''
+            PRIMARY KEY ("id")
         );');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, ' IS ''', entityDescription, ''';');
@@ -192,7 +190,7 @@ BEGIN
         CREATE TABLE "', entityName, '_attribute"
         (
             "id"                  BIGSERIAL,  -- ''Идентификатор''
-            "domain_id"           BIGINT NOT NULL,  -- ''Идентификатор домена''
+            "domain_id"           BIGINT NOT NULL REFERENCES "', entityName,'" ON DELETE CASCADE,  -- ''Идентификатор домена''
             "entity_attribute_id" INT NOT NULL,  -- ''Идентификатор типа атрибута''
             "text"                VARCHAR(255),  -- ''Текст''
             "number"              BIGINT,  -- ''Число''
@@ -200,10 +198,8 @@ BEGIN
             "start_date"          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- ''Дата начала периода действия атрибута''
             "end_date"            TIMESTAMP,  -- ''Дата окончания периода действия атрибута''
             "status"              INT    NOT NULL DEFAULT 1,  -- ''Статус''
-            "user_id"             BIGINT NULL,  -- ''Идентифитактор пользователя''
-            PRIMARY KEY ("id"),
-            CONSTRAINT "fk_', entityName, '_attribute__', entityName, '" FOREIGN KEY ("domain_id") REFERENCES "', entityName, '" ("id"),
-            CONSTRAINT "fk_', entityName, '_attribute__user" FOREIGN KEY ("user_id") REFERENCES "user" ("id")
+            "user_id"             BIGINT NULL REFERENCES "user",  -- ''Идентифитактор пользователя''
+            PRIMARY KEY ("id")
         );');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_attribute IS ''', entityDescription, ' - Аттрибуты'';');
@@ -213,15 +209,12 @@ BEGIN
         CREATE TABLE "', entityName, '_value"
         (
             "id"           BIGSERIAL,  -- ''Идентификатор''
-            "attribute_id" BIGINT NOT NULL,  -- ''Идентификатор атрибута''
-            "locale_id"    INT,  -- ''Идентификатор локали''
+            "attribute_id" BIGINT NOT NULL REFERENCES "', entityName, '_attribute" ON DELETE CASCADE,  -- ''Идентификатор атрибута''
+            "locale_id"    INT REFERENCES "locale",  -- ''Идентификатор локали''
             "text"         VARCHAR(1000),  -- ''Текстовое значение''
             "number"       BIGINT,  -- ''Числовое значение''
             PRIMARY KEY ("id"),
-            UNIQUE ("attribute_id", "locale_id"),
-            CONSTRAINT "fk_', entityName, '_value__', entityName, '_attribute" FOREIGN KEY ("attribute_id") REFERENCES "',
-                entityName, '_attribute" ("id"),
-            CONSTRAINT "fk_', entityName, '_value__locale" FOREIGN KEY ("locale_id") REFERENCES "locale" ("id")
+            UNIQUE ("attribute_id", "locale_id")
         );');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_value IS ''', entityDescription, ' - Значения атрибутов'';');
@@ -288,9 +281,13 @@ CREATE OR REPLACE PROCEDURE create_domain(IN entityId BIGINT,
 LANGUAGE plpgsql
 AS $$
 BEGIN
+--
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_value"');
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_attribute"');
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '"');
+    EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_matching";');
+--
+
     EXECUTE CONCAT('DROP TABLE IF EXISTS "', entityName, '_id"');
 
     CALL create_domain_tables(entityName, entityDescriptionRU);
@@ -383,7 +380,7 @@ BEGIN
     EXECUTE CONCAT('
         CREATE TABLE "', entityName, '_matching" (
           "id" BIGSERIAL,  -- ''Идентификатор соответствия''
-          "object_id" BIGINT NOT NULL,  -- ''Идентификатор объекта''
+          "object_id" BIGINT NOT NULL REFERENCES "', entityName,'_id" ON DELETE CASCADE,  -- ''Идентификатор объекта''
           "parent_id" BIGINT,  -- ''Идентификатор родителя''
           "additional_parent_id" VARCHAR(64),  -- ''Дополнительный идентификатор родителя''
           "external_id" BIGINT,  -- ''Внешний идентификатор''
@@ -394,8 +391,7 @@ BEGIN
           "end_date" TIMESTAMP,  -- ''Дата окончания актуальности''
           "company_id" BIGINT,  -- ''Идентификатор компании''
           "user_company_id" BIGINT,  -- ''Идентификатор компании пользователя''
-          PRIMARY KEY ("id"),
-          CONSTRAINT "fk_', entityName, '_id" FOREIGN KEY ("object_id") REFERENCES "', entityName, '_id" ("object_id"));');
+          PRIMARY KEY ("id"));');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_matching IS ''', entityDescription, ' - Соответствия'';');
 END;
