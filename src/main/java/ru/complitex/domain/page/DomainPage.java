@@ -107,24 +107,38 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         provider.setSort(idColumn.getSortProperty(), SortOrder.DESCENDING);
 
-        getListEntityAttributes().forEach(entityAttribute -> addColumn(columns, entityAttribute));
+        getListEntityAttributes().forEach(entityAttribute -> addColumn(entityAttribute, columns));
 
         if (isEditEnabled()) {
             columns.add(new ActionColumn<T>() {
                 @Override
-                protected void onAction(IModel<T> rowModel, AjaxRequestTarget target) {
-                    onEdit(rowModel.getObject(), target);
+                protected void onSearch(AjaxRequestTarget target) {
+                    getFilter().getObject().setObjectId(null);
+
+                    getFilter().getObject().getAttributes().forEach(a -> {
+                        a.setNumber(null);
+                        a.setText(null);
+                    });
+
+                    getFilter().getMap().clear();
+
+                    target.add(container);
                 }
 
                 @Override
-                protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel) {
+                protected void onEdit(IModel<T> rowModel, AjaxRequestTarget target) {
+                    DomainPage.this.onEdit(rowModel.getObject(), target);
+                }
+
+                @Override
+                protected void addAction(RepeatingView repeatingView, IModel<T> rowModel) {
                     DomainPage.this.onNewAction(repeatingView, rowModel);
                 }
             });
         }
 
 
-        table = new Table<>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()){
+        table = new Table<>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()) {
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -161,7 +175,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             domainModal = newDomainModal(DOMAIN_EDIT_MODAL_ID);
 
             editForm.add(domainModal);
-        }else{
+        } else {
             editForm.add(new EmptyPanel("edit"));
         }
     }
@@ -179,7 +193,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected DomainModal<T> newDomainModal(String componentId) {
-        return new DomainModal<>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)){
+        return new DomainModal<>(componentId, domainClass, getEditEntityAttributes(), t -> t.add(notification, table)) {
             @Override
             protected boolean validate(Domain<T> domain) {
                 return DomainPage.this.validate(domain);
@@ -206,19 +220,19 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         domainModal.edit(newDomain(), target);
     }
 
-    protected T newDomain(){
+    protected T newDomain() {
         return Domains.newObject(domainClass);
     }
 
-    protected void addColumn(List<IColumn<T, Sort>> columns, EntityAttribute entityAttribute) {
-        columns.add(new DomainColumn<>(entityAttribute, t -> table.update(t)));
+    protected void addColumn(EntityAttribute entityAttribute, List<IColumn<T, Sort>> columns) {
+        columns.add(new DomainColumn<>(entityAttribute, this::updateTable));
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
         domainModal.edit(object, target);
     }
 
-    protected void onRowItem(Item<T> item){
+    protected void onRowItem(Item<T> item) {
         item.add(new AjaxEventBehavior("click") {
             @Override
             protected void onEvent(AjaxRequestTarget target) {
@@ -243,20 +257,20 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return domainService.getDomainsCount(filter);
     }
 
-    protected int[] getRequiredEntityAttributeIds(){
+    protected int[] getRequiredEntityAttributeIds() {
         return new int[]{};
     }
 
-    protected List<EntityAttribute> getListEntityAttributes(){
+    protected List<EntityAttribute> getListEntityAttributes() {
         return getEntity().getEntityAttributes();
     }
 
-    protected List<EntityAttribute> getEditEntityAttributes(){
+    protected List<EntityAttribute> getEditEntityAttributes() {
         List<EntityAttribute> entityAttributes = getListEntityAttributes();
 
         Set<Integer> required = new HashSet<>();
 
-        for (int id : getRequiredEntityAttributeIds()){
+        for (int id : getRequiredEntityAttributeIds()) {
             required.add(id);
         }
 
@@ -281,16 +295,19 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return table;
     }
 
-    protected boolean isEditEnabled(){
+    protected boolean isEditEnabled() {
         return true;
     }
 
-    protected boolean isAddEnabled(){
+    protected boolean isAddEnabled() {
         return true;
     }
 
-    protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel){
+    protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel) {
 
     }
 
+    protected void updateTable(AjaxRequestTarget target){
+        getTable().update(target);
+    }
 }

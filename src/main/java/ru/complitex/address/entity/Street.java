@@ -7,8 +7,8 @@ import ru.complitex.domain.entity.NameDomain;
  * 02.04.2020 9:42 PM
  */
 public class Street extends NameDomain<Street> {
-    public final static int ENTITY_ID = 7;
-    public final static String ENTITY_NAME = "street";
+    public final static int ID = 7;
+    public final static String ENTITY = "street";
 
     public final static int CITY = 1;
     public final static int STREET_TYPE = 2;
@@ -16,7 +16,7 @@ public class Street extends NameDomain<Street> {
     public final static int CODE = 4;
 
     public Street() {
-        super(ENTITY_ID, ENTITY_NAME, NAME);
+        super(ID, ENTITY, NAME);
     }
 
     public Long getCityId(){

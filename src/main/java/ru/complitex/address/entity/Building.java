@@ -1,25 +1,25 @@
 package ru.complitex.address.entity;
 
-import ru.complitex.domain.entity.NameDomain;
+import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.util.Locales;
 
 /**
  * @author Anatoly A. Ivanov
  * 02.04.2020 9:44 PM
  */
-public class Building extends NameDomain<Building> {
-    public final static int ENTITY_ID = 8;
-    public final static String ENTITY_NAME = "building";
+public class Building extends Domain<Building> {
+    public final static int ID = 8;
+    public final static String ENTITY = "building";
 
     public final static int DISTRICT = 1;
     public final static int STREET = 2;
-    public final static int NAME = 3;
+    public final static int NUMBER = 3;
     public final static int CORPS = 4;
     public final static int STRUCTURE = 5;
     public final static int CODE = 6;
 
     public Building() {
-        super(ENTITY_ID, ENTITY_NAME, NAME);
+        super(ID, ENTITY);
     }
 
     public Long getDistrictId(){
@@ -36,6 +36,30 @@ public class Building extends NameDomain<Building> {
 
     public void setStreetId(Long streetId){
         setNumber(STREET, streetId);
+    }
+
+    public String getNumber(){
+        return getTextValue(NUMBER);
+    }
+
+    public void setNumber(String name){
+        setTextValue(NUMBER, name);
+    }
+
+    public String getNumber(Integer localeId){
+        return getTextValue(NUMBER, localeId);
+    }
+
+    public void setNumber(String name, Integer localeId){
+        setTextValue(NUMBER, name, localeId);
+    }
+
+    public String getAltNumber(){
+        return getNumber(Locales.getAltLocaleId());
+    }
+
+    public void setAltNumber(String altNumber){
+        setNumber(altNumber, Locales.getAltLocaleId());
     }
 
     public String getCorps(){
@@ -60,5 +84,29 @@ public class Building extends NameDomain<Building> {
 
     public void setAltCorps(String altCorps){
         setCorps(altCorps, Locales.getAltLocaleId());
+    }
+
+    public String getStructure(){
+        return getTextValue(STRUCTURE);
+    }
+
+    public void setStructure(String shortName){
+        setTextValue(STRUCTURE, shortName);
+    }
+
+    public String getStructure(Integer localeId){
+        return getTextValue(STRUCTURE, localeId);
+    }
+
+    public void setStructure(String shortName, Integer localeId){
+        setTextValue(STRUCTURE, shortName, localeId);
+    }
+
+    public String getAltStructure(){
+        return getStructure(Locales.getAltLocaleId());
+    }
+
+    public void setAltStructure(String altStructure){
+        setStructure(altStructure, Locales.getAltLocaleId());
     }
 }

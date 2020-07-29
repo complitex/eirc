@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.StreetMapper">
+    <resultMap id="streetResultMap" type="ru.complitex.address.entity.Street"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap"/>
+
+    <sql id="selectStreetsJoin">
+        <if test="map.country != null or map.region != null or sort.key in {'country', 'region'}">
+            left join "street_attribute" da_c on da_c.domain_id = d.id and da_c.entity_attribute_id = 1 and da_c.status = 1
+            left join "city" city on city.object_id = da_c.number and city.status = 1
+            left join "city_attribute" city_a_r on city_a_r.domain_id = city.id and city_a_r.entity_attribute_id = 1 and city_a_r.status = 1
+            left join "region" r on r.object_id = city_a_r.number and r.status = 1
+
+            <if test="map.region != null or sort.key == 'region'">
+                left join "region_attribute" ra_n on ra_n.domain_id = r.id and ra_n.entity_attribute_id = 2 and ra_n.status = 1
+                left join "region_value" rv_n on rv_n.attribute_id = ra_n.id and rv_n.locale_id = #{localeId}
+            </if>
+
+            <if test="map.country != null or sort.key == 'country'">
+                left join "region_attribute" ra_c on ra_c.domain_id = r.id and ra_c.entity_attribute_id = 1 and ra_c.status = 1
+                left join "country" c on c.object_id = ra_c.number and c.status = 1
+                left join "country_attribute" ca_n on ca_n.domain_id = c.id and ca_n.entity_attribute_id = 1 and ca_n.status = 1
+                left join "country_value" cv_n on cv_n.attribute_id = ca_n.id and cv_n.locale_id = #{localeId}
+            </if>
+        </if>
+    </sql>
+
+    <sql id="selectStreetsWhere">
+        <if test="map.region != null">
+            <if test="filter == 'search'">
+                ${operator} rv_n.text ilike concat('%', #{map.region}, '%')
+            </if>
+        </if>
+
+        <if test="map.country != null">
+            <if test="filter == 'search'">
+                ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
+            </if>
+        </if>
+    </sql>
+
+    <sql id="selectStreetsSort">
+        <if test="sort.key == 'region'">
+            order by rv_n.text ${asc}
+        </if>
+
+        <if test="sort.key == 'country'">
+            order by cv_n.text ${asc}
+        </if>
+    </sql>
+
+    <select id="selectStreets" parameterType="ru.complitex.common.entity.Filter" resultMap="streetResultMap">
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (select d.id from "street" d
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+            <include refid="selectStreetsJoin"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectStreetsWhere"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+            <include refid="selectStreetsSort"/>
+            ${limit}
+        ) o
+        left join "street" d on d.id = o.id
+        left join "street_attribute" a on a.domain_id = d.id and a.status = 1
+            <if test="!entityAttributeIds.empty">
+                and a.entity_attribute_id in
+                    <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                        ${i}
+                    </foreach>
+            </if>
+        left join "street_value" v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+        <include refid="selectStreetsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+        <include refid="selectStreetsSort"/>
+    </select>
+
+    <select id="selectStreetsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "street" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectStreetsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectStreetsWhere"/>
+    </select>
+</mapper>

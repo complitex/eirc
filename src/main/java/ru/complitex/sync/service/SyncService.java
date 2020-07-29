@@ -90,23 +90,23 @@ public class SyncService {
 
     private ISyncHandler getHandler(int entityId){
         switch (entityId){
-            case Country.ENTITY_ID:
+            case Country.ID:
                 return countrySyncHandler;
-            case Region.ENTITY_ID:
+            case Region.ID:
                 return regionSyncHandler;
-            case CityType.ENTITY_ID:
+            case CityType.ID:
                 return cityTypeSyncHandler;
-            case City.ENTITY_ID:
+            case City.ID:
                 return citySyncHandler;
-            case District.ENTITY_ID:
+            case District.ID:
                 return districtSyncHandler;
-            case StreetType.ENTITY_ID:
+            case StreetType.ID:
                 return streetTypeSyncHandler;
-            case Street.ENTITY_ID:
+            case Street.ID:
                 return streetSyncHandler;
-            case Building.ENTITY_ID:
+            case Building.ID:
                 return buildingSyncHandler;
-            case Company.ENTITY_ID:
+            case Company.ID:
                 return companySyncHandler;
 
             default:
@@ -188,7 +188,7 @@ public class SyncService {
     private List<Sync> getSyncs(int entityId, int syncStatusId, Long externalId) {
         List<Sync> syncs = syncMapper.getSyncs(Filter.of(new Sync(entityId, syncStatusId, externalId)));
 
-        if (entityId == Company.ENTITY_ID) {
+        if (entityId == Company.ID) {
             Map<Long, Sync> map = syncs.stream().collect(Collectors.toMap(Sync::getExternalId, s -> s));
 
             Map<Long, Integer> levelMap = new HashMap<>();

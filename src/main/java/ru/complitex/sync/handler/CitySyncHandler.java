@@ -47,11 +47,11 @@ public class CitySyncHandler implements ISyncHandler<City> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(Filter.of(new Sync(Region.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(Region.ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Region.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Region.ENTITY,
                 sync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -62,7 +62,7 @@ public class CitySyncHandler implements ISyncHandler<City> {
     }
 
     private Long getAdditionalParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(CityType.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(CityType.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), organizationId);
 
         if (matchingList.isEmpty()){
@@ -106,7 +106,7 @@ public class CitySyncHandler implements ISyncHandler<City> {
 
     @Override
     public Matching insertMatching(City city, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(City.ENTITY_NAME, city.getObjectId(), city.getRegionId(),
+        return matchingMapper.insert(new Matching(City.ENTITY, city.getObjectId(), city.getRegionId(),
                 sync.getExternalId(), sync.getName(), companyId));
     }
 

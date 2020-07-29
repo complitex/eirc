@@ -20,11 +20,11 @@ public class DistrictGroup extends CityGroup {
     private boolean districtRequired;
 
     public DistrictGroup(String id, IModel<Long> districtModel) {
-        super(id, new AddressModel(District.ENTITY_NAME, districtModel, District.CITY));
+        super(id, new AddressModel(District.ENTITY, districtModel, District.CITY));
 
         this.districtModel = districtModel;
 
-        district = new DomainGroup("district", District.ENTITY_NAME, District.NAME, districtModel){
+        district = new DomainGroup("district", District.ENTITY, District.NAME, districtModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(District.CITY, getCityModel().getObject());

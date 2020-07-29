@@ -11,10 +11,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
-import ru.complitex.common.component.table.Column;
-import ru.complitex.common.entity.Sort;
 import ru.complitex.common.component.form.InputPanel;
+import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.Domain;
 
 /**

@@ -3,7 +3,7 @@
 <mapper namespace="ru.complitex.domain.mapper.DomainMapper">
 <!--    <cache/>-->
 
-    <resultMap id="domainResultMap" type="ru.complitex.domain.entity.Domain">
+    <resultMap id="domainResultMapSelect" type="ru.complitex.domain.entity.Domain">
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
         <result column="start_date" property="startDate"/>
@@ -17,7 +17,7 @@
                     select="ru.complitex.domain.mapper.AttributeMapper.selectAttributes"/>
     </resultMap>
 
-    <resultMap id="domainResultMapJoin" type="ru.complitex.domain.entity.Domain">
+    <resultMap id="domainResultMap" type="ru.complitex.domain.entity.Domain">
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
         <result column="start_date" property="startDate"/>
@@ -108,7 +108,7 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMapJoin">
+    <select id="selectDomain" parameterType="ru.complitex.domain.entity.Domain" resultMap="domainResultMap">
         <include refid="selectDomainSql"/>
     </select>
 
@@ -306,90 +306,84 @@
     </sql>
 
     <sql id="selectDomainsSelectSort">
-        <if test="sort != null">
-            <choose>
-                <when test="sort.key == 'text'">, sort_a.text</when>
-                <when test="sort.key == 'number'">, sort_a.number</when>
-                <when test="sort.key == 'date'">, sort_a.date</when>
-                <when test="sort.key == 'values'">, sort_v.text</when>
-                <when test="sort.key == 'entity'">, sort_rv.text</when>
-            </choose>
-        </if>
+        <choose>
+            <when test="sort.key == 'text'">, sort_a.text</when>
+            <when test="sort.key == 'number'">, sort_a.number</when>
+            <when test="sort.key == 'date'">, sort_a.date</when>
+            <when test="sort.key == 'values'">, sort_v.text</when>
+            <when test="sort.key == 'entity'">, sort_rv.text</when>
+        </choose>
     </sql>
 
     <sql id="selectDomainsJoinSort">
-        <if test="sort != null">
-            <if test="sort.key == 'entity_attribute'">
-                left join "${object.entityName}_attribute" sort_a on sort_a.domain_id = d.id
-                    and sort_a.entity_attribute_id = #{sort.value.entityAttributeId} and sort_a.status = 1
+        <if test="sort.key == 'entity_attribute'">
+            left join "${object.entityName}_attribute" sort_a on sort_a.domain_id = d.id
+                and sort_a.entity_attribute_id = #{sort.value.entityAttributeId} and sort_a.status = 1
 
-                <if test="sort.value.valueTypeId == 6">
-                    left join "${sort.value.referenceEntityAttribute.entityName}" sort_r
-                        on sort_r.object_id = sort_a.number and sort_r.status = 1
+            <if test="sort.value.valueTypeId == 6">
+                left join "${sort.value.referenceEntityAttribute.entityName}" sort_r
+                    on sort_r.object_id = sort_a.number and sort_r.status = 1
 
-                    left join "${sort.value.referenceEntityAttribute.entityName}_attribute" sort_ra
-                      on sort_ra.domain_id = sort_r.id
-                        and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
-                        and sort_ra.status = 1
+                left join "${sort.value.referenceEntityAttribute.entityName}_attribute" sort_ra
+                  on sort_ra.domain_id = sort_r.id
+                    and sort_ra.entity_attribute_id = #{sort.value.referenceEntityAttribute.entityAttributeId}
+                    and sort_ra.status = 1
 
-                    <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
-                        left join "${sort.value.referenceEntityAttribute.entityName}_value" sort_rv
-                            on sort_rv.attribute_id = sort_ra.id and sort_rv.locale_id = #{localeId}
-                    </if>
+                <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
+                    left join "${sort.value.referenceEntityAttribute.entityName}_value" sort_rv
+                        on sort_rv.attribute_id = sort_ra.id and sort_rv.locale_id = #{localeId}
                 </if>
-
-                <if test="sort.value.valueTypeId == 8">
-                    left join "${object.entityName}_value" sort_v on sort_v.attribute_id = sort_a.id
-                        and sort_v.locale_id = #{localeId}
-                </if>
-
-                <!--
-
-                <if test="sort.key == 'entity_value' and sort.values != null and sort.values.referenceEntityAttribute != null">
-                    left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
-                      on sort_ra.object_id = sort_v.number
-                        and sort_ra.entity_attribute_id = #{sort.values.referenceEntityAttribute.entityAttributeId}
-                        and sort_ra.status = 1
-                    left join "${sort.values.referenceEntityAttribute.entityName}_value" sort_rv
-                      on sort_rv.attribute_id = sort_ra.id
-                </if>
-                -->
             </if>
+
+            <if test="sort.value.valueTypeId == 8">
+                left join "${object.entityName}_value" sort_v on sort_v.attribute_id = sort_a.id
+                    and sort_v.locale_id = #{localeId}
+            </if>
+
+            <!--
+
+            <if test="sort.key == 'entity_value' and sort.values != null and sort.values.referenceEntityAttribute != null">
+                left join "${sort.values.referenceEntityAttribute.entityName}_attribute" sort_ra
+                  on sort_ra.object_id = sort_v.number
+                    and sort_ra.entity_attribute_id = #{sort.values.referenceEntityAttribute.entityAttributeId}
+                    and sort_ra.status = 1
+                left join "${sort.values.referenceEntityAttribute.entityName}_value" sort_rv
+                  on sort_rv.attribute_id = sort_ra.id
+            </if>
+            -->
         </if>
     </sql>
 
     <sql id="selectDomainsSort">
-        <if test="sort != null">
-            <choose>
-                <when test="sort.key == 'object_id'">
-                    order by d.object_id ${asc}
-                </when>
-                <when test="sort.key == 'entity_attribute'">
-                    <choose>
-                        <when test="sort.value.valueTypeId == 6">
-                            <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
-                                order by sort_rv.text ${asc}
-                            </if>
-                        </when>
-                        <when test="sort.value.valueTypeId == 8">
-                            order by sort_v.text ${asc}
-                        </when>
-                    </choose>
-                </when>
+        <choose>
+            <when test="sort.key == 'object_id'">
+                order by d.object_id ${asc}
+            </when>
+            <when test="sort.key == 'entity_attribute'">
+                <choose>
+                    <when test="sort.value.valueTypeId == 6">
+                        <if test="sort.value.referenceEntityAttribute.valueTypeId == 8">
+                            order by sort_rv.text ${asc}
+                        </if>
+                    </when>
+                    <when test="sort.value.valueTypeId == 8">
+                        order by sort_v.text ${asc}
+                    </when>
+                </choose>
+            </when>
 
 
-                <!--<when test="sort.key == 'id'">order by d.id ${asc}</when>
-                <when test="sort.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
-                <when test="sort.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
-                <when test="sort.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
-                <when test="sort.key == 'values'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>-->
-                <!--
-                <when test="sort.key in {'entity', 'entity_value'} and sort.values != null and sort.values.referenceEntityAttribute != null">
-                    order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
-                </when>
-                -->
-            </choose>
-        </if>
+            <!--<when test="sort.key == 'id'">order by d.id ${asc}</when>
+            <when test="sort.key == 'text'">order by group_concat(sort_a.text order by sort_a.text ${asc}) ${asc}</when>
+            <when test="sort.key == 'number'">order by max(sort_a.number) + 0 ${asc}</when>
+            <when test="sort.key == 'date'">order by group_concat(sort_a.date order by sort_a.date ${asc}) ${asc}</when>
+            <when test="sort.key == 'values'">order by group_concat(sort_v.text order by sort_v.text  ${asc}) ${asc}</when>-->
+            <!--
+            <when test="sort.key in {'entity', 'entity_value'} and sort.values != null and sort.values.referenceEntityAttribute != null">
+                order by group_concat(sort_rv.text order by sort_rv.text ${asc}) ${asc}
+            </when>
+            -->
+        </choose>
     </sql>
 
     <!--suppress SqlResolve -->
@@ -402,7 +396,7 @@
     </sql>
 
     <!--suppress SqlResolve -->
-    <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMapJoin">
+    <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMap">
         <include refid="selectDomainsSelect"/>
         from (select d.id from "${object.entityName}" d
             <include refid="selectDomainsJoinFilter"/>

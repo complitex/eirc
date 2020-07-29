@@ -19,9 +19,9 @@ public class ApartmentGroup extends BuildingGroup {
     private boolean apartmentRequired;
 
     public ApartmentGroup(String id, IModel<Long> apartmentModel) {
-        super(id, new AddressModel(Apartment.ENTITY_NAME, apartmentModel, Apartment.BUILDING));
+        super(id, new AddressModel(Apartment.ENTITY, apartmentModel, Apartment.BUILDING));
 
-        apartment = new DomainGroup("apartment", Apartment.ENTITY_NAME, Apartment.NAME, apartmentModel){
+        apartment = new DomainGroup("apartment", Apartment.ENTITY, Apartment.NAME, apartmentModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(Apartment.BUILDING, getBuildingModel().getObject());

@@ -71,7 +71,7 @@ public class CountrySyncHandler implements ISyncHandler<Country> {
 
     @Override
     public Matching insertMatching(Country country, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Country.ENTITY_NAME, country.getObjectId(), sync.getExternalId(),
+        return matchingMapper.insert(new Matching(Country.ENTITY, country.getObjectId(), sync.getExternalId(),
                 sync.getName(), companyId));
     }
 

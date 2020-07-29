@@ -51,7 +51,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
             return null;            
         }
 
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Company.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Company.ENTITY,
                 sync.getParentId(),  companyId);
 
         if (matchingList.isEmpty()) {
@@ -96,7 +96,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
 
     @Override
     public Matching insertMatching(Company company, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Company.ENTITY_NAME, company.getObjectId(), company.getParentId(),
+        return matchingMapper.insert(new Matching(Company.ENTITY, company.getObjectId(), company.getParentId(),
                 sync.getExternalId(), sync.getAdditionalExternalId(), companyId));
     }
 

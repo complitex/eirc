@@ -31,7 +31,7 @@ public class DistrictStreetGroup extends StreetGroup {
 
         this.districtModel = districtModel;
 
-        district = new DomainGroup("district", District.ENTITY_NAME, District.NAME, districtModel){
+        district = new DomainGroup("district", District.ENTITY, District.NAME, districtModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(District.CITY, getCityModel().getObject());
@@ -39,7 +39,7 @@ public class DistrictStreetGroup extends StreetGroup {
 
             @Override
             protected void onChange(AjaxRequestTarget target) {
-                Long cityId = attributeMapper.getNumber(District.ENTITY_NAME, districtModel.getObject(), District.CITY);
+                Long cityId = attributeMapper.getNumber(District.ENTITY, districtModel.getObject(), District.CITY);
 
                 if (!Objects.equals(cityId, getCityModel().getObject())){
                     updateStreet(target);
@@ -81,7 +81,7 @@ public class DistrictStreetGroup extends StreetGroup {
     protected void onStreetChange(AjaxRequestTarget target) {
         onDistrictStreetChange(target);
 
-        Long cityId = attributeMapper.getNumber(Street.ENTITY_NAME, getStreetModel().getObject(), Street.CITY);
+        Long cityId = attributeMapper.getNumber(Street.ENTITY, getStreetModel().getObject(), Street.CITY);
 
         if (!Objects.equals(cityId, getCityModel().getObject())){
             updateDistrict(target);

@@ -4,23 +4,63 @@
     <resultMap id="cityResultMap" type="ru.complitex.address.entity.City"
                extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap"/>
 
-    <sql id="selectCitiesJoinSql">
-
+    <sql id="selectCitiesJoin">
+        <if test="map.country != null or sort.key == 'country'">
+            left join "city_attribute" ca_r on ca_r.domain_id = d.id and ca_r.entity_attribute_id = 1 and ca_r.status = 1
+            left join "region" r on r.object_id = ca_r.number and r.status = 1
+            left join "region_attribute" ra_c on ra_c.domain_id = r.id and ra_c.entity_attribute_id = 1 and ra_c.status = 1
+            left join "country" c on c.object_id = ra_c.number and c.status = 1
+            left join "country_attribute" ca_n on ca_n.domain_id = c.id and ca_n.entity_attribute_id = 1 and ca_n.status = 1
+            left join "country_value" cv_n on cv_n.attribute_id = ca_n.id and cv_n.locale_id = #{localeId}
+        </if>
     </sql>
 
-    <sql id="selectCitiesWhereSql">
-
+    <sql id="selectCitiesWhere">
+        <if test="map.country != null">
+            <if test="filter == 'search'">
+                ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
+            </if>
+        </if>
     </sql>
 
-    <sql id="selectCitiesSortSql">
-
+    <sql id="selectCitiesSort">
+        <if test="sort.key == 'country'">
+            order by cv_n.text ${asc}
+        </if>
     </sql>
 
     <select id="selectCities" parameterType="ru.complitex.common.entity.Filter" resultMap="cityResultMap">
-
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (select d.id from "city" d
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+            <include refid="selectCitiesJoin"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectCitiesWhere"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+            <include refid="selectCitiesSort"/>
+            ${limit}
+        ) o
+        left join "city" d on d.id = o.id
+        left join "city_attribute" a on a.domain_id = d.id and a.status = 1
+            <if test="!entityAttributeIds.empty">
+                and a.entity_attribute_id in
+                    <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                        ${i}
+                    </foreach>
+            </if>
+        left join "city_value" v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+        <include refid="selectCitiesJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+        <include refid="selectCitiesSort"/>
     </select>
 
-    <select id="selectCitiesCount" parameterType="ru.complitex.common.entity.Filter">
-
+    <select id="selectCitiesCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "city" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectCitiesJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectCitiesWhere"/>
     </select>
 </mapper>

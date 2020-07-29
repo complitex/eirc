@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.BuildingMapper">
+    <resultMap id="buildingResultMap" type="ru.complitex.address.entity.Building"
+               extends="ru.complitex.domain.mapper.DomainMapper.domainResultMap"/>
+
+    <sql id="selectBuildingsJoin">
+        <if test="map.country != null or map.region != null or map.city != null or sort.key in {'country', 'region', 'city'}">
+            left join "building_attribute" ba_s on ba_s.domain_id = d.id and ba_s.entity_attribute_id = 2 and ba_s.status = 1
+            left join "street" s on s.object_id = ba_s.number and s.status = 1
+            left join "street_attribute" sa_c on sa_c.domain_id = s.id and sa_c.entity_attribute_id = 1 and sa_c.status = 1
+            left join "city" city on city.object_id = sa_c.number and city.status = 1
+
+            <if test="map.city != null or sort.key == 'city'">
+                left join "city_attribute" city_a_n on city_a_n.domain_id = city.id and city_a_n.entity_attribute_id = 3 and city_a_n.status = 1
+                left join "city_value" city_v_n on city_v_n.attribute_id = city_a_n.id and city_v_n.locale_id = #{localeId}
+            </if>
+
+            <if test="map.region != null or map.country != null or sort.key in {'country', 'region'}">
+                left join "city_attribute" city_a_r on city_a_r.domain_id = city.id and city_a_r.entity_attribute_id = 1 and city_a_r.status = 1
+                left join "region" r on r.object_id = city_a_r.number and r.status = 1
+
+                <if test="map.region != null or sort.key == 'region'">
+                    left join "region_attribute" ra_n on ra_n.domain_id = r.id and ra_n.entity_attribute_id = 2 and ra_n.status = 1
+                    left join "region_value" rv_n on rv_n.attribute_id = ra_n.id and rv_n.locale_id = #{localeId}
+                </if>
+
+                <if test="map.country != null or sort.key == 'country'">
+                    left join "region_attribute" ra_c on ra_c.domain_id = r.id and ra_c.entity_attribute_id = 1 and ra_c.status = 1
+                    left join "country" c on c.object_id = ra_c.number and c.status = 1
+                    left join "country_attribute" ca_n on ca_n.domain_id = c.id and ca_n.entity_attribute_id = 1 and ca_n.status = 1
+                    left join "country_value" cv_n on cv_n.attribute_id = ca_n.id and cv_n.locale_id = #{localeId}
+                </if>
+            </if>
+        </if>
+    </sql>
+
+    <sql id="selectBuildingsWhere">
+        <if test="map.country != null">
+            <if test="filter == 'search'">
+                ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
+            </if>
+        </if>
+
+        <if test="map.region != null">
+            <if test="filter == 'search'">
+                ${operator} rv_n.text ilike concat('%', #{map.region}, '%')
+            </if>
+        </if>
+
+        <if test="map.city != null">
+            <if test="filter == 'search'">
+                ${operator} city_v_n.text ilike concat('%', #{map.city}, '%')
+            </if>
+        </if>
+    </sql>
+
+    <sql id="selectBuildingsSort">
+        <if test="sort.key == 'city'">
+            order by city_v_n.text ${asc}
+        </if>
+
+        <if test="sort.key == 'region'">
+            order by rv_n.text ${asc}
+        </if>
+
+        <if test="sort.key == 'country'">
+            order by cv_n.text ${asc}
+        </if>
+    </sql>
+
+    <select id="selectBuildings" parameterType="ru.complitex.common.entity.Filter" resultMap="buildingResultMap">
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
+        from (select d.id from "building" d
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+            <include refid="selectBuildingsJoin"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+            <include refid="selectBuildingsWhere"/>
+            <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+            <include refid="selectBuildingsSort"/>
+            ${limit}
+        ) o
+        left join "building" d on d.id = o.id
+        left join "building_attribute" a on a.domain_id = d.id and a.status = 1
+            <if test="!entityAttributeIds.empty">
+                and a.entity_attribute_id in
+                    <foreach collection="entityAttributeIds" open="(" close=")" separator="," item="i">
+                        ${i}
+                    </foreach>
+            </if>
+        left join "building_value" v on v.attribute_id = a.id
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinSort"/>
+        <include refid="selectBuildingsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
+        <include refid="selectBuildingsSort"/>
+    </select>
+
+    <select id="selectBuildingsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "building" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectBuildingsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectBuildingsWhere"/>
+    </select>
+</mapper>

@@ -7,7 +7,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.cdi.NonContextual;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -64,7 +64,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
     }
 
     public EntityService getEntityService() {
-        if (entityService == null){
+        if (entityService == null) {
             NonContextual.of(this).inject(this);
         }
 
@@ -72,7 +72,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
     }
 
     public DomainService getDomainService() {
-        if (domainService == null){
+        if (domainService == null) {
             NonContextual.of(this).inject(this);
         }
 
@@ -87,7 +87,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
 
         FormComponent<?> component;
 
-        switch (entityAttribute.getValueTypeId()){
+        switch (entityAttribute.getValueTypeId()) {
             case ValueType.NUMBER:
                 component = new TextField<>(InputPanel.ID, new NumberModel<>(domainModel, entityAttributeId),
                         Long.class);
@@ -104,7 +104,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
 
         }
 
-        if (onChange != null){
+        if (onChange != null) {
             component.add(OnChangeAjaxBehavior.onChange(onChange));
         }
 
@@ -119,15 +119,15 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
 
-        switch (entityAttribute.getValueTypeId()){
+        switch (entityAttribute.getValueTypeId()) {
             case ValueType.TEXT_VALUE:
                 List<Value> values = attribute.getValues();
 
                 if (values != null && !values.isEmpty()) {
-                    if (values.get(0).getLocaleId() != 0){
+                    if (values.get(0).getLocaleId() != 0) {
                         text = Attributes.displayText(entityAttribute,
                                 attribute.getTextValue(entityAttribute.getEntityAttributeId()));
-                    }else{
+                    } else {
                         text = values.stream()
                                 .filter(v -> v.getLocaleId() == 0)
                                 .map(v -> Attributes.displayText(entityAttribute, v.getText()))
@@ -138,16 +138,16 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
                 break;
             case ValueType.REFERENCE:
                 if (attribute.getNumber() != null) {
-                    text = displayEntity(entityAttribute, attribute.getNumber());
+                    text = displayReference(entityAttribute.getReferenceEntityId(), attribute.getNumber(), rowModel);
                 }
 
                 break;
             case ValueType.NUMBER:
-                text = attribute.getNumber() != null ?  attribute.getNumber() + "" : "";
+                text = attribute.getNumber() != null ? attribute.getNumber() + "" : "";
 
                 break;
             case ValueType.DECIMAL:
-                text = attribute.getDecimal() != null ?  attribute.getDecimal() + "" : "";
+                text = attribute.getDecimal() != null ? attribute.getDecimal() + "" : "";
 
                 break;
 
@@ -157,10 +157,10 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
                 break;
 
             case ValueType.REFERENCE_VALUE:
-                if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null){
+                if (attribute.getValues() != null && entityAttribute.getReferenceEntityAttributeId() != null) {
                     EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
-                    if (referenceEntityAttribute != null){
+                    if (referenceEntityAttribute != null) {
                         List<Long> list = attribute.getValues().stream()
                                 .map(Value::getNumber)
                                 .collect(Collectors.toList());
@@ -169,11 +169,11 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
                                 .map(id -> {
                                     Domain<?> domain = getDomainService().getDomain(referenceEntityAttribute.getEntityName(), id);
 
-                                    return  Attributes.displayText(referenceEntityAttribute,
+                                    return Attributes.displayText(referenceEntityAttribute,
                                             domain.getTextValue(referenceEntityAttribute.getEntityAttributeId()));
                                 })
                                 .collect(Collectors.joining("\n"));
-                    }else{
+                    } else {
                         List<String> list = attribute.getValues().stream()
                                 .map(v -> Attributes.displayText(entityAttribute, v.getText()))
                                 .collect(Collectors.toList());
@@ -187,44 +187,37 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
                 text = Attributes.displayText(entityAttribute, attribute.getText());
         }
 
-        MultiLineLabel label = new MultiLineLabel(componentId, text);
-
-        //label.add(AttributeAppender.append("style", "white-space: nowrap"));
-
-
-        cellItem.add(label);
+        cellItem.add(new Label(componentId, text));
     }
 
-    protected String displayEntity(EntityAttribute entityAttribute, Long objectId){
-        if (entityAttribute.getReferenceEntityId() != null) {
-            Domain<?> refDomain = getDomainService().getDomainRef(entityAttribute.getReferenceEntityId(), objectId);
+    protected String displayReference(int referenceEntityId, Long objectId, IModel<T> rowModel) {
+        Domain<?> refDomain = getDomainService().getDomainRef(referenceEntityId, objectId);
 
-            if (refDomain != null){
-                EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
+        EntityAttribute referenceEntityAttribute = getEntityService().getReferenceEntityAttribute(entityAttribute);
 
-                String text;
+        String text;
 
-                switch (referenceEntityAttribute.getValueTypeId()){
-                    case ValueType.REFERENCE:
-                        text = displayEntity(referenceEntityAttribute, refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()));
-                        break;
-                    case ValueType.TEXT_VALUE:
-                        text = refDomain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
-                        break;
-                    case ValueType.TEXT:
-                        text = refDomain.getText(referenceEntityAttribute.getEntityAttributeId());
-                        break;
-                    case ValueType.NUMBER:
-                        text = refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()) + "";
-                        break;
-                    default:
-                        text = "[" + referenceEntityAttribute.getEntityAttributeId() + "]";
-                }
-
-                return Attributes.displayText(referenceEntityAttribute, text);
-            }
+        switch (referenceEntityAttribute.getValueTypeId()) {
+            case ValueType.REFERENCE:
+                text = displayReference(referenceEntityAttribute.getEntityId(), refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()), rowModel);
+                break;
+            case ValueType.TEXT_VALUE:
+                text = refDomain.getTextValue(referenceEntityAttribute.getEntityAttributeId());
+                break;
+            case ValueType.TEXT:
+                text = refDomain.getText(referenceEntityAttribute.getEntityAttributeId());
+                break;
+            case ValueType.NUMBER:
+                text = refDomain.getNumber(referenceEntityAttribute.getEntityAttributeId()) + "";
+                break;
+            default:
+                text = "[" + referenceEntityAttribute.getEntityAttributeId() + "]";
         }
 
-        return entityAttribute.getEntityAttributeId() + ":" + objectId;
+        return Attributes.displayText(referenceEntityAttribute, text);
+    }
+
+    public EntityAttribute getEntityAttribute() {
+        return entityAttribute;
     }
 }

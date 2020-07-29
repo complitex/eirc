@@ -27,7 +27,7 @@ public class DomainGroup extends Group {
             }
 
             @Override
-            protected void onChange(AjaxRequestTarget target) {
+            protected void onChangeId(AjaxRequestTarget target) {
                 DomainGroup.this.onChange(target);
             }
 

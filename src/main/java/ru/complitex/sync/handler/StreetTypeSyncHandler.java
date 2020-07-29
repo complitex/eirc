@@ -78,7 +78,7 @@ public class StreetTypeSyncHandler implements ISyncHandler<StreetType> {
 
     @Override
     public Matching insertMatching(StreetType streetType, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(StreetType.ENTITY_NAME, streetType.getObjectId(),
+        return matchingMapper.insert(new Matching(StreetType.ENTITY, streetType.getObjectId(),
                 sync.getExternalId(), sync.getName(), sync.getAdditionalName(), companyId));
     }
 

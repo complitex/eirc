@@ -42,7 +42,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ID, SyncStatus.SYNCHRONIZED,
                 Long.valueOf(parentSync.getAdditionalParentId()))));
 
         if (cityTypeSyncs.isEmpty()){
@@ -54,11 +54,11 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(Filter.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(City.ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync domainSync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(City.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(City.ENTITY,
                 domainSync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -100,7 +100,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
 
     @Override
     public Matching insertMatching(District district, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(District.ENTITY_NAME, district.getObjectId(), district.getCityId(),
+        return matchingMapper.insert(new Matching(District.ENTITY, district.getObjectId(), district.getCityId(),
                 sync.getExternalId(), sync.getName(), companyId));
     }
 

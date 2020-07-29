@@ -27,11 +27,11 @@ public class CityGroup extends RegionGroup {
     private boolean cityRequired;
 
     public CityGroup(String id, IModel<Long> cityModel) {
-        super(id, new AddressModel(City.ENTITY_NAME, cityModel, City.REGION));
+        super(id, new AddressModel(City.ENTITY, cityModel, City.REGION));
 
         this.cityModel = cityModel;
 
-        city = new DomainGroup("city", City.ENTITY_NAME, City.NAME, cityModel){
+        city = new DomainGroup("city", City.ENTITY, City.NAME, cityModel){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(City.REGION, getRegionModel().getObject());
@@ -47,7 +47,7 @@ public class CityGroup extends RegionGroup {
 
             @Override
             protected String getTextValue(Domain<?> object, String textValue) {
-                return attributeMapper.getTextValue(CityType.ENTITY_NAME, object.getNumber(City.CITY_TYPE),
+                return attributeMapper.getTextValue(CityType.ENTITY, object.getNumber(City.CITY_TYPE),
                         CityType.SHORT_NAME) + " " + textValue;
             }
 

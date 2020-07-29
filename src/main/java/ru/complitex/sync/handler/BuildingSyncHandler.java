@@ -40,7 +40,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ENTITY_ID, SyncStatus.SYNCHRONIZED,
+        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ID, SyncStatus.SYNCHRONIZED,
                 Long.valueOf(parentSync.getAdditionalParentId()))));
 
         if (cityTypeSyncs.isEmpty()){
@@ -53,11 +53,11 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(Filter.of(new Sync(City.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(City.ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long companyId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Street.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Street.ENTITY,
                 sync.getParentId(), companyId);
 
         if (matchingList.isEmpty()){
@@ -74,8 +74,8 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
     @Override
     public boolean isMatch(Building building, Sync sync, Long companyId) {
         return Objects.equals(building.getStreetId(), getParentId(sync, companyId)) &&
-                equalsIgnoreCase(building.getName(), sync.getName()) &&
-                equalsIgnoreCase(building.getAltName(), sync.getAltName()) &&
+                equalsIgnoreCase(building.getNumber(), sync.getName()) &&
+                equalsIgnoreCase(building.getAltNumber(), sync.getAltName()) &&
                 equalsIgnoreCase(building.getCorps(), sync.getAdditionalName()) &&
                 equalsIgnoreCase(building.getAltCorps(), sync.getAltAdditionalName());
     }
@@ -99,8 +99,8 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
         Building building = new Building();
 
         building.setStreetId(getParentId(sync, companyId));
-        building.setName(sync.getName());
-        building.setAltName(sync.getAltName());
+        building.setNumber(sync.getName());
+        building.setAltNumber(sync.getAltName());
         building.setCorps(sync.getAdditionalName());
         building.setAltCorps(sync.getAltAdditionalName());
 
@@ -109,7 +109,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public Matching insertMatching(Building building, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Building.ENTITY_NAME, building.getObjectId(), building.getStreetId(),
+        return matchingMapper.insert(new Matching(Building.ENTITY, building.getObjectId(), building.getStreetId(),
                 sync.getExternalId(), sync.getName(), sync.getAdditionalName(), companyId));
     }
 
@@ -124,7 +124,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public void updateNames(Building building, Sync sync, Long companyId) {
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(District.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(District.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), companyId);
 
         if (matchingList.isEmpty()){
@@ -133,8 +133,8 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
         building.setStreetId(getParentId(sync, companyId));
         building.setDistrictId(matchingList.get(0).getObjectId());
-        building.setName(sync.getName());
-        building.setAltName(sync.getAltName());
+        building.setNumber(sync.getName());
+        building.setAltNumber(sync.getAltName());
         building.setCorps(sync.getAdditionalName());
         building.setAltCorps(sync.getAltAdditionalName());
     }

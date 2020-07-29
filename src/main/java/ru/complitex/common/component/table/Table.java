@@ -38,14 +38,14 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
         getBottomToolbars().setOutputMarkupId(true);
         getBottomToolbars().setOutputMarkupPlaceholderTag(true);
 
-        addTopToolbar(new AjaxFallbackHeadersToolbar<>(this, provider){
+        addTopToolbar(new AjaxFallbackHeadersToolbar<>(this, provider) {
             @Override
             public boolean isVisible() {
                 return !hideOnEmpty || getRowCount() > 0;
             }
         });
 
-        addTopToolbar(new Toolbar(this, form){
+        addTopToolbar(new Toolbar(this, form) {
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();
@@ -60,7 +60,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
             }
         });
 
-        addBottomToolbar(new Paging(this, tableKey){
+        addBottomToolbar(new Paging(this, tableKey) {
             @Override
             public boolean isVisible() {
                 return getRowCount() > 5;
@@ -85,7 +85,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
         this.hideOnEmpty = hideOnEmpty;
     }
 
-    public void update(AjaxRequestTarget target){
+    public void update(AjaxRequestTarget target) {
         target.add(getBody());
         target.add(getBottomToolbars());
     }

@@ -46,11 +46,11 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(Filter.of(new Sync(Country.ENTITY_ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(Country.ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Country.ENTITY_NAME,
+        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Country.ENTITY,
                 sync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -92,7 +92,7 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
 
     @Override
     public Matching insertMatching(Region region, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Region.ENTITY_NAME, region.getObjectId(), region.getCountryId(),
+        return matchingMapper.insert(new Matching(Region.ENTITY, region.getObjectId(), region.getCountryId(),
                 sync.getExternalId(), sync.getName(), companyId));
     }
 

@@ -25,7 +25,7 @@ import java.util.Objects;
 public abstract class AbstractAutoComplete<T extends Serializable> extends Panel {
     private final HiddenField<Long> idField;
 
-    private final AutoCompleteTextField<T> nameField;
+    private final AutoCompleteTextField<T> textField;
 
     private boolean required;
 
@@ -46,12 +46,12 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         idField.setOutputMarkupId(true);
         idField.setConvertEmptyInputStringToNull(true);
 
-        idField.add(OnChangeAjaxBehavior.onChange(this::onChange));
+        idField.add(OnChangeAjaxBehavior.onChange(this::onChangeId));
 
         add(idField);
 
-        nameField = new AutoCompleteTextField<T>("name",
-                new IModel<T>(){
+        textField = new AutoCompleteTextField<T>("text",
+                new IModel<>(){
                     @Override
                     public T getObject() {
                         return AbstractAutoComplete.this.getObject(model.getObject());
@@ -118,30 +118,44 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
             }
         };
 
-        nameField.setType(Object.class);
+        textField.setType(Object.class);
 
-        nameField.add(OnChangeAjaxBehavior.onChange(target -> {
-            if (nameField.getInput().isEmpty() || (model.getObject() != null &&
-                    !Objects.equals(getTextValue(getObject(model.getObject())), nameField.getInput()))){
+        textField.add(OnChangeAjaxBehavior.onChange(target -> {
+            if (textField.getInput().isEmpty() || (model.getObject() != null &&
+                    !Objects.equals(getTextValue(getObject(model.getObject())), textField.getInput()))){
                 model.setObject(null);
 
                 target.appendJavaScript(String.format("Wicket.DOM.get('%s').value = null;", idField.getMarkupId()));
             }
+
+            onChangeText(target);
         }));
 
-        add(nameField);
+        add(textField);
     }
 
-    protected void onChange(AjaxRequestTarget target){
+    protected void onChangeId(AjaxRequestTarget target){
 
+    }
+
+    protected void onChangeText(AjaxRequestTarget target){
+
+    }
+
+    public Long getObjectId(){
+        return idField.getModelObject();
+    }
+
+    public String getInputText(){
+        return textField.getInput();
     }
 
     protected HiddenField<Long> getIdField() {
         return idField;
     }
 
-    protected AutoCompleteTextField<T> getNameField() {
-        return nameField;
+    protected AutoCompleteTextField<T> getTextField() {
+        return textField;
     }
 
     protected abstract String getTextValue(T object);
@@ -168,7 +182,4 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         this.placeholder = placeholder;
     }
 
-    public String getInputText(){
-        return nameField.getInput();
-    }
 }

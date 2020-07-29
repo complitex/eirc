@@ -24,7 +24,7 @@ public class Filter<T extends Serializable> implements Serializable {
     private T object;
     private Long first = 0L;
     private Long count = 0L;
-    private Sort sort;
+    private Sort sort = new Sort(null, null);
     private boolean ascending = false;
 
     private Map<String, Object> map = new HashMap<>();

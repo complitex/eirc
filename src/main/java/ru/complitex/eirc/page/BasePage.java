@@ -9,6 +9,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.link.Link;
 import ru.complitex.address.page.*;
 import ru.complitex.company.page.CompanyPage;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
@@ -25,7 +26,14 @@ import ru.complitex.sync.page.address.*;
 @AuthorizeInstantiation(EircRoles.AUTHORIZED)
 public class BasePage extends WebPage {
     public BasePage() {
-        add(new BookmarkablePageLink<>("brand", HomePage.class));
+        add(new BookmarkablePageLink<>("home", HomePage.class));
+
+        add(new Link<>("logout") {
+            @Override
+            public void onClick() {
+                BasePage.this.getSession().invalidate();
+            }
+        });
 
         WebMarkupContainer address = new WebMarkupContainer("domains");
         add(address);

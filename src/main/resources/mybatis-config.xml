@@ -27,6 +27,12 @@
         <mapper resource="ru/complitex/domain/mapper/AttributeMapper.xml"/>
         <mapper resource="ru/complitex/domain/mapper/ValueMapper.xml"/>
 
+        <mapper resource="ru/complitex/address/mapper/CityMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/DistrictMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/StreetMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/BuildingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/ApartmentMapper.xml"/>
+
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/matching/mapper/MatchingMapper.xml"/>
 

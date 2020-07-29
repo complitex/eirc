@@ -12,8 +12,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <wicket.version>9.0.0-M5</wicket.version>
-        <wicket-bootstrap.version>5.0.0-M2</wicket-bootstrap.version>
+        <wicket.version>9.0.0</wicket.version>
+        <wicket-bootstrap.version>5.0.0</wicket-bootstrap.version>
     </properties>
 
     <dependencies>
