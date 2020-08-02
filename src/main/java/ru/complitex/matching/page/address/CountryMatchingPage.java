@@ -37,8 +37,7 @@ public class CountryMatchingPage extends MatchingPage<Country> {
 
     @Override
     protected Component newObjectId(String componentId, IModel<Matching> model) {
-        return new DomainGroup(componentId, Country.ENTITY, Country.NAME, PropertyModel.of(model, "objectId"))
-                .setRequired(true);
+        return new DomainGroup(componentId, Country.ENTITY, Country.NAME, PropertyModel.of(model, "objectId")).setRequired(true);
     }
 
     @Override
@@ -48,6 +47,16 @@ public class CountryMatchingPage extends MatchingPage<Country> {
 
     @Override
     protected boolean isAdditionalParentIdVisible() {
+        return false;
+    }
+
+    @Override
+    protected boolean isAdditionalCodeVisible() {
+        return false;
+    }
+
+    @Override
+    protected boolean isAdditionalNameVisible() {
         return false;
     }
 }

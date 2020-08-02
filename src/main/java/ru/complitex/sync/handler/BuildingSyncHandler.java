@@ -4,7 +4,7 @@ import ru.complitex.address.entity.*;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
@@ -57,7 +57,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
     }
 
     private Long getParentId(Sync sync, Long companyId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Street.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListCode(Street.ENTITY,
                 sync.getParentId(), companyId);
 
         if (matchingList.isEmpty()){
@@ -124,7 +124,7 @@ public class BuildingSyncHandler implements ISyncHandler<Building> {
 
     @Override
     public void updateNames(Building building, Sync sync, Long companyId) {
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(District.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListCode(District.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), companyId);
 
         if (matchingList.isEmpty()){

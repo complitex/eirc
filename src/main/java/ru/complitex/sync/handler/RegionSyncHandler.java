@@ -5,7 +5,7 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
@@ -50,7 +50,7 @@ public class RegionSyncHandler implements ISyncHandler<Region> {
     }
 
     private Long getParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Country.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListCode(Country.ENTITY,
                 sync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){

@@ -36,6 +36,6 @@
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/matching/mapper/MatchingMapper.xml"/>
 
-        <mapper resource="ru/complitex/eirc/adapter/SyncAdapter.xml"/>
+        <mapper resource="ru/complitex/sync/adapter/SyncAdapter.xml"/>
     </mappers>
 </configuration>

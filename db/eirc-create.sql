@@ -383,14 +383,15 @@ BEGIN
           "object_id" BIGINT NOT NULL REFERENCES "', entityName,'_id" ON DELETE CASCADE,  -- ''Идентификатор объекта''
           "parent_id" BIGINT,  -- ''Идентификатор родителя''
           "additional_parent_id" VARCHAR(64),  -- ''Дополнительный идентификатор родителя''
-          "external_id" BIGINT,  -- ''Внешний идентификатор''
-          "additional_external_id" VARCHAR(64),  -- ''Дополнительный внешний идентификатор''
+          "code" BIGINT,  -- ''Код''
+          "additional_code" VARCHAR(64),  -- ''Дополнительный код''
           "name" VARCHAR(1000) NOT NULL,  -- ''Соответствие''
           "additional_name" VARCHAR(1000),  -- ''Дополнительное соответствие''
           "start_date" TIMESTAMP,  -- ''Дата начала актуальности''
           "end_date" TIMESTAMP,  -- ''Дата окончания актуальности''
           "company_id" BIGINT,  -- ''Идентификатор компании''
           "user_company_id" BIGINT,  -- ''Идентификатор компании пользователя''
+          "locale_id" INT REFERENCES "locale",  -- ''Идентификатор локали''
           PRIMARY KEY ("id"));');
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_matching IS ''', entityDescription, ' - Соответствия'';');
@@ -417,8 +418,8 @@ CREATE TABLE "sync"(
   "id" BIGSERIAL,  -- 'Идентификатор синхронизации',
   "parent_id" BIGINT,  -- 'Идентификатор родителя',
   "additional_parent_id" VARCHAR(64),  -- 'Дополнительный идентификатор родителя',
-  "external_id" BIGINT NOT NULL,  -- 'Внешний идентификатор',
-  "additional_external_id" VARCHAR(64),  -- 'Дополнительный внешний идентификатор',
+  "external_id" BIGINT NOT NULL,  -- 'Код',
+  "additional_external_id" VARCHAR(64),  -- 'Дополнительный код',
   "name" VARCHAR(250) NOT NULL,  -- 'Название',
   "additional_name" VARCHAR(50),  -- 'Дополнительное название',
   "alt_name" VARCHAR(250),  -- 'Название в альтернативной локали',

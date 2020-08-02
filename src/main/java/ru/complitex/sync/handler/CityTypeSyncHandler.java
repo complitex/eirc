@@ -4,7 +4,7 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;

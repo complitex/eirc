@@ -15,7 +15,7 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
@@ -234,7 +234,7 @@ public class SyncService {
                         return;
                     }
 
-                    List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(entity.getName(),
+                    List<Matching> matchingList = matchingMapper.getMatchingListCode(entity.getName(),
                             s.getExternalId(), companyId);
 
                     if (!matchingList.isEmpty()){
@@ -321,7 +321,7 @@ public class SyncService {
 
 
             matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
-                if (getSyncs(entity.getId(), 0, m.getExternalId()).isEmpty()){
+                if (getSyncs(entity.getId(), 0, m.getCode()).isEmpty()){
                     matchingMapper.delete(m.getId());
 
                     log.info("sync: delete matching {}", m);
@@ -331,7 +331,7 @@ public class SyncService {
 
             getSyncs(entity.getId(), SyncStatus.DELAYED, null).forEach(s -> {
                 if (syncMapper.getSync(s.getId()).getStatus() == SyncStatus.DELAYED) {
-                    List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(entity.getName(),
+                    List<Matching> matchingList = matchingMapper.getMatchingListCode(entity.getName(),
                             s.getExternalId(), companyId);
 
                     if (matchingList.isEmpty()){
@@ -358,7 +358,7 @@ public class SyncService {
 
                         objectMatchingList.forEach(m -> {
                             if (!m.getId().equals(matching.getId())){
-                                Sync sync = getSyncs(entity.getId(), 0, m.getExternalId()).get(0);
+                                Sync sync = getSyncs(entity.getId(), 0, m.getCode()).get(0);
 
                                 sync.setStatus(SyncStatus.SYNCHRONIZED);
                                 syncMapper.updateStatus(sync);

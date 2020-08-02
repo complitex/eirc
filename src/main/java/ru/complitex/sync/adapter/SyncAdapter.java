@@ -1,9 +1,10 @@
-package ru.complitex.eirc.adapter;
+package ru.complitex.sync.adapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.company.entity.Company;
+import ru.complitex.eirc.adapter.BaseAdapter;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
 

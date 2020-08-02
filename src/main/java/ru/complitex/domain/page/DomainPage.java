@@ -63,7 +63,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private Table<T> table;
 
-    private DomainModal<T> domainModal;
+    private DomainModal<T> modal;
 
     public DomainPage(Class<T> domainClass) {
         this.domainClass = domainClass;
@@ -143,7 +143,14 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
 
-                onRowItem(item);
+                item.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        onRowClick(item.getModelObject(), target);
+                    }
+                });
+
+                item.add(new CssClassNameAppender("pointer"));
 
                 return item;
             }
@@ -172,9 +179,9 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         container.add(editForm);
 
         if (isEditEnabled()) {
-            domainModal = newDomainModal(DOMAIN_EDIT_MODAL_ID);
+            modal = newDomainModal(DOMAIN_EDIT_MODAL_ID);
 
-            editForm.add(domainModal);
+            editForm.add(modal);
         } else {
             editForm.add(new EmptyPanel("edit"));
         }
@@ -217,7 +224,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected void onCreate(AjaxRequestTarget target) {
-        domainModal.edit(newDomain(), target);
+        modal.edit(newDomain(), target);
     }
 
     protected T newDomain() {
@@ -229,18 +236,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
-        domainModal.edit(object, target);
-    }
-
-    protected void onRowItem(Item<T> item) {
-        item.add(new AjaxEventBehavior("click") {
-            @Override
-            protected void onEvent(AjaxRequestTarget target) {
-                onRowClick(item.getModelObject(), target);
-            }
-        });
-
-        item.add(new CssClassNameAppender("pointer"));
+        modal.edit(object, target);
     }
 
     protected void onRowClick(T object, AjaxRequestTarget target) {

@@ -1,23 +1,27 @@
 package ru.complitex.matching.page;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.behavior.CssClassNameAppender;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.common.entity.Sort;
 import ru.complitex.common.component.table.KeyColumn;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
 import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.entity.Filter;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.company.entity.Company;
+import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.util.Domains;
@@ -39,6 +43,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
     @Inject
     private DomainService domainService;
+
+    private Table<Matching> table;
 
     private MatchingModal modal;
 
@@ -80,12 +86,19 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             columns.add(new KeyColumn<>("additionalParentId"));
         }
 
-        columns.add(new KeyColumn<>("externalId"));
-        columns.add(new KeyColumn<>("additionalExternalId"));
+        columns.add(new KeyColumn<>("code"));
+
+        if (isAdditionalCodeVisible()) {
+            columns.add(new KeyColumn<>("additionalCode"));
+        }
+
         columns.add(new KeyColumn<>("name"));
-        columns.add(new KeyColumn<>("additionalName"));
+
+        if (isAdditionalNameVisible()) {
+            columns.add(new KeyColumn<>("additionalName"));
+        }
+
         columns.add(new KeyColumn<>("startDate"));
-        columns.add(new KeyColumn<>("endDate"));
 
         columns.add(new KeyColumn<>("companyId"){
             @Override
@@ -96,19 +109,38 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             }
         });
 
-        columns.add(new KeyColumn<>("userCompanyId"){
+        columns.add(new ActionColumn<>(){
             @Override
-            protected IModel<?> newItemModel(IModel<Matching> rowModel) {
-                Long userCompanyId = rowModel.getObject().getUserCompanyId();
+            protected void onSearch(AjaxRequestTarget target) {
+                table.update(target);
+            }
 
-                return Model.of(userCompanyId != null ? domainService.getDomain(Company.class, userCompanyId).getName() : "");
+            @Override
+            protected void onEdit(IModel<Matching> rowModel, AjaxRequestTarget target) {
+                modal.edit(rowModel.getObject(), target);
             }
         });
 
         TableForm<Matching> form = new TableForm<>("form", filter);
         container.add(form);
 
-        Table<Matching> table = new Table<>("table", provider, columns, form, 10, MatchingPage.class.getName());
+        table = new Table<>("table", provider, columns, form, 10, MatchingPage.class.getName()){
+            @Override
+            protected Item<Matching> newRowItem(String id, int index, IModel<Matching> model) {
+                Item<Matching> item = super.newRowItem(id, index, model);
+
+                item.add(new AjaxEventBehavior("click") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        modal.edit(model.getObject(), target);
+                    }
+                });
+
+                item.add(new CssClassNameAppender("pointer"));
+
+                return item;
+            }
+        };
         form.add(table);
 
         Form<Matching> matchingForm = new Form<>("matchingForm");
@@ -139,6 +171,17 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
                 return MatchingPage.this.isAdditionalParentIdVisible();
             }
 
+
+            @Override
+            protected boolean isAdditionalCodeVisible(){
+                return MatchingPage.this.isAdditionalCodeVisible();
+            }
+
+            @Override
+            protected boolean isAdditionalNameVisible() {
+                return MatchingPage.this.isAdditionalNameVisible();
+            }
+
             @Override
             protected void onSave(AjaxRequestTarget target) {
                 target.add(container);
@@ -149,7 +192,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         form.add(new BootstrapAjaxLink<>("create", null, Buttons.Type.Outline_Primary, new StringResourceModel("create", this)) {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                modal.open(target, new Matching(domain.getEntityName()));
+                modal.edit(new Matching(domain.getEntityName()), target);
             }
         });
     }
@@ -180,6 +223,14 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
     protected KeyColumn<Matching> newAdditionalParentId(String columnKey) {
         return new KeyColumn<>(columnKey);
+    }
+
+    protected boolean isAdditionalCodeVisible(){
+        return true;
+    }
+
+    protected boolean isAdditionalNameVisible(){
+        return false;
     }
 
 }

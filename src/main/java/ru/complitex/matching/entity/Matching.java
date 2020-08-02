@@ -14,14 +14,15 @@ public class Matching implements Serializable {
     private Long objectId;
     private Long parentId;
     private Long additionalParentId;
-    private Long externalId;
-    private String additionalExternalId;
+    private Long code;
+    private String additionalCode;
     private String name;
     private String additionalName;
     private Date startDate;
     private Date endDate;
     private Long companyId;
     private Long userCompanyId;
+    private Long localeId;
 
     private String entityName;
 
@@ -32,56 +33,56 @@ public class Matching implements Serializable {
         this.entityName = entityName;
     }
 
-    public Matching(String entityName, Long objectId, Long externalId, String name, Long companyId) {
+    public Matching(String entityName, Long objectId, Long code, String name, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
-        this.externalId = externalId;
+        this.code = code;
         this.name = name;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long externalId, String name, String additionalName,
+    public Matching(String entityName, Long objectId, Long code, String name, String additionalName,
                     Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
-        this.externalId = externalId;
+        this.code = code;
         this.name = name;
         this.additionalName = additionalName;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long externalId, String name, Long companyId) {
+    public Matching(String entityName, Long objectId, Long parentId, Long code, String name, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
-        this.externalId = externalId;
+        this.code = code;
         this.name = name;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long externalId, String name, String additionalName,
+    public Matching(String entityName, Long objectId, Long parentId, Long code, String name, String additionalName,
                     Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
-        this.externalId = externalId;
+        this.code = code;
         this.name = name;
         this.additionalName = additionalName;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long additionalParentId, Long externalId,
+    public Matching(String entityName, Long objectId, Long parentId, Long additionalParentId, Long code,
                     String name, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
         this.additionalParentId = additionalParentId;
-        this.externalId = externalId;
+        this.code = code;
         this.name = name;
         this.companyId = companyId;
     }
@@ -118,20 +119,20 @@ public class Matching implements Serializable {
         this.additionalParentId = additionalParentId;
     }
 
-    public Long getExternalId() {
-        return externalId;
+    public Long getCode() {
+        return code;
     }
 
-    public void setExternalId(Long externalId) {
-        this.externalId = externalId;
+    public void setCode(Long code) {
+        this.code = code;
     }
 
-    public String getAdditionalExternalId() {
-        return additionalExternalId;
+    public String getAdditionalCode() {
+        return additionalCode;
     }
 
-    public void setAdditionalExternalId(String additionalExternalId) {
-        this.additionalExternalId = additionalExternalId;
+    public void setAdditionalCode(String additionalCode) {
+        this.additionalCode = additionalCode;
     }
 
     public String getName() {
@@ -182,6 +183,14 @@ public class Matching implements Serializable {
         this.userCompanyId = userCompanyId;
     }
 
+    public Long getLocaleId() {
+        return localeId;
+    }
+
+    public void setLocaleId(Long localeId) {
+        this.localeId = localeId;
+    }
+
     public String getEntityName() {
         return entityName;
     }
@@ -196,15 +205,16 @@ public class Matching implements Serializable {
                 .add("id", id)
                 .add("objectId", objectId)
                 .add("parentId", parentId)
-                .add("additionalParentId", additionalParentId)
-                .add("externalId", externalId)
-                .add("additionalExternalId", additionalExternalId)
+                .add("additionalCode", additionalParentId)
+                .add("code", code)
+                .add("additionalExternalId", additionalCode)
                 .add("name", name)
                 .add("additionalName", additionalName)
                 .add("startDate", startDate)
                 .add("endDate", endDate)
                 .add("companyId", companyId)
-                .add("userCompanyId", userCompanyId)
+                .add("userCompanyId", localeId)
+                .add("localeId", localeId)
                 .add("entityName", entityName)
                 .toString();
     }

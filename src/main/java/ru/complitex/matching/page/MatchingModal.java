@@ -52,10 +52,10 @@ public class MatchingModal extends Modal<Matching> {
         container.add(newParentId("parentId").setVisible(isParentIdVisible()));
         container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
 
-        container.add(new TextGroup<>("externalId", PropertyModel.of(getModel(), "externalId"), Long.class));
-        container.add(new TextGroup<>("additionalExternalId", PropertyModel.of(getModel(), "additionalExternalId")));
+        container.add(new TextGroup<>("code", PropertyModel.of(getModel(), "code"), Long.class));
+        container.add(new TextGroup<>("additionalCode", PropertyModel.of(getModel(), "additionalCode")).setVisible(isAdditionalCodeVisible()));
         container.add(new TextGroup<>("name", PropertyModel.of(getModel(), "name")).setRequired(true));
-        container.add(new TextGroup<>("additionalName", PropertyModel.of(getModel(), "additionalName")));
+        container.add(new TextGroup<>("additionalName", PropertyModel.of(getModel(), "additionalName")).setVisible(isAdditionalNameVisible()));
         container.add(new DateGroup("startDate", PropertyModel.of(getModel(), "startDate")));
         container.add(new DateGroup("endDate", PropertyModel.of(getModel(), "endDate")));
 
@@ -101,11 +101,19 @@ public class MatchingModal extends Modal<Matching> {
         return true;
     }
 
+    protected boolean isAdditionalCodeVisible(){
+        return true;
+    }
+
+    protected boolean isAdditionalNameVisible(){
+        return true;
+    }
+
     protected Component newAdditionalParentId(String componentId){
         return new TextGroup<>(componentId, PropertyModel.of(getModel(), "additionalParentId"), Long.class);
     }
 
-    protected void open(AjaxRequestTarget target, Matching matching){
+    protected void edit(Matching matching, AjaxRequestTarget target){
         setModelObject(matching);
 
         target.add(container);
@@ -116,7 +124,6 @@ public class MatchingModal extends Modal<Matching> {
     private void clear(){
         container.visitChildren(FormComponent.class, (c, v) -> {
             ((FormComponent<?>) c).clearInput();
-            ((FormComponent<?>) c).setModelObject(null);
         });
     }
 

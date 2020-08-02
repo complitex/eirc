@@ -4,7 +4,7 @@ import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
@@ -51,7 +51,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
             return null;            
         }
 
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(Company.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListCode(Company.ENTITY,
                 sync.getParentId(),  companyId);
 
         if (matchingList.isEmpty()) {

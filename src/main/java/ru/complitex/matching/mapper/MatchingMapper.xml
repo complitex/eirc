@@ -5,14 +5,15 @@
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
         <result column="parent_id" property="parentId"/>
-        <result column="external_id" property="externalId"/>
-        <result column="additional_external_id" property="additionalExternalId"/>
+        <result column="code" property="code"/>
+        <result column="additional_code" property="additionalCode"/>
         <result column="name" property="name"/>
         <result column="additional_name" property="additionalName"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="company_id" property="companyId"/>
         <result column="user_company_id" property="userCompanyId"/>
+        <result column="locale_id" property="localeId"/>
 
         <result column="entity_name" property="entityName"/>
     </resultMap>
@@ -21,21 +22,21 @@
     <insert id="insertMatching" parameterType="ru.complitex.matching.entity.Matching"
             keyProperty="id" useGeneratedKeys="true">
         insert into "${entityName}_matching" ("object_id", "parent_id", "additional_parent_id",
-            "external_id", "additional_external_id", "name", "additional_name", "start_date", "end_date",
-            "company_id", "user_company_id")
+            "code", "additional_code", "name", "additional_name", "start_date", "end_date",
+            "company_id", "user_company_id", "locale_id")
         values (#{objectId}, #{parentId}, #{additionalParentId},
-            #{externalId}, #{additionalExternalId}, upper(#{name}), upper(#{additionalName}), #{startDate}, #{endDate},
-            #{companyId}, #{userCompanyId})
+            #{code}, #{additionalCode}, upper(#{name}), upper(#{additionalName}), #{startDate}, #{endDate},
+            #{companyId}, #{userCompanyId}, #{localeId})
     </insert>
 
     <!--suppress SqlResolve -->
     <update id="updateMatching" parameterType="ru.complitex.matching.entity.Matching">
         update "${entityName}_matching" set "object_id" = #{objectId},
             "parent_id" = #{parentId}, "additional_parent_id" = #{additionalParentId},
-            "external_id" = #{externalId}, "additional_external_id" = #{additionalExternalId},
-            "name" = upper(#{name}), "additional_name" = upper(#{additionalName},
+            "code" = #{code}, "additional_code" = #{additionalCode},
+            "name" = upper(#{name}), "additional_name" = upper(#{additionalName}),
             "start_date" = #{startDate}, "end_date" = #{endDate},
-            "company_id" = #{companyId}, "user_company_id" = #{userCompanyId}
+            "company_id" = #{companyId}, "user_company_id" = #{userCompanyId}, "locale_id" = #{localeId}
         where "id" = #{id}
     </update>
 
@@ -46,35 +47,36 @@
 
     <sql id="selectMatchingWhere">
         <where>
-            <if test="object.objectId != null">and c."object_id" = #{object.objectId}</if>
-            <if test="object.parentId != null">and c."parent_id" = #{object.parentId}</if>
-            <if test="object.additionalParentId != null">and c."additional_parent_id" = #{object.additionalParentId}</if>
-            <if test="object.externalId != null">and c."external_id" = #{object.externalId}</if>
-            <if test="object.additionalExternalId != null">and c."additional_external_id" = #{object.additionalExternalId}</if>
-            <if test="object.name != null">and c."name" = #{object.name}</if>
-            <if test="object.additionalName != null">and c."additional_name" = #{object.additionalName}</if>
-            <if test="object.startDate != null">and c."start_date" = #{object.startDate}</if>
-            <if test="object.endDate != null">and c."end_date" = #{object.endDate}</if>
-            <if test="object.companyId != null">and c."company_id" = #{object.companyId}</if>
-            <if test="object.userCompanyId != null">and c."user_company_id" = #{object.userCompanyId}</if>
+            <if test="object.objectId != null">and m."object_id" = #{object.objectId}</if>
+            <if test="object.parentId != null">and m."parent_id" = #{object.parentId}</if>
+            <if test="object.additionalParentId != null">and m."additional_parent_id" = #{object.additionalParentId}</if>
+            <if test="object.code != null">and m."code" = #{object.code}</if>
+            <if test="object.additionalCode != null">and m."additional_code" = #{object.additionalCode}</if>
+            <if test="object.name != null">and m."name" = #{object.name}</if>
+            <if test="object.additionalName != null">and m."additional_name" = #{object.additionalName}</if>
+            <if test="object.startDate != null">and m."start_date" = #{object.startDate}</if>
+            <if test="object.endDate != null">and m."end_date" = #{object.endDate}</if>
+            <if test="object.companyId != null">and m."company_id" = #{object.companyId}</if>
+            <if test="object.userCompanyId != null">and m."user_company_id" = #{object.userCompanyId}</if>
+            <if test="object.localeId != null">and m."locale_id" = #{object.localeId}</if>
         </where>
     </sql>
 
     <!--suppress SqlResolve -->
     <select id="selectMatching" resultMap="matchingResultMap" parameterType="ru.complitex.matching.entity.Matching">
-        select c.*, '${entityName}' entity_name from "${entityName}_matching" c where c."id" = #{id}
+        select m.*, '${entityName}' entity_name from "${entityName}_matching" m where m."id" = #{id}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="matchingResultMap">
-        select c.*, '${object.entityName}' entity_name from "${object.entityName}_matching" c
+        select m.*, '${object.entityName}' entity_name from "${object.entityName}_matching" m
         <include refid="selectMatchingWhere"/>
         ${limit}
     </select>
 
     <!--suppress SqlResolve -->
     <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(*) from "${object.entityName}_matching" c
+        select count(*) from "${object.entityName}_matching" m
         <include refid="selectMatchingWhere"/>
     </select>
 </mapper>

@@ -12,13 +12,14 @@ import org.apache.wicket.request.Response;
 import ru.complitex.common.component.form.AjaxLinkPanel;
 import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.TableForm;
-import ru.complitex.domain.entity.Domain;
+
+import java.io.Serializable;
 
 /**
  * @author Anatoly A. Ivanov
  * 26.02.2019 20:22
  */
-public abstract class ActionColumn<T extends Domain<T>> extends Column<T> {
+public class ActionColumn<T extends Serializable> extends Column<T> {
 
     private final AjaxIndicatorAppender ajaxIndicatorAppender = new AjaxIndicatorAppender() {
         @Override

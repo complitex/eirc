@@ -6,7 +6,7 @@ import ru.complitex.address.entity.District;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.eirc.adapter.SyncAdapter;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
@@ -58,7 +58,7 @@ public class DistrictSyncHandler implements ISyncHandler<District> {
     }
 
     private Long getParentId(Sync domainSync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListByExternalId(City.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListCode(City.ENTITY,
                 domainSync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
