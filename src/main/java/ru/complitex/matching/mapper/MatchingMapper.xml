@@ -47,6 +47,7 @@
 
     <sql id="selectMatchingWhere">
         <where>
+            <if test="object.id != null">and m."id" = #{object.id}</if>
             <if test="object.objectId != null">and m."object_id" = #{object.objectId}</if>
             <if test="object.parentId != null">and m."parent_id" = #{object.parentId}</if>
             <if test="object.additionalParentId != null">and m."additional_parent_id" = #{object.additionalParentId}</if>

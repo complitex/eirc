@@ -18,6 +18,10 @@
     height: 100%;
 }
 
+.navbar-expand .navbar-nav .nav-link {
+    padding: 0.45rem 0.75rem 0.45rem 0.75rem;
+}
+
 .sidebar {
     min-width: 220px;
     padding-right: 0 !important;

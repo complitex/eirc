@@ -109,6 +109,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         columns.add(new ActionColumn<>(){
             @Override
             protected void onSearch(Table<Matching> table, AjaxRequestTarget target) {
+                table.getFilterModel().getObject().setObject(new Matching(domain.getEntityName()));
+
                 table.update(target);
             }
 
