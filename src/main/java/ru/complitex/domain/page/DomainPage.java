@@ -19,9 +19,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
-import ru.complitex.common.component.table.TableForm;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.model.FilterModel;
 import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.component.table.DomainColumn;
 import ru.complitex.domain.component.table.IdColumn;
@@ -55,8 +55,6 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private Entity entity;
 
-    private Filter<T> filter;
-
     private WebMarkupContainer container;
 
     private FeedbackPanel notification;
@@ -80,10 +78,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         notification.setOutputMarkupId(true);
         container.add(notification);
 
-
-        filter = newFilter();
-
-        Provider<T> provider = new Provider<T>(filter) {
+        Provider<T> provider = new Provider<T>(newFilterModel()) {
             @Override
             protected List<T> data() {
                 return getDomains(getFilter());
@@ -95,7 +90,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             }
         };
 
-        TableForm<T> form = new TableForm<>("form", filter);
+        Form<T> form = new Form<>("form");
         container.add(form);
 
 
@@ -112,15 +107,17 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         if (isEditEnabled()) {
             columns.add(new ActionColumn<T>() {
                 @Override
-                protected void onSearch(AjaxRequestTarget target) {
-                    getFilter().getObject().setObjectId(null);
+                protected void onSearch(Table<T> table, AjaxRequestTarget target) {
+                    Filter<T> filter = table.getFilterModel().getObject();
 
-                    getFilter().getObject().getAttributes().forEach(a -> {
+                    filter.getObject().setObjectId(null);
+
+                    filter.getObject().getAttributes().forEach(a -> {
                         a.setNumber(null);
                         a.setText(null);
                     });
 
-                    getFilter().getMap().clear();
+                    filter.getMap().clear();
 
                     target.add(container);
                 }
@@ -138,7 +135,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         }
 
 
-        table = new Table<>("table", provider, columns, form, 10, "domainListModalPage" + domainClass.getName()) {
+        table = new Table<>("table", provider, columns, 10, "domainListModalPage" + domainClass.getName()) {
             @Override
             protected Item<T> newRowItem(String id, int index, IModel<T> model) {
                 Item<T> item = super.newRowItem(id, index, model);
@@ -195,8 +192,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return Model.of(getEntity().getValue().getText());
     }
 
-    protected Filter<T> newFilter() {
-        return Filter.of(Domains.newObject(domainClass, entity));
+    protected IModel<Filter<T>> newFilterModel() {
+        return FilterModel.of(Domains.newObject(domainClass, entity));
     }
 
     protected DomainModal<T> newDomainModal(String componentId) {
@@ -232,7 +229,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected void addColumn(EntityAttribute entityAttribute, List<IColumn<T, Sort>> columns) {
-        columns.add(new DomainColumn<>(entityAttribute, this::updateTable));
+        columns.add(new DomainColumn<>(entityAttribute));
     }
 
     protected void onEdit(T object, AjaxRequestTarget target) {
@@ -275,10 +272,6 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
         return entityAttributes;
     }
 
-    public Filter<T> getFilter() {
-        return filter;
-    }
-
     public WebMarkupContainer getContainer() {
         return container;
     }
@@ -301,9 +294,5 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     protected void onNewAction(RepeatingView repeatingView, IModel<T> rowModel) {
 
-    }
-
-    protected void updateTable(AjaxRequestTarget target){
-        getTable().update(target);
     }
 }

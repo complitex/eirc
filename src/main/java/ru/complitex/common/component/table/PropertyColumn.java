@@ -17,23 +17,23 @@ import java.io.Serializable;
  * @author Anatoly A. Ivanov
  * 15.03.2019 22:50
  */
-public class KeyColumn<T extends Serializable> extends Column<T> {
-    private String columnKey;
+public class PropertyColumn<T extends Serializable> extends Column<T> {
+    private final String property;
 
-    public KeyColumn(String columnKey) {
-        super(new ResourceModel(columnKey), new Sort(columnKey));
+    public PropertyColumn(String property) {
+        super(new ResourceModel(property), new Sort(property));
 
-        this.columnKey = columnKey;
+        this.property = property;
     }
 
     @Override
-    public Component newFilter(String componentId, TableForm<T> tableForm) {
+    public Component newFilter(String componentId, Table<T> table) {
         return InputPanel.of(componentId, new TextField<>(InputPanel.ID,
-                new PropertyModel<>(tableForm.getModel(),"map." + columnKey)));
+                PropertyModel.of(table.getFilterModel(),"object." + property)));
     }
 
     protected IModel<?> newItemModel(IModel<T> rowModel){
-        return PropertyModel.of(rowModel, columnKey);
+        return PropertyModel.of(rowModel, property);
     }
 
     @Override

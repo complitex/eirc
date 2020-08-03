@@ -16,7 +16,7 @@ import ru.complitex.address.entity.Region;
 import ru.complitex.address.mapper.CityMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -64,8 +64,8 @@ public class CityPage extends DomainPage<City> {
         if (entityAttribute.getEntityAttributeId() == City.REGION){
             columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<City> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.country"), CityPage.this::updateTable);
+                public Component newFilter(String componentId, Table<City> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
                 }
 
                 @Override

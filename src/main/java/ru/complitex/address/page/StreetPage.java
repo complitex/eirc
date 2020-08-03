@@ -15,7 +15,7 @@ import ru.complitex.address.entity.Street;
 import ru.complitex.address.mapper.StreetMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.table.DomainColumn;
@@ -48,8 +48,8 @@ public class StreetPage extends DomainPage<Street> {
         if (entityAttribute.getEntityAttributeId() == Street.CITY){
             columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Street> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.country"), StreetPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Street> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
                 }
 
                 @Override
@@ -60,8 +60,8 @@ public class StreetPage extends DomainPage<Street> {
 
             columns.add(new Column<>(new ResourceModel("region"), new Sort("region")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Street> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.region"), StreetPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Street> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.region"), table::update);
                 }
 
                 @Override
@@ -70,7 +70,7 @@ public class StreetPage extends DomainPage<Street> {
                 }
             });
 
-            columns.add(new DomainColumn<>(entityAttribute, this::updateTable){
+            columns.add(new DomainColumn<>(entityAttribute){
                 @Override
                 protected String displayReference(int referenceEntityId, Long objectId, IModel<Street> rowModel) {
                     return addressService.getCityTypeNameByCityId(rowModel.getObject().getCityId()) + " " +

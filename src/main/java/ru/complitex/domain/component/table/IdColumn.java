@@ -13,7 +13,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.danekja.java.util.function.serializable.SerializableConsumer;
 import ru.complitex.common.component.form.InputPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.Domain;
 
@@ -22,26 +22,19 @@ import ru.complitex.domain.entity.Domain;
  * 20.12.2017 2:17
  */
 public class IdColumn<T extends Domain<T>> extends Column<T> {
-    private SerializableConsumer<AjaxRequestTarget> onChange;
-
     public IdColumn() {
         super(Model.of("№"), new Sort("object_id"));
     }
 
     public IdColumn(SerializableConsumer<AjaxRequestTarget> onChange) {
         this();
-
-        this.onChange = onChange;
     }
 
     @Override
-    public Component newFilter(String componentId, TableForm<T> tableForm) {
-        TextField textField = new TextField<>(InputPanel.ID, new PropertyModel<>(tableForm.getModelObject(),
-                "object.objectId"));
+    public Component newFilter(String componentId, Table<T> table) {
+        TextField<Long> textField = new TextField<>(InputPanel.ID, new PropertyModel<>(table.getFilterModel(),"object.objectId"));
 
-        if (onChange != null){
-            textField.add(OnChangeAjaxBehavior.onChange(onChange));
-        }
+        textField.add(OnChangeAjaxBehavior.onChange(table::update));
 
         return InputPanel.of(componentId, textField);
     }

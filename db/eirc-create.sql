@@ -12,7 +12,7 @@ CREATE TABLE "user" (
   UNIQUE ("login")
 ); -- 'Пользователь'
 
-INSERT INTO "user" ("login", "password") values ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918');
+INSERT INTO "user" ("login", "password") values ('admin', '591414ddbf3a953b3a12b0dd02f34f378540bd73a66282d851011dbd96b0e0fb');
 
 
 -- ------------------------------

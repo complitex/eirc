@@ -10,5 +10,5 @@ import java.io.Serializable;
  * 12.12.2018 19:05
  */
 public interface IFilterColumn<T extends Serializable, S> extends IColumn<T, S> {
-    Component newFilter(String componentId, TableForm<T> tableForm);
+    Component newFilter(String componentId, Table<T> table);
 }

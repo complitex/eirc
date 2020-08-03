@@ -8,6 +8,8 @@ import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFal
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.table.ActionColumn;
 
@@ -24,9 +26,12 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
 
     private boolean hideOnEmpty = false;
 
-    public Table(String id, Provider<T> provider, List<? extends IColumn<T, Sort>> columns,
-                 TableForm<T> form, long rowsPerPage, String tableKey) {
+    private Provider<T> provider;
+
+    public Table(String id, Provider<T> provider, List<? extends IColumn<T, Sort>> columns, long rowsPerPage, String tableKey) {
         super(id, columns, provider, rowsPerPage);
+
+        this.provider = provider;
 
         ajaxIndicatorAppender = getColumns().stream().filter(c -> c instanceof ActionColumn)
                 .findAny()
@@ -45,7 +50,7 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
             }
         });
 
-        addTopToolbar(new Toolbar(this, form) {
+        addTopToolbar(new Toolbar(this) {
             @Override
             protected void onBeforeRender() {
                 super.onBeforeRender();
@@ -66,6 +71,10 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
                 return getRowCount() > 5;
             }
         });
+    }
+
+    public IModel<Filter<T>> getFilterModel() {
+        return provider.getFilterModel();
     }
 
     @Override

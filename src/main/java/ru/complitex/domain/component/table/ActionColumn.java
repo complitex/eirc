@@ -11,7 +11,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.Response;
 import ru.complitex.common.component.form.AjaxLinkPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 
 import java.io.Serializable;
 
@@ -49,11 +49,11 @@ public class ActionColumn<T extends Serializable> extends Column<T> {
     }
 
     @Override
-    public Component newFilter(String componentId, TableForm<T> tableForm) {
+    public Component newFilter(String componentId, Table<T> table) {
         return new AjaxLinkPanel(componentId, "fa fa-undo") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                ActionColumn.this.onSearch(target);
+                ActionColumn.this.onSearch(table, target);
             }
         };
     }
@@ -78,7 +78,7 @@ public class ActionColumn<T extends Serializable> extends Column<T> {
         return "action-column";
     }
 
-    protected void onSearch(AjaxRequestTarget target) {
+    protected void onSearch(Table<T> table, AjaxRequestTarget target) {
     }
 
     protected void onEdit(IModel<T> rowModel, AjaxRequestTarget target) {

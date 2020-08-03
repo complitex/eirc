@@ -17,7 +17,7 @@ import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.table.DomainColumn;
@@ -52,8 +52,8 @@ public class BuildingPage extends DomainPage<Building> {
         if (entityAttribute.getEntityAttributeId() == Building.DISTRICT){
             columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Building> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.country_name"), BuildingPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Building> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country_name"), table::update);
                 }
 
                 @Override
@@ -64,8 +64,8 @@ public class BuildingPage extends DomainPage<Building> {
 
             columns.add(new Column<>(new ResourceModel("region"), new Sort("region")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Building> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.region_name"), BuildingPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Building> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.region_name"), table::update);
                 }
 
                 @Override
@@ -76,8 +76,8 @@ public class BuildingPage extends DomainPage<Building> {
 
             columns.add(new Column<>(new ResourceModel("city"), new Sort("city")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Building> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.city_name"), BuildingPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Building> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.city_name"), table::update);
                 }
 
                 @Override
@@ -90,8 +90,8 @@ public class BuildingPage extends DomainPage<Building> {
         } else if (entityAttribute.getEntityAttributeId() == Building.NUMBER){
             columns.add(new Column<>(new ResourceModel("building"), new EntityAttributeSort(entityAttribute)) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Building> tableForm) {
-                    return new TextFieldPanel<>(componentId, TextModel.of(Model.of(getFilter().getObject()), Building.NUMBER), BuildingPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Building> table) {
+                    return new TextFieldPanel<>(componentId, TextModel.of(Model.of(table.getFilterModel().getObject().getObject()), Building.NUMBER), table::update);
                 }
 
                 public void populateItem(Item<ICellPopulator<Building>> cellItem, String componentId, IModel<Building> rowModel) {
@@ -99,7 +99,7 @@ public class BuildingPage extends DomainPage<Building> {
                 }
             });
         } else if (entityAttribute.getEntityAttributeId() == Building.STREET){
-            columns.add(new DomainColumn<>(entityAttribute, this::updateTable){
+            columns.add(new DomainColumn<>(entityAttribute){
                 @Override
                 protected String displayReference(int referenceEntityId, Long objectId, IModel<Building> rowModel) {
                     return addressService.getStreetTypeNameByStreetId(rowModel.getObject().getStreetId()) + " " +

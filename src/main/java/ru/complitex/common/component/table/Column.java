@@ -21,7 +21,7 @@ public abstract class Column<T extends Serializable> extends AbstractColumn<T, S
     }
 
     @Override
-    public abstract Component newFilter(String componentId, TableForm<T> tableForm);
+    public abstract Component newFilter(String componentId, Table<T> table);
 
     @Override
     public abstract void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel);

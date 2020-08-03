@@ -15,7 +15,7 @@ import ru.complitex.address.entity.Apartment;
 import ru.complitex.address.mapper.ApartmentMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.TableForm;
+import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -47,8 +47,8 @@ public class ApartmentPage extends DomainPage<Apartment> {
         if (entityAttribute.getEntityAttributeId() == Apartment.BUILDING){
             columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Apartment> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.country"), ApartmentPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Apartment> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
                 }
 
                 @Override
@@ -59,8 +59,8 @@ public class ApartmentPage extends DomainPage<Apartment> {
 
             columns.add(new Column<>(new ResourceModel("region"), new Sort("region")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Apartment> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.region"), ApartmentPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Apartment> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.region"), table::update);
                 }
 
                 @Override
@@ -71,8 +71,8 @@ public class ApartmentPage extends DomainPage<Apartment> {
 
             columns.add(new Column<>(new ResourceModel("city"), new Sort("city")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Apartment> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.city"), ApartmentPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Apartment> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.city"), table::update);
                 }
 
                 @Override
@@ -83,8 +83,8 @@ public class ApartmentPage extends DomainPage<Apartment> {
 
             columns.add(new Column<>(new ResourceModel("district"), new Sort("district")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Apartment> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.district"), ApartmentPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Apartment> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.district"), table::update);
                 }
 
                 @Override
@@ -95,8 +95,8 @@ public class ApartmentPage extends DomainPage<Apartment> {
 
             columns.add(new Column<>(new ResourceModel("street"), new Sort("street")) {
                 @Override
-                public Component newFilter(String componentId, TableForm<Apartment> tableForm) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(getFilter(), "map.street"), ApartmentPage.this::updateTable);
+                public Component newFilter(String componentId, Table<Apartment> table) {
+                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.street"), table::update);
                 }
 
                 @Override

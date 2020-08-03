@@ -14,12 +14,11 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import ru.complitex.common.component.table.KeyColumn;
+import ru.complitex.common.component.table.PropertyColumn;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
-import ru.complitex.common.component.table.TableForm;
-import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.model.FilterModel;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.entity.Domain;
@@ -59,23 +58,21 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         T domain = Domains.newObject(domainClass);
 
-        Filter<Matching> filter = Filter.of(new Matching(domain.getEntityName()));
-
-        Provider<Matching> provider = new Provider<Matching>(filter) {
+        Provider<Matching> provider = new Provider<>(FilterModel.of(new Matching(domain.getEntityName()))) {
             @Override
             protected List<Matching> data() {
-                return matchingMapper.getMatchingList(filter);
+                return matchingMapper.getMatchingList(getFilter());
             }
 
             @Override
             public long size() {
-                return matchingMapper.getMatchingListCount(filter);
+                return matchingMapper.getMatchingListCount(getFilter());
             }
         };
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
-        columns.add(new KeyColumn<Matching>("id").setCssClass("id-column"));
+        columns.add(new PropertyColumn<Matching>("id").setCssClass("id-column"));
         columns.add(newObjectId("objectId"));
 
         if (isParentIdVisible()) {
@@ -83,24 +80,24 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         }
 
         if (isAdditionalParentIdVisible()) {
-            columns.add(new KeyColumn<>("additionalParentId"));
+            columns.add(new PropertyColumn<>("additionalParentId"));
         }
 
-        columns.add(new KeyColumn<>("code"));
+        columns.add(new PropertyColumn<>("code"));
 
         if (isAdditionalCodeVisible()) {
-            columns.add(new KeyColumn<>("additionalCode"));
+            columns.add(new PropertyColumn<>("additionalCode"));
         }
 
-        columns.add(new KeyColumn<>("name"));
+        columns.add(new PropertyColumn<>("name"));
 
         if (isAdditionalNameVisible()) {
-            columns.add(new KeyColumn<>("additionalName"));
+            columns.add(new PropertyColumn<>("additionalName"));
         }
 
-        columns.add(new KeyColumn<>("startDate"));
+        columns.add(new PropertyColumn<>("startDate"));
 
-        columns.add(new KeyColumn<>("companyId"){
+        columns.add(new PropertyColumn<>("companyId"){
             @Override
             protected IModel<?> newItemModel(IModel<Matching> rowModel) {
                 Long companyId = rowModel.getObject().getCompanyId();
@@ -111,7 +108,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         columns.add(new ActionColumn<>(){
             @Override
-            protected void onSearch(AjaxRequestTarget target) {
+            protected void onSearch(Table<Matching> table, AjaxRequestTarget target) {
                 table.update(target);
             }
 
@@ -121,10 +118,10 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             }
         });
 
-        TableForm<Matching> form = new TableForm<>("form", filter);
+        Form<Matching> form = new Form<>("form");
         container.add(form);
 
-        table = new Table<>("table", provider, columns, form, 10, MatchingPage.class.getName()){
+        table = new Table<>("table", provider, columns, 10, MatchingPage.class.getName()){
             @Override
             protected Item<Matching> newRowItem(String id, int index, IModel<Matching> model) {
                 Item<Matching> item = super.newRowItem(id, index, model);
@@ -197,8 +194,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         });
     }
 
-    protected KeyColumn<Matching> newObjectId(String columnKey) {
-        return new KeyColumn<>(columnKey);
+    protected PropertyColumn<Matching> newObjectId(String columnKey) {
+        return new PropertyColumn<>(columnKey);
     }
 
     protected Component newObjectId(String componentId, IModel<Matching> model) {
@@ -209,8 +206,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected KeyColumn<Matching> newParentId(String columnKey) {
-        return new KeyColumn<>(columnKey);
+    protected PropertyColumn<Matching> newParentId(String columnKey) {
+        return new PropertyColumn<>(columnKey);
     }
 
     protected Component newParentId(String componentId, IModel<Matching> model) {
@@ -221,8 +218,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected KeyColumn<Matching> newAdditionalParentId(String columnKey) {
-        return new KeyColumn<>(columnKey);
+    protected PropertyColumn<Matching> newAdditionalParentId(String columnKey) {
+        return new PropertyColumn<>(columnKey);
     }
 
     protected boolean isAdditionalCodeVisible(){

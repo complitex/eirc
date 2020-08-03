@@ -4,6 +4,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Alert;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
@@ -16,7 +17,7 @@ public class LoginPage extends WebPage {
     public LoginPage(PageParameters parameters) {
         setVersioned(false);
 
-        add(new Alert("error", new ResourceModel("error_login"))
+        add(new Alert("error", Model.of("(eircadmin)"), new ResourceModel("error_login"))
                 .type(Alert.Type.Danger)
                 .setCloseButtonVisible(true)
                 .setVisible(!parameters.get("error").isNull()));
