@@ -36,6 +36,7 @@
         <mapper resource="ru/complitex/address/mapper/ApartmentMapper.xml"/>
 
         <mapper resource="ru/complitex/address/mapper/matching/CountryMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/RegionMatchingMapper.xml"/>
 
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/sync/adapter/SyncAdapter.xml"/>

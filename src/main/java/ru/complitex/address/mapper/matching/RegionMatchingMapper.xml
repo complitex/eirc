@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.matching.RegionMatchingMapper">
+    <sql id="selectRegionMatchingJoin">
+        <if test="map.region != null or sort.key == 'region'">
+            left join "region" r on r.object_id = m.object_id and r.status = 1
+            left join "region_attribute" r_a on r_a.domain_id = r.id and r_a.entity_attribute_id = 2 and r_a.status = 1
+            left join "region_value" r_v on r_v.attribute_id = r_a.id and r_v.locale_id = #{localeId}
+        </if>
+
+        <if test="map.country != null or sort.key == 'country'">
+            left join "country" c on c.object_id = m.parent_id and c.status = 1
+            left join "country_attribute" c_a on c_a.domain_id = c.id and c_a.entity_attribute_id = 1 and c_a.status = 1
+            left join "country_value" c_v on c_v.attribute_id = c_a.id and c_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectRegionMatchingWhere">
+        <if test="map.region != null">
+            ${operator} r_v.text ilike concat('%', #{map.region}, '%')
+        </if>
+
+        <if test="map.country != null">
+            ${operator} c_v.text ilike concat('%', #{map.country}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectRegionMatchingSort">
+        <if test="sort.key == 'region'">
+            order by r_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'country'">
+            order by c_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectRegionMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, '${object.entityName}' entity_name from "${object.entityName}_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectRegionMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectRegionMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectRegionMatchingSort"/>
+        ${limit}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectRegionMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "${object.entityName}_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+    </select>
+</mapper>

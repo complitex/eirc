@@ -4,17 +4,12 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.component.RegionGroup;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.address.mapper.CityMapper;
-import ru.complitex.common.component.form.TextFieldPanel;
-import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.Table;
+import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -60,15 +55,10 @@ public class CityPage extends DomainPage<City> {
     @Override
     protected void addColumn(EntityAttribute entityAttribute, List<IColumn<City, Sort>> columns) {
         if (entityAttribute.getEntityAttributeId() == City.REGION){
-            columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
+            columns.add(new MapColumn<>("country") {
                 @Override
-                public Component filter(String componentId, Table<City> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
-                }
-
-                @Override
-                public IModel<?> model(IModel<City> model) {
-                    return Model.of(attributeService.getTextValue(Region.ENTITY, model.getObject().getRegionId(), Region.COUNTRY, Country.ENTITY, Country.NAME));
+                public String text(IModel<City> model) {
+                    return attributeService.getTextValue(Region.ENTITY, model.getObject().getRegionId(), Region.COUNTRY, Country.ENTITY, Country.NAME);
                 }
             });
         }

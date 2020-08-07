@@ -201,25 +201,26 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return matchingMapper.getMatchingList(filter);
     }
 
-    protected IColumn<Matching, Sort> newObjectColumn() {
-        return new PropertyColumn<>("objectId");
-    }
-
     protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return null;
-    }
-
-    protected IColumn<Matching, Sort> newParentColumn() {
-        return new PropertyColumn<>("parentId");
     }
 
     protected Component newParentGroup(String componentId, IModel<Matching> model) {
         return null;
     }
 
-    protected IColumn<Matching, Sort> newAdditionalParentId(String columnKey) {
+    protected IColumn<Matching, Sort> newAdditionalParentColumn(String columnKey) {
         return new PropertyColumn<>(columnKey);
     }
+
+    protected IColumn<Matching, Sort> newObjectColumn() {
+        return new PropertyColumn<>("objectId");
+    }
+
+    protected IColumn<Matching, Sort> newParentColumn() {
+        return new PropertyColumn<>("parentId");
+    }
+
 
     protected boolean isParentVisible() {
         return true;

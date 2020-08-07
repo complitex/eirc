@@ -15,11 +15,21 @@ public class AddressService {
     @Inject
     private AttributeMapper attributeMapper;
 
+    public String getCountryName(Long countryId){
+        return attributeMapper.getTextValue(Country.ENTITY, countryId, Country.NAME);
+    }
+
+    public String getCountryNameByRegionId(Long regionId){
+        Long countryId = attributeMapper.getNumber(Region.ENTITY, regionId, Region.COUNTRY);
+
+        return getCountryName(countryId);
+    }
+
     public String getCountryNameByCityId(Long cityId){
         Long regionId = attributeMapper.getNumber(City.ENTITY, cityId, City.REGION);
         Long countryId = attributeMapper.getNumber(Region.ENTITY, regionId, Region.COUNTRY);
 
-        return attributeMapper.getTextValue(Country.ENTITY, countryId, Country.NAME);
+        return getCountryName(countryId);
     }
 
     public Long getCityIdByStreetId(Long streetId){
@@ -35,11 +45,14 @@ public class AddressService {
         return getCountryNameByStreetId(getStreetIdByBuildingId(buildingId));
     }
 
+    public String getRegionName(Long regionId){
+        return attributeMapper.getTextValue(Region.ENTITY, regionId, Region.NAME);
+    }
 
     public String getRegionNameByCityId(Long cityId){
         Long regionId = attributeMapper.getNumber(City.ENTITY, cityId, City.REGION);
 
-        return attributeMapper.getTextValue(Region.ENTITY, regionId, Region.NAME);
+        return getRegionName(regionId);
     }
 
     public String getRegionNameByStreetId(Long streetId){
@@ -48,6 +61,10 @@ public class AddressService {
 
     public String getRegionNameByBuildingId(Long buildingId){
         return getRegionNameByStreetId(getStreetIdByBuildingId(buildingId));
+    }
+
+    public String getRegionFullName(Long regionId){
+        return getCountryNameByRegionId(regionId) + ", " + getRegionName(regionId);
     }
 
     public String getCityTypeNameByCityId(Long cityId){

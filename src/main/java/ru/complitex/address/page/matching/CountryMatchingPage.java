@@ -33,16 +33,6 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     }
 
     @Override
-    protected IColumn<Matching, Sort> newObjectColumn() {
-        return new MapColumn<>("country"){
-            @Override
-            public String text(IModel<Matching> model) {
-                return attributeMapper.getTextValue(Country.ENTITY, model.getObject().getObjectId(), Country.NAME);
-            }
-        };
-    }
-
-    @Override
     protected Long getMatchingListCount(Filter<Matching> filter) {
         return countryMatchingMapper.getCountryMatchingListCount(filter);
     }
@@ -55,6 +45,16 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     @Override
     protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return new DomainGroup(componentId, Country.ENTITY, Country.NAME, PropertyModel.of(model, "objectId")).setRequired(true);
+    }
+
+    @Override
+    protected IColumn<Matching, Sort> newObjectColumn() {
+        return new MapColumn<>("country"){
+            @Override
+            public String text(IModel<Matching> model) {
+                return attributeMapper.getTextValue(Country.ENTITY, model.getObject().getObjectId(), Country.NAME);
+            }
+        };
     }
 
     @Override
