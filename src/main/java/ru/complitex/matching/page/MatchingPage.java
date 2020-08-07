@@ -12,17 +12,18 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.component.table.PropertyColumn;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
+import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.model.FilterModel;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.service.AttributeService;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
 import ru.complitex.matching.entity.Matching;
@@ -41,7 +42,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
     private MatchingMapper matchingMapper;
 
     @Inject
-    private DomainService domainService;
+    private AttributeService attributeService;
 
     private Table<Matching> table;
 
@@ -60,23 +61,23 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         Provider<Matching> provider = new Provider<>(FilterModel.of(new Matching(domain.getEntityName()))) {
             @Override
-            protected List<Matching> data() {
-                return matchingMapper.getMatchingList(getFilter());
+            public Long count() {
+                return MatchingPage.this.getMatchingListCount(getFilter());
             }
 
             @Override
-            public long size() {
-                return matchingMapper.getMatchingListCount(getFilter());
+            public List<Matching> list() {
+                return MatchingPage.this.getMatchingList(getFilter());
             }
         };
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
         columns.add(new PropertyColumn<Matching>("id").setCssClass("id-column"));
-        columns.add(newObjectId("objectId"));
+        columns.add(newObjectId());
 
         if (isParentIdVisible()) {
-            columns.add(newParentId("parentId"));
+            columns.add(newParentId());
         }
 
         if (isAdditionalParentIdVisible()) {
@@ -97,12 +98,10 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         columns.add(new PropertyColumn<>("startDate"));
 
-        columns.add(new PropertyColumn<>("companyId"){
+        columns.add(new MapColumn<>("company"){
             @Override
-            protected IModel<?> newItemModel(IModel<Matching> rowModel) {
-                Long companyId = rowModel.getObject().getCompanyId();
-
-                return Model.of(companyId != null ? domainService.getDomain(Company.class, companyId).getName() : "");
+            public String text(IModel<Matching> model) {
+                return attributeService.getTextValue(Company.ENTITY, model.getObject().getCompanyId(), Company.NAME);
             }
         });
 
@@ -196,8 +195,16 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         });
     }
 
-    protected PropertyColumn<Matching> newObjectId(String columnKey) {
-        return new PropertyColumn<>(columnKey);
+    protected Long getMatchingListCount(Filter<Matching> filter) {
+        return matchingMapper.getMatchingListCount(filter);
+    }
+
+    protected List<Matching> getMatchingList(Filter<Matching> filter) {
+        return matchingMapper.getMatchingList(filter);
+    }
+
+    protected IColumn<Matching, Sort> newObjectId() {
+        return new PropertyColumn<>("objectId");
     }
 
     protected Component newObjectId(String componentId, IModel<Matching> model) {
@@ -208,8 +215,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected PropertyColumn<Matching> newParentId(String columnKey) {
-        return new PropertyColumn<>(columnKey);
+    protected IColumn<Matching, Sort> newParentId() {
+        return new PropertyColumn<>("parentId");
     }
 
     protected Component newParentId(String componentId, IModel<Matching> model) {
@@ -220,7 +227,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return true;
     }
 
-    protected PropertyColumn<Matching> newAdditionalParentId(String columnKey) {
+    protected IColumn<Matching, Sort> newAdditionalParentId(String columnKey) {
         return new PropertyColumn<>(columnKey);
     }
 

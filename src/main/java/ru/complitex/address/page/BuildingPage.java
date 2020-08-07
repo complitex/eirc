@@ -2,14 +2,11 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.AddressService;
 import ru.complitex.address.component.DistrictStreetGroup;
@@ -17,6 +14,7 @@ import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
+import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
@@ -50,39 +48,24 @@ public class BuildingPage extends DomainPage<Building> {
     @Override
     protected void addColumn(EntityAttribute entityAttribute, List<IColumn<Building, Sort>> columns) {
         if (entityAttribute.getEntityAttributeId() == Building.DISTRICT){
-            columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
+            columns.add(new MapColumn<>("country") {
                 @Override
-                public Component newFilter(String componentId, Table<Building> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country_name"), table::update);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Building>> cellItem, String componentId, IModel<Building> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getCountryNameByStreetId(rowModel.getObject().getStreetId())));
+                public String text(IModel<Building> model) {
+                    return addressService.getCountryNameByStreetId(model.getObject().getStreetId());
                 }
             });
 
-            columns.add(new Column<>(new ResourceModel("region"), new Sort("region")) {
+            columns.add(new MapColumn<>("region") {
                 @Override
-                public Component newFilter(String componentId, Table<Building> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.region_name"), table::update);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Building>> cellItem, String componentId, IModel<Building> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getRegionNameByStreetId(rowModel.getObject().getStreetId())));
+                public String text(IModel<Building> model) {
+                    return addressService.getRegionNameByStreetId(model.getObject().getStreetId());
                 }
             });
 
-            columns.add(new Column<>(new ResourceModel("city"), new Sort("city")) {
+            columns.add(new MapColumn<>("city") {
                 @Override
-                public Component newFilter(String componentId, Table<Building> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.city_name"), table::update);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Building>> cellItem, String componentId, IModel<Building> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getCityNameByStreetId(rowModel.getObject().getStreetId())));
+                public String text(IModel<Building> model) {
+                    return addressService.getCityNameByStreetId(model.getObject().getStreetId());
                 }
             });
 
@@ -90,12 +73,13 @@ public class BuildingPage extends DomainPage<Building> {
         } else if (entityAttribute.getEntityAttributeId() == Building.NUMBER){
             columns.add(new Column<>(new ResourceModel("building"), new EntityAttributeSort(entityAttribute)) {
                 @Override
-                public Component newFilter(String componentId, Table<Building> table) {
+                public Component filter(String componentId, Table<Building> table) {
                     return new TextFieldPanel<>(componentId, TextModel.of(Model.of(table.getFilterModel().getObject().getObject()), Building.NUMBER), table::update);
                 }
 
-                public void populateItem(Item<ICellPopulator<Building>> cellItem, String componentId, IModel<Building> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getBuildingName(rowModel.getObject())));
+                @Override
+                public IModel<?> model(IModel<Building> model) {
+                    return LoadableDetachableModel.of(() -> addressService.getBuildingName(model.getObject()));
                 }
             });
         } else if (entityAttribute.getEntityAttributeId() == Building.STREET){

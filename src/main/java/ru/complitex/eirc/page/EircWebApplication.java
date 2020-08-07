@@ -14,8 +14,8 @@ import ru.complitex.common.application.ServletAuthorizationStrategy;
 import ru.complitex.common.application.ServletUnauthorizedListener;
 import ru.complitex.company.page.CompanyPage;
 import ru.complitex.eirc.page.login.LoginPage;
-import ru.complitex.matching.page.address.*;
-import ru.complitex.sync.page.address.*;
+import ru.complitex.address.page.matching.*;
+import ru.complitex.address.page.sync.*;
 
 /**
  * @author Anatoly A. Ivanov

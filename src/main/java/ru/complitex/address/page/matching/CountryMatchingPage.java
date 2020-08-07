@@ -1,17 +1,21 @@
-package ru.complitex.matching.page.address;
+package ru.complitex.address.page.matching;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import ru.complitex.address.entity.Country;
-import ru.complitex.common.component.table.PropertyColumn;
+import ru.complitex.address.mapper.matching.CountryMatchingMapper;
+import ru.complitex.common.component.table.MapColumn;
+import ru.complitex.common.entity.Filter;
+import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.form.DomainGroup;
-import ru.complitex.domain.service.DomainService;
+import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.page.MatchingPage;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author Anatoly Ivanov
@@ -19,20 +23,33 @@ import javax.inject.Inject;
  */
 public class CountryMatchingPage extends MatchingPage<Country> {
     @Inject
-    private DomainService domainService;
+    private AttributeMapper attributeMapper;
+
+    @Inject
+    private CountryMatchingMapper countryMatchingMapper;
 
     public CountryMatchingPage() {
         super(Country.class);
     }
 
     @Override
-    protected PropertyColumn<Matching> newObjectId(String columnKey) {
-        return new PropertyColumn<>(columnKey){
+    protected IColumn<Matching, Sort> newObjectId() {
+        return new MapColumn<>("country"){
             @Override
-            protected IModel<?> newItemModel(IModel<Matching> rowModel) {
-                return Model.of(domainService.getDomain(Country.class, rowModel.getObject().getObjectId()).getName());
+            public String text(IModel<Matching> model) {
+                return attributeMapper.getTextValue(Country.ENTITY, model.getObject().getObjectId(), Country.NAME);
             }
         };
+    }
+
+    @Override
+    protected Long getMatchingListCount(Filter<Matching> filter) {
+        return countryMatchingMapper.getCountryMatchingListCount(filter);
+    }
+
+    @Override
+    protected List<Matching> getMatchingList(Filter<Matching> filter) {
+        return countryMatchingMapper.getCountryMatchingList(filter);
     }
 
     @Override

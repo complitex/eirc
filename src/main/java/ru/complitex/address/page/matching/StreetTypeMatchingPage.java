@@ -1,4 +1,4 @@
-package ru.complitex.matching.page.address;
+package ru.complitex.address.page.matching;
 
 import ru.complitex.address.entity.StreetType;
 import ru.complitex.matching.page.MatchingPage;

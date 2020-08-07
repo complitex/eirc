@@ -1,4 +1,4 @@
-package ru.complitex.matching.page.address;
+package ru.complitex.address.page.matching;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;

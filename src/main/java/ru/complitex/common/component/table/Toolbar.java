@@ -43,7 +43,7 @@ public class Toolbar extends AbstractToolbar {
 
                 if (col instanceof IFilterColumn) {
                     IFilterColumn<T, Sort> filteredCol = (IFilterColumn<T, Sort>) col;
-                    filter = filteredCol.newFilter(FILTER_ID, table);
+                    filter = filteredCol.filter(FILTER_ID, table);
                 }
 
                 if (filter == null) {

@@ -2,20 +2,13 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.AddressService;
 import ru.complitex.address.component.CityGroup;
 import ru.complitex.address.entity.Street;
 import ru.complitex.address.mapper.StreetMapper;
-import ru.complitex.common.component.form.TextFieldPanel;
-import ru.complitex.common.component.table.Column;
-import ru.complitex.common.component.table.Table;
+import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.component.table.DomainColumn;
@@ -46,27 +39,17 @@ public class StreetPage extends DomainPage<Street> {
     @Override
     protected void addColumn(EntityAttribute entityAttribute, List<IColumn<Street, Sort>> columns) {
         if (entityAttribute.getEntityAttributeId() == Street.CITY){
-            columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
+            columns.add(new MapColumn<>("country") {
                 @Override
-                public Component newFilter(String componentId, Table<Street> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Street>> cellItem, String componentId, IModel<Street> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getCountryNameByCityId(rowModel.getObject().getCityId())));
+                public String text(IModel<Street> model) {
+                    return addressService.getCountryNameByCityId(model.getObject().getCityId());
                 }
             });
 
-            columns.add(new Column<>(new ResourceModel("region"), new Sort("region")) {
+            columns.add(new MapColumn<>("region") {
                 @Override
-                public Component newFilter(String componentId, Table<Street> table) {
-                    return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.region"), table::update);
-                }
-
-                @Override
-                public void populateItem(Item<ICellPopulator<Street>> cellItem, String componentId, IModel<Street> rowModel) {
-                    cellItem.add(new Label(componentId, addressService.getRegionNameByCityId(rowModel.getObject().getCityId())));
+                public String text(IModel<Street> model) {
+                    return addressService.getRegionNameByCityId(model.getObject().getCityId());
                 }
             });
 

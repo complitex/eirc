@@ -80,13 +80,13 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         Provider<T> provider = new Provider<T>(newFilterModel()) {
             @Override
-            protected List<T> data() {
-                return getDomains(getFilter());
+            public Long count() {
+                return getDomainsCount(getFilter());
             }
 
             @Override
-            public long size() {
-                return getDomainsCount(getFilter());
+            public List<T> list() {
+                return getDomains(getFilter());
             }
         };
 

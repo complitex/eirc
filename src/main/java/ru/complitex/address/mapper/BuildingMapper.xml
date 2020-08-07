@@ -37,19 +37,19 @@
 
     <sql id="selectBuildingsWhere">
         <if test="map.country != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
             </if>
         </if>
 
         <if test="map.region != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} rv_n.text ilike concat('%', #{map.region}, '%')
             </if>
         </if>
 
         <if test="map.city != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} city_v_n.text ilike concat('%', #{map.city}, '%')
             </if>
         </if>
@@ -68,6 +68,14 @@
             order by cv_n.text ${asc}
         </if>
     </sql>
+
+    <select id="selectBuildingsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "building" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectBuildingsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectBuildingsWhere"/>
+    </select>
 
     <select id="selectBuildings" parameterType="ru.complitex.common.entity.Filter" resultMap="buildingResultMap">
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
@@ -94,13 +102,5 @@
         <include refid="selectBuildingsJoin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
         <include refid="selectBuildingsSort"/>
-    </select>
-
-    <select id="selectBuildingsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct d.id) from "building" d
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
-        <include refid="selectBuildingsJoin"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-        <include refid="selectBuildingsWhere"/>
     </select>
 </mapper>

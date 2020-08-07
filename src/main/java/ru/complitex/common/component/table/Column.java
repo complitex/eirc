@@ -3,6 +3,7 @@ package ru.complitex.common.component.table;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import ru.complitex.common.entity.Sort;
@@ -21,10 +22,14 @@ public abstract class Column<T extends Serializable> extends AbstractColumn<T, S
     }
 
     @Override
-    public abstract Component newFilter(String componentId, Table<T> table);
+    public abstract Component filter(String componentId, Table<T> table);
+
+    public abstract IModel<?> model(IModel<T> model);
 
     @Override
-    public abstract void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel);
+    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel){
+        cellItem.add(new Label(componentId, model(rowModel)));
+    }
 
     @Override
     public String getCssClass() {

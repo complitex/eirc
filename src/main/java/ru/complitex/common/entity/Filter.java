@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class Filter<T extends Serializable> implements Serializable {
     public static final String FILTER_EQUAL = "equal";
-    public static final String FILTER_SEARCH = "search";
+    public static final String FILTER_LIKE = "like";
 
     public static final String STATUS_ACTIVE_AND_ARCHIVE = "active_and_archive";
 
@@ -22,14 +22,15 @@ public class Filter<T extends Serializable> implements Serializable {
     public static final String OPERATOR_OR = "or";
 
     private T object;
+
     private Long first = 0L;
     private Long count = 0L;
+
     private Sort sort = new Sort(null, null);
+
     private boolean ascending = false;
 
-    private Map<String, Object> map = new HashMap<>();
-
-    private String filter = FILTER_SEARCH;
+    private String filter = FILTER_LIKE;
 
     private String status;
 
@@ -38,6 +39,8 @@ public class Filter<T extends Serializable> implements Serializable {
     private List<Long> entityAttributeIds = new ArrayList<>();
 
     private int localeId = Locales.getSystemLocaleId();
+
+    private Map<String, Object> map = new HashMap<>();
 
     public Filter() {
     }

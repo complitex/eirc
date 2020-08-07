@@ -13,11 +13,11 @@ import java.util.List;
  */
 @RequestScoped
 public class StreetMapper extends BaseMapper {
-    public List<Street> getStreets(Filter<Street> filter){
-        return sqlSession().selectList("selectStreets", filter);
-    }
-
     public Long getStreetsCount(Filter<Street> filter){
         return sqlSession().selectOne("selectStreetsCount", filter);
+    }
+
+    public List<Street> getStreets(Filter<Street> filter){
+        return sqlSession().selectList("selectStreets", filter);
     }
 }

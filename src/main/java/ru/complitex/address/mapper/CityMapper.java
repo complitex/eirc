@@ -13,11 +13,11 @@ import java.util.List;
  */
 @RequestScoped
 public class CityMapper extends BaseMapper {
-    public List<City> getCities(Filter<City> filter){
-        return sqlSession().selectList("selectCities", filter);
-    }
-
     public Long getCitiesCount(Filter<City> filter){
         return sqlSession().selectOne("selectCitiesCount", filter);
+    }
+
+    public List<City> getCities(Filter<City> filter){
+        return sqlSession().selectList("selectCities", filter);
     }
 }

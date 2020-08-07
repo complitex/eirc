@@ -188,13 +188,13 @@
                     <choose>
                         <when test="a.entityAttribute != null and a.entityAttribute.referenceEntityAttribute != null">
                             <if test="a.entityAttribute.referenceEntityAttribute.valueTypeId == 4">
-                                <if test="filter == 'search'">
+                                <if test="filter == 'like'">
                                     ${operator} (a${i}_ref.text ilike concat('%', #{a.text}, '%')
                                 </if>
                             </if>
 
                             <if test="a.entityAttribute.referenceEntityAttribute.valueTypeId == 8">
-                                <if test="filter == 'search'">
+                                <if test="filter == 'like'">
                                     ${operator} v${i}_ref.text ilike concat('%', #{a.text}, '%')
                                 </if>
                             </if>
@@ -203,7 +203,7 @@
                             <if test="filter == 'equal'">
                                 ${operator} (a${i}.text = #{a.text} or v${i}.text = #{a.text})
                             </if>
-                            <if test="filter == 'search'">
+                            <if test="filter == 'like'">
                                 ${operator} (a${i}.text ilike concat('%', #{a.text}, '%') or v${i}.text ilike concat('%', #{a.text}, '%'))
                             </if>
                         </otherwise>
@@ -396,6 +396,13 @@
     </sql>
 
     <!--suppress SqlResolve -->
+    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "${object.entityName}" d
+        <include refid="selectDomainsJoinFilter"/>
+        <include refid="selectDomainsWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
     <select id="selectDomains" parameterType="ru.complitex.common.entity.Filter" resultMap="domainResultMap">
         <include refid="selectDomainsSelect"/>
         from (select d.id from "${object.entityName}" d
@@ -416,13 +423,6 @@
         left join "${object.entityName}_value" v on v.attribute_id = a.id
         <include refid="selectDomainsJoinSort"/>
         <include refid="selectDomainsSort"/>
-    </select>
-
-    <!--suppress SqlResolve -->
-    <select id="selectDomainsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct d.id) from "${object.entityName}" d
-        <include refid="selectDomainsJoinFilter"/>
-        <include refid="selectDomainsWhere"/>
     </select>
 
     <!--suppress SqlResolve -->

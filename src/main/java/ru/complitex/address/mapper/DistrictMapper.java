@@ -13,11 +13,11 @@ import java.util.List;
  */
 @RequestScoped
 public class DistrictMapper extends BaseMapper {
-    public List<District> getDistricts(Filter<District> filter){
-        return sqlSession().selectList("selectDistricts", filter);
-    }
-
     public Long getDistrictsCount(Filter<District> filter){
         return sqlSession().selectOne("selectDistrictsCount", filter);
+    }
+
+    public List<District> getDistricts(Filter<District> filter){
+        return sqlSession().selectList("selectDistricts", filter);
     }
 }

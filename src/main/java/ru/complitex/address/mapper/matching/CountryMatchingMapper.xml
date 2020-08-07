@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.matching.CountryMatchingMapper">
+    <sql id="selectCountryMatchingJoin">
+        <if test="map.country != null or sort.key == 'country'">
+            left join "country" c on c.object_id = m.object_id and c.status = 1
+            left join "country_attribute" c_a on c_a.domain_id = c.id and c_a.entity_attribute_id = 1 and c_a.status = 1
+            left join "country_value" c_v on c_v.attribute_id = c_a.id and c_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectCountryMatchingWhere">
+        <if test="map.country != null">
+            ${operator} c_v.text ilike concat('%', #{map.country}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectCountryMatchingSort">
+        <if test="sort.key == 'country'">
+            order by c_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectCountryMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, '${object.entityName}' entity_name from "${object.entityName}_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectCountryMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectCountryMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectCountryMatchingSort"/>
+        ${limit}
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectCountryMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "${object.entityName}_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+    </select>
+</mapper>

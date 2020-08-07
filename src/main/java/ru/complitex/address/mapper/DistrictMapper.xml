@@ -27,13 +27,13 @@
 
     <sql id="selectDistrictsWhere">
         <if test="map.country != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
             </if>
         </if>
 
         <if test="map.region != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} rv_n.text ilike concat('%', #{map.region}, '%')
             </if>
         </if>
@@ -48,6 +48,14 @@
             order by rv_n.text ${asc}
         </if>
     </sql>
+
+    <select id="selectDistrictsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "district" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectDistrictsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectDistrictsWhere"/>
+    </select>
 
     <select id="selectDistricts" parameterType="ru.complitex.common.entity.Filter" resultMap="districtResultMap">
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
@@ -74,13 +82,5 @@
         <include refid="selectDistrictsJoin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
         <include refid="selectDistrictsSort"/>
-    </select>
-
-    <select id="selectDistrictsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct d.id) from "district" d
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
-        <include refid="selectDistrictsJoin"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-        <include refid="selectDistrictsWhere"/>
     </select>
 </mapper>

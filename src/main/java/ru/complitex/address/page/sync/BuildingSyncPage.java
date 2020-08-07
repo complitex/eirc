@@ -1,4 +1,4 @@
-package ru.complitex.sync.page.address;
+package ru.complitex.address.page.sync;
 
 import ru.complitex.address.entity.Building;
 import ru.complitex.sync.page.SyncPage;

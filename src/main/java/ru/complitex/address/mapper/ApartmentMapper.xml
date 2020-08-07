@@ -57,31 +57,31 @@
 
     <sql id="selectApartmentsWhere">
         <if test="map.country != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
             </if>
         </if>
 
         <if test="map.region != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} rv_n.text ilike concat('%', #{map.region}, '%')
             </if>
         </if>
 
         <if test="map.city != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} city_v_n.text ilike concat('%', #{map.city}, '%')
             </if>
         </if>
 
         <if test="map.district != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} district_v_n.text ilike concat('%', #{map.district}, '%')
             </if>
         </if>
 
         <if test="map.street != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} sv_n.text ilike concat('%', #{map.street}, '%')
             </if>
         </if>
@@ -110,6 +110,14 @@
         </if>
     </sql>
 
+    <select id="selectApartmentsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "apartment" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectApartmentsJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectApartmentsWhere"/>
+    </select>
+
     <select id="selectApartments" parameterType="ru.complitex.common.entity.Filter" resultMap="apartmentResultMap">
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
         from (select d.id from "apartment" d
@@ -135,13 +143,5 @@
         <include refid="selectApartmentsJoin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
         <include refid="selectApartmentsSort"/>
-    </select>
-
-    <select id="selectApartmentsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct d.id) from "apartment" d
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
-        <include refid="selectApartmentsJoin"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-        <include refid="selectApartmentsWhere"/>
     </select>
 </mapper>

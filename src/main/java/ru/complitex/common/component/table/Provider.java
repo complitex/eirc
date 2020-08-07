@@ -43,7 +43,7 @@ public abstract class Provider<T extends Serializable> extends SortableDataProvi
     }
 
     @Override
-    public Iterator<? extends T> iterator(long first, long count) {
+    public final Iterator<? extends T> iterator(long first, long count) {
         Filter<T> filter = filterModel.getObject().limit(first, count);
 
         if (getSort() != null){
@@ -51,8 +51,14 @@ public abstract class Provider<T extends Serializable> extends SortableDataProvi
             filter.setAscending(getSort().isAscending());
         }
 
-        return data().iterator();
+        return list().iterator();
     }
 
-    protected abstract List<T> data();
+    public final long size(){
+        return count();
+    }
+
+    public abstract Long count();
+
+    public abstract List<T> list();
 }

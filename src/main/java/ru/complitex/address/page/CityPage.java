@@ -2,11 +2,9 @@ package ru.complitex.address.page;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.component.RegionGroup;
@@ -20,9 +18,9 @@ import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.domain.entity.EntityAttribute;
-import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.domain.model.NumberModel;
 import ru.complitex.domain.page.DomainPage;
+import ru.complitex.domain.service.AttributeService;
 import ru.complitex.eirc.security.EircRoles;
 
 import javax.inject.Inject;
@@ -35,7 +33,7 @@ import java.util.List;
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
 public class CityPage extends DomainPage<City> {
     @Inject
-    private AttributeMapper attributeMapper;
+    private AttributeService attributeService;
 
     @Inject
     private CityMapper cityMapper;
@@ -64,15 +62,13 @@ public class CityPage extends DomainPage<City> {
         if (entityAttribute.getEntityAttributeId() == City.REGION){
             columns.add(new Column<>(new ResourceModel("country"), new Sort("country")) {
                 @Override
-                public Component newFilter(String componentId, Table<City> table) {
+                public Component filter(String componentId, Table<City> table) {
                     return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map.country"), table::update);
                 }
 
                 @Override
-                public void populateItem(Item<ICellPopulator<City>> cellItem, String componentId, IModel<City> rowModel) {
-                    Long countryId = attributeMapper.getNumber(Region.ENTITY, rowModel.getObject().getRegionId(), Region.COUNTRY);
-
-                    cellItem.add(new Label(componentId, attributeMapper.getTextValue(Country.ENTITY, countryId, Country.NAME)));
+                public IModel<?> model(IModel<City> model) {
+                    return Model.of(attributeService.getTextValue(Region.ENTITY, model.getObject().getRegionId(), Region.COUNTRY, Country.ENTITY, Country.NAME));
                 }
             });
         }

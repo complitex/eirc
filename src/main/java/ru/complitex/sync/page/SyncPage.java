@@ -49,13 +49,13 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
 
         Provider<Sync> provider = new Provider<>(FilterModel.of(new Sync(domain.getEntityId()))) {
             @Override
-            protected List<Sync> data() {
-                return syncMapper.getSyncs(getFilter());
+            public Long count() {
+                return syncMapper.getSyncsCount(getFilter());
             }
 
             @Override
-            public long size() {
-                return syncMapper.getSyncsCount(getFilter());
+            public List<Sync> list() {
+                return syncMapper.getSyncs(getFilter());
             }
         };
 
@@ -73,7 +73,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         columns.add(new PropertyColumn<>("date"));
         columns.add(new PropertyColumn<>("status"){
             @Override
-            protected IModel<?> newItemModel(IModel<Sync> rowModel) {
+            public IModel<?> model(IModel<Sync> rowModel) {
                 return new ResourceModel("syncStatus." + rowModel.getObject().getStatus());
             }
         });

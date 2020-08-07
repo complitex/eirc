@@ -1,4 +1,4 @@
-package ru.complitex.sync.page.address;
+package ru.complitex.address.page.sync;
 
 import ru.complitex.address.entity.StreetType;
 import ru.complitex.sync.page.SyncPage;

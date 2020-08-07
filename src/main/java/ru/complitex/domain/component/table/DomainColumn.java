@@ -5,10 +5,7 @@ import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.DateTextField
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.cdi.NonContextual;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -71,7 +68,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
     }
 
     @Override
-    public Component newFilter(String componentId, Table<T> table) {
+    public Component filter(String componentId, Table<T> table) {
         IModel<T> domainModel = PropertyModel.of(table.getFilterModel(), "object");
 
         int entityAttributeId = entityAttribute.getEntityAttributeId();
@@ -102,7 +99,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     @Override
-    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
+    public IModel<?> model(IModel<T> rowModel) {
         String text = "";
 
         Attribute attribute = rowModel.getObject().getOrCreateAttribute(entityAttribute.getEntityAttributeId());
@@ -175,7 +172,7 @@ public class DomainColumn<T extends Domain<T>> extends Column<T> {
                 text = Attributes.displayText(entityAttribute, attribute.getText());
         }
 
-        cellItem.add(new Label(componentId, text));
+        return Model.of(text);
     }
 
     protected String displayReference(int referenceEntityId, Long objectId, IModel<T> rowModel) {

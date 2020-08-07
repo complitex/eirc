@@ -13,11 +13,11 @@ import java.util.List;
  */
 @RequestScoped
 public class ApartmentMapper extends BaseMapper {
-    public List<Apartment> getApartments(Filter<Apartment> filter){
-        return sqlSession().selectList("selectApartments", filter);
-    }
-
     public Long getApartmentsCount(Filter<Apartment> filter){
         return sqlSession().selectOne("selectApartmentsCount", filter);
+    }
+
+    public List<Apartment> getApartments(Filter<Apartment> filter){
+        return sqlSession().selectList("selectApartments", filter);
     }
 }

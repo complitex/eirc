@@ -49,13 +49,18 @@ public class ActionColumn<T extends Serializable> extends Column<T> {
     }
 
     @Override
-    public Component newFilter(String componentId, Table<T> table) {
+    public Component filter(String componentId, Table<T> table) {
         return new AjaxLinkPanel(componentId, "fa fa-undo") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ActionColumn.this.onSearch(table, target);
             }
         };
+    }
+
+    @Override
+    public IModel<?> model(IModel<T> model) {
+        return null;
     }
 
     @Override

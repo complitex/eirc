@@ -3,10 +3,7 @@ package ru.complitex.domain.component.table;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -31,7 +28,7 @@ public class IdColumn<T extends Domain<T>> extends Column<T> {
     }
 
     @Override
-    public Component newFilter(String componentId, Table<T> table) {
+    public Component filter(String componentId, Table<T> table) {
         TextField<Long> textField = new TextField<>(InputPanel.ID, new PropertyModel<>(table.getFilterModel(),"object.objectId"));
 
         textField.add(OnChangeAjaxBehavior.onChange(table::update));
@@ -40,8 +37,8 @@ public class IdColumn<T extends Domain<T>> extends Column<T> {
     }
 
     @Override
-    public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-        cellItem.add(new Label(componentId, () -> rowModel.getObject().getObjectId()));
+    public IModel<?> model(IModel<T> model) {
+        return () -> model.getObject().getObjectId();
     }
 
     @Override

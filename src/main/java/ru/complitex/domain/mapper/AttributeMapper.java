@@ -92,4 +92,6 @@ public class AttributeMapper extends BaseMapper {
         return sqlSession().selectOne("selectAttributeTextValue", Maps.of("entityName", entityName,
                 "objectId", objectId, "entityAttributeId", entityAttributeId));
     }
+
+
 }

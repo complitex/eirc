@@ -17,7 +17,7 @@
 
     <sql id="selectCitiesWhere">
         <if test="map.country != null">
-            <if test="filter == 'search'">
+            <if test="filter == 'like'">
                 ${operator} cv_n.text ilike concat('%', #{map.country}, '%')
             </if>
         </if>
@@ -28,6 +28,14 @@
             order by cv_n.text ${asc}
         </if>
     </sql>
+
+    <select id="selectCitiesCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(distinct d.id) from "city" d
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
+        <include refid="selectCitiesJoin"/>
+        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
+        <include refid="selectCitiesWhere"/>
+    </select>
 
     <select id="selectCities" parameterType="ru.complitex.common.entity.Filter" resultMap="cityResultMap">
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSelect"/>
@@ -54,13 +62,5 @@
         <include refid="selectCitiesJoin"/>
         <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsSort"/>
         <include refid="selectCitiesSort"/>
-    </select>
-
-    <select id="selectCitiesCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(distinct d.id) from "city" d
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsJoinFilter"/>
-        <include refid="selectCitiesJoin"/>
-        <include refid="ru.complitex.domain.mapper.DomainMapper.selectDomainsWhere"/>
-        <include refid="selectCitiesWhere"/>
     </select>
 </mapper>
