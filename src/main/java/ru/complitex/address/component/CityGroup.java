@@ -31,7 +31,7 @@ public class CityGroup extends RegionGroup {
 
         this.cityModel = cityModel;
 
-        city = new DomainGroup("city", City.ENTITY, City.NAME, cityModel){
+        city = new DomainGroup("city", City.ENTITY, cityModel, City.NAME){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(City.REGION, getRegionModel().getObject());

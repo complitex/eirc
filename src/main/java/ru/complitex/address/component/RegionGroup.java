@@ -32,7 +32,7 @@ public class RegionGroup extends Panel {
 
         countryModel = new AddressModel(Region.ENTITY, regionModel, Region.COUNTRY);
 
-        country = new DomainGroup("country", Country.ENTITY, Country.NAME, countryModel){
+        country = new DomainGroup("country", Country.ENTITY, countryModel, Country.NAME){
             @Override
             protected void onChange(AjaxRequestTarget target) {
                 updateRegion(target);
@@ -42,7 +42,7 @@ public class RegionGroup extends Panel {
         };
         add(country);
 
-        region = new DomainGroup("region", Region.ENTITY, Region.NAME, regionModel){
+        region = new DomainGroup("region", Region.ENTITY, regionModel, Region.NAME){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(Region.COUNTRY, countryModel.getObject());

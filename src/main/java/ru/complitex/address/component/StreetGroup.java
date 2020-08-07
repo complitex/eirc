@@ -24,7 +24,7 @@ public class StreetGroup extends CityGroup {
 
         this.streetModel = streetModel;
 
-        street = new DomainGroup("street", Street.ENTITY, Street.NAME, streetModel){
+        street = new DomainGroup("street", Street.ENTITY, streetModel, Street.NAME){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(Street.CITY, getCityModel().getObject());

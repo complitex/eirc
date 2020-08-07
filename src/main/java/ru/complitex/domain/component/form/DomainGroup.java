@@ -38,7 +38,7 @@ public class DomainGroup extends Group {
         });
     }
 
-    public DomainGroup(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+    public DomainGroup(String id, String entityName, IModel<Long> model, int entityAttributeId) {
         this(id, new ResourceModel("_" + id), entityName, entityAttributeId, model);
     }
 

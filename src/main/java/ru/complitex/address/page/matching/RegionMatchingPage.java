@@ -51,7 +51,7 @@ public class RegionMatchingPage extends MatchingPage<Region> {
 
     @Override
     protected Component newParentGroup(String componentId, IModel<Matching> model) {
-        return new DomainGroup(componentId, Country.ENTITY, Country.NAME, PropertyModel.of(model, "parentId"));
+        return new DomainGroup(componentId, Country.ENTITY, PropertyModel.of(model, "parentId"), Country.NAME);
     }
 
     @Override

@@ -67,6 +67,10 @@ public class AddressService {
         return getCountryNameByRegionId(regionId) + ", " + getRegionName(regionId);
     }
 
+    public String getCityTypeName(Long cityTypeId){
+        return attributeMapper.getTextValue(CityType.ENTITY, cityTypeId, CityType.NAME);
+    }
+
     public String getCityTypeNameByCityId(Long cityId){
         Long cityTypeId = attributeMapper.getNumber(City.ENTITY, cityId, City.CITY_TYPE);
 

@@ -61,10 +61,10 @@ public class MatchingModal extends Modal<Matching> {
         container.add(new DateGroup("startDate", PropertyModel.of(getModel(), "startDate")));
         container.add(new DateGroup("endDate", PropertyModel.of(getModel(), "endDate")));
 
-        container.add(new DomainGroup("companyId", Company.ENTITY, Company.NAME,
-                PropertyModel.of(getModel(), "companyId")));
-        container.add(new DomainGroup("userCompanyId",  Company.ENTITY, Company.NAME,
-                PropertyModel.of(getModel(), "userCompanyId")));
+        container.add(new DomainGroup("companyId", Company.ENTITY, PropertyModel.of(getModel(), "companyId"), Company.NAME
+        ));
+        container.add(new DomainGroup("userCompanyId",  Company.ENTITY, PropertyModel.of(getModel(), "userCompanyId"), Company.NAME
+        ));
 
         addButton(new BootstrapAjaxButton(Modal.BUTTON_MARKUP_ID, Buttons.Type.Outline_Primary) {
             @Override

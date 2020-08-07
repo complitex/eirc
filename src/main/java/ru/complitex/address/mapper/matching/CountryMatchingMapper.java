@@ -20,7 +20,4 @@ public class CountryMatchingMapper extends BaseMapper {
     public List<Matching> getCountryMatchingList(Filter<Matching> filter){
         return sqlSession().selectList("selectCountryMatchingList", filter);
     }
-
-
-
 }

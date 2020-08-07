@@ -25,7 +25,7 @@ public class BuildingGroup extends DistrictStreetGroup {
 
         this.buildingModel = buildingModel;
 
-        building = new DomainGroup("building", Building.ENTITY, Building.NUMBER, buildingModel){
+        building = new DomainGroup("building", Building.ENTITY, buildingModel, Building.NUMBER){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(Building.DISTRICT, getDistrictModel().getObject());
