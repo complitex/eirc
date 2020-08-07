@@ -32,7 +32,7 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
     @Inject
     private SyncMapper syncMapper;
 
-    private Class<T> domainClass;
+    private final Class<T> domainClass;
 
     public SyncPage(Class<T> domainClass) {
         this.domainClass = domainClass;

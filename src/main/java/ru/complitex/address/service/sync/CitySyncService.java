@@ -52,7 +52,7 @@ public class CitySyncService implements ISyncHandler<City> {
     }
 
     private Long getParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(Region.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(Region.ENTITY,
                 sync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -63,7 +63,7 @@ public class CitySyncService implements ISyncHandler<City> {
     }
 
     private Long getAdditionalParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(CityType.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(CityType.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), organizationId);
 
         if (matchingList.isEmpty()){
@@ -108,7 +108,7 @@ public class CitySyncService implements ISyncHandler<City> {
     @Override
     public Matching insertMatching(City city, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(City.ENTITY, city.getObjectId(), city.getRegionId(),
-                sync.getExternalId(), sync.getName(), companyId));
+                sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
     }
 
     @Override

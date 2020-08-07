@@ -58,7 +58,7 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
             return null;
         }
 
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(Company.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(Company.ENTITY,
                 sync.getParentId(),  companyId);
 
         if (matchingList.isEmpty()) {
@@ -104,7 +104,7 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
     @Override
     public Matching insertMatching(Company company, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(Company.ENTITY, company.getObjectId(), company.getParentId(),
-                sync.getExternalId(), sync.getAdditionalExternalId(), companyId));
+                sync.getAdditionalExternalId(), sync.getExternalId(), sync.getDate(), companyId));
     }
 
     @Override

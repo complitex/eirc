@@ -18,7 +18,7 @@ public class DistrictMatchingPage extends MatchingPage<District> {
     }
 
     @Override
-    protected Component newObjectId(String componentId, IModel<Matching> model) {
+    protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return new DistrictGroup(componentId, PropertyModel.of(model, "objectId")).setDistrictRequired(true);
     }
 }

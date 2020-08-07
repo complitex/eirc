@@ -59,7 +59,7 @@ public class DistrictSyncService implements ISyncHandler<District> {
     }
 
     private Long getParentId(Sync domainSync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(City.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(City.ENTITY,
                 domainSync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -102,7 +102,7 @@ public class DistrictSyncService implements ISyncHandler<District> {
     @Override
     public Matching insertMatching(District district, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(District.ENTITY, district.getObjectId(), district.getCityId(),
-                sync.getExternalId(), sync.getName(), companyId));
+                sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
     }
 
     @Override

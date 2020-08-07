@@ -372,19 +372,20 @@ BEGIN
     EXECUTE CONCAT('
         CREATE TABLE "', entityName, '_matching" (
           "id" BIGSERIAL,  -- ''Идентификатор соответствия''
-          "object_id" BIGINT NOT NULL REFERENCES "', entityName,'_id" ON DELETE CASCADE,  -- ''Идентификатор объекта''
+          "object_id" BIGINT NOT NULL REFERENCES "', entityName, '_id" ON DELETE CASCADE,  -- ''Идентификатор объекта''
           "parent_id" BIGINT,  -- ''Идентификатор родителя''
-          "additional_parent_id" VARCHAR(64),  -- ''Дополнительный идентификатор родителя''
-          "code" BIGINT,  -- ''Код''
-          "additional_code" VARCHAR(64),  -- ''Дополнительный код''
+          "additional_parent_id" BIGINT,  -- ''Дополнительный идентификатор родителя''
           "name" VARCHAR(1000) NOT NULL,  -- ''Соответствие''
           "additional_name" VARCHAR(1000),  -- ''Дополнительное соответствие''
+          "number" BIGINT,  -- ''Номер''
+          "code" VARCHAR(64),  -- ''Код''
           "start_date" TIMESTAMP,  -- ''Дата начала актуальности''
           "end_date" TIMESTAMP,  -- ''Дата окончания актуальности''
           "company_id" BIGINT,  -- ''Идентификатор компании''
           "user_company_id" BIGINT,  -- ''Идентификатор компании пользователя''
           "locale_id" INT REFERENCES "locale",  -- ''Идентификатор локали''
           PRIMARY KEY ("id"));');
+
 
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_matching IS ''', entityDescription, ' - Соответствия'';');
 END;
@@ -408,19 +409,18 @@ CALL create_matching('apartment', 'Квартира');
 DROP TABLE IF EXISTS "sync";
 CREATE TABLE "sync"(
   "id" BIGSERIAL,  -- 'Идентификатор синхронизации',
+  "entity_id" INT NOT NULL REFERENCES "entity",  -- 'Идентификатор сущности',
   "parent_id" BIGINT,  -- 'Идентификатор родителя',
   "additional_parent_id" VARCHAR(64),  -- 'Дополнительный идентификатор родителя',
-  "external_id" BIGINT NOT NULL,  -- 'Код',
-  "additional_external_id" VARCHAR(64),  -- 'Дополнительный код',
   "name" VARCHAR(250) NOT NULL,  -- 'Название',
   "additional_name" VARCHAR(50),  -- 'Дополнительное название',
   "alt_name" VARCHAR(250),  -- 'Название в альтернативной локали',
   "alt_additional_name" VARCHAR(50),  -- 'Дополнительное название в альтернативной локали',
+  "external_id" BIGINT NOT NULL,  -- 'Код',
+  "additional_external_id" VARCHAR(64),  -- 'Дополнительный код',
+  "date" TIMESTAMP NOT NULL,  -- 'Дата актуальности',
   "servicing_organization" BIGINT,  -- 'Обслуживающая организация',
   "balance_holder" BIGINT,  -- 'Балансодержатель',
-  "date" TIMESTAMP NOT NULL,  -- 'Дата актуальности',
   "status" INT NOT NULL,  -- 'Статус синхронизации',
-  "entity_id" INT NOT NULL,  -- 'Идентификатор сущности',
-  PRIMARY KEY ("id"),
-  CONSTRAINT "fk_sync__entity_id" FOREIGN KEY ("entity_id") REFERENCES "entity" ("id")
+  PRIMARY KEY ("id")
 )  -- 'Синхронизация';

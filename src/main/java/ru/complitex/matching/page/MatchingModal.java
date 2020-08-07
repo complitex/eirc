@@ -49,13 +49,15 @@ public class MatchingModal extends Modal<Matching> {
 
         container.add(newObjectId("objectId"));
 
-        container.add(newParentId("parentId").setVisible(isParentIdVisible()));
-        container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentIdVisible()));
+        container.add(newParentId("parentId").setVisible(isParentVisible()));
+        container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentVisible()));
 
-        container.add(new TextGroup<>("code", PropertyModel.of(getModel(), "code"), Long.class));
-        container.add(new TextGroup<>("additionalCode", PropertyModel.of(getModel(), "additionalCode")).setVisible(isAdditionalCodeVisible()));
         container.add(new TextGroup<>("name", PropertyModel.of(getModel(), "name")).setRequired(true));
         container.add(new TextGroup<>("additionalName", PropertyModel.of(getModel(), "additionalName")).setVisible(isAdditionalNameVisible()));
+
+        container.add(new TextGroup<>("number", PropertyModel.of(getModel(), "number"), Long.class));
+        container.add(new TextGroup<>("code", PropertyModel.of(getModel(), "code")).setVisible(isCodeVisible()));
+
         container.add(new DateGroup("startDate", PropertyModel.of(getModel(), "startDate")));
         container.add(new DateGroup("endDate", PropertyModel.of(getModel(), "endDate")));
 
@@ -89,7 +91,7 @@ public class MatchingModal extends Modal<Matching> {
         return new TextGroup<>(componentId, PropertyModel.of(getModel(), "objectId"), Long.class);
     }
 
-    protected boolean isParentIdVisible(){
+    protected boolean isParentVisible(){
         return true;
     }
 
@@ -97,11 +99,11 @@ public class MatchingModal extends Modal<Matching> {
         return new TextGroup<>(componentId, PropertyModel.of(getModel(), "parentId"), Long.class);
     }
 
-    protected boolean isAdditionalParentIdVisible(){
+    protected boolean isAdditionalParentVisible(){
         return true;
     }
 
-    protected boolean isAdditionalCodeVisible(){
+    protected boolean isCodeVisible(){
         return true;
     }
 

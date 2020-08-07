@@ -44,9 +44,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
     @Inject
     private AttributeService attributeService;
 
-    private Table<Matching> table;
-
-    private MatchingModal modal;
+    private final MatchingModal modal;
 
     public MatchingPage(Class<T> domainClass) {
         WebMarkupContainer container = new WebMarkupContainer("container");
@@ -74,26 +72,26 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
         columns.add(new PropertyColumn<Matching>("id").setCssClass("id-column"));
-        columns.add(newObjectId());
+        columns.add(newObjectColumn());
 
-        if (isParentIdVisible()) {
-            columns.add(newParentId());
+        if (isParentVisible()) {
+            columns.add(newParentColumn());
         }
 
-        if (isAdditionalParentIdVisible()) {
+        if (isAdditionalParentVisible()) {
             columns.add(new PropertyColumn<>("additionalParentId"));
-        }
-
-        columns.add(new PropertyColumn<>("code"));
-
-        if (isAdditionalCodeVisible()) {
-            columns.add(new PropertyColumn<>("additionalCode"));
         }
 
         columns.add(new PropertyColumn<>("name"));
 
         if (isAdditionalNameVisible()) {
             columns.add(new PropertyColumn<>("additionalName"));
+        }
+
+        columns.add(new PropertyColumn<>("number"));
+
+        if (isCodeVisible()) {
+            columns.add(new PropertyColumn<>("code"));
         }
 
         columns.add(new PropertyColumn<>("startDate"));
@@ -122,7 +120,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         Form<Matching> form = new Form<>("form");
         container.add(form);
 
-        table = new Table<>("table", provider, columns, 10, MatchingPage.class.getName()){
+        Table<Matching> table = new Table<>("table", provider, columns, 10, MatchingPage.class.getName()) {
             @Override
             protected Item<Matching> newRowItem(String id, int index, IModel<Matching> model) {
                 Item<Matching> item = super.newRowItem(id, index, model);
@@ -147,32 +145,32 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         modal = new MatchingModal("modal"){
             @Override
             protected Component newObjectId(String componentId) {
-                Component component =  MatchingPage.this.newObjectId(componentId, getModel());
+                Component component =  MatchingPage.this.newObjectGroup(componentId, getModel());
 
                 return component != null ? component : super.newObjectId(componentId);
             }
 
             @Override
-            protected boolean isParentIdVisible() {
-                return MatchingPage.this.isParentIdVisible();
+            protected boolean isParentVisible() {
+                return MatchingPage.this.isParentVisible();
             }
 
             @Override
             public Component newParentId(String componentId) {
-                Component component = MatchingPage.this.newParentId(componentId, getModel());
+                Component component = MatchingPage.this.newParentGroup(componentId, getModel());
 
                 return component != null ? component : super.newParentId(componentId);
             }
 
             @Override
-            protected boolean isAdditionalParentIdVisible() {
-                return MatchingPage.this.isAdditionalParentIdVisible();
+            protected boolean isAdditionalParentVisible() {
+                return MatchingPage.this.isAdditionalParentVisible();
             }
 
 
             @Override
-            protected boolean isAdditionalCodeVisible(){
-                return MatchingPage.this.isAdditionalCodeVisible();
+            protected boolean isCodeVisible(){
+                return MatchingPage.this.isCodeVisible();
             }
 
             @Override
@@ -203,39 +201,39 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return matchingMapper.getMatchingList(filter);
     }
 
-    protected IColumn<Matching, Sort> newObjectId() {
+    protected IColumn<Matching, Sort> newObjectColumn() {
         return new PropertyColumn<>("objectId");
     }
 
-    protected Component newObjectId(String componentId, IModel<Matching> model) {
+    protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return null;
     }
 
-    protected boolean isParentIdVisible() {
-        return true;
-    }
-
-    protected IColumn<Matching, Sort> newParentId() {
+    protected IColumn<Matching, Sort> newParentColumn() {
         return new PropertyColumn<>("parentId");
     }
 
-    protected Component newParentId(String componentId, IModel<Matching> model) {
+    protected Component newParentGroup(String componentId, IModel<Matching> model) {
         return null;
-    }
-
-    protected boolean isAdditionalParentIdVisible() {
-        return true;
     }
 
     protected IColumn<Matching, Sort> newAdditionalParentId(String columnKey) {
         return new PropertyColumn<>(columnKey);
     }
 
-    protected boolean isAdditionalCodeVisible(){
+    protected boolean isParentVisible() {
         return true;
     }
 
+    protected boolean isAdditionalParentVisible() {
+        return false;
+    }
+
     protected boolean isAdditionalNameVisible(){
+        return false;
+    }
+
+    protected boolean isCodeVisible(){
         return false;
     }
 

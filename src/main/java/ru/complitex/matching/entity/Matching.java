@@ -14,10 +14,10 @@ public class Matching implements Serializable {
     private Long objectId;
     private Long parentId;
     private Long additionalParentId;
-    private Long code;
-    private String additionalCode;
     private String name;
     private String additionalName;
+    private Long number;
+    private String code;
     private Date startDate;
     private Date endDate;
     private Long companyId;
@@ -33,57 +33,60 @@ public class Matching implements Serializable {
         this.entityName = entityName;
     }
 
-    public Matching(String entityName, Long objectId, Long code, String name, Long companyId) {
+    public Matching(String entityName, Long objectId, String name, Long number, Date startDate, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
-        this.code = code;
         this.name = name;
+        this.number = number;
+        this.startDate = startDate;
+
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long code, String name, String additionalName,
-                    Long companyId) {
+    public Matching(String entityName, Long objectId, String name, String additionalName, Long number, Date startDate, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
-        this.code = code;
         this.name = name;
         this.additionalName = additionalName;
+        this.number = number;
+        this.startDate = startDate;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long code, String name, Long companyId) {
+    public Matching(String entityName, Long objectId, Long parentId, String name, Long number, Date startDate, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
-        this.code = code;
         this.name = name;
+        this.number = number;
+        this.startDate = startDate;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long code, String name, String additionalName,
-                    Long companyId) {
+    public Matching(String entityName, Long objectId, Long parentId, String name, String additionalName, Long number, Date startDate, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
-        this.code = code;
         this.name = name;
         this.additionalName = additionalName;
+        this.number = number;
+        this.startDate = startDate;
         this.companyId = companyId;
     }
 
-    public Matching(String entityName, Long objectId, Long parentId, Long additionalParentId, Long code,
-                    String name, Long companyId) {
+    public Matching(String entityName, Long objectId, Long parentId, Long additionalParentId, String name, Long number, Date startDate, Long companyId) {
         this.entityName = entityName;
 
         this.objectId = objectId;
         this.parentId = parentId;
         this.additionalParentId = additionalParentId;
-        this.code = code;
         this.name = name;
+        this.number = number;
+        this.startDate = startDate;
         this.companyId = companyId;
     }
 
@@ -119,22 +122,6 @@ public class Matching implements Serializable {
         this.additionalParentId = additionalParentId;
     }
 
-    public Long getCode() {
-        return code;
-    }
-
-    public void setCode(Long code) {
-        this.code = code;
-    }
-
-    public String getAdditionalCode() {
-        return additionalCode;
-    }
-
-    public void setAdditionalCode(String additionalCode) {
-        this.additionalCode = additionalCode;
-    }
-
     public String getName() {
         return name;
     }
@@ -149,6 +136,22 @@ public class Matching implements Serializable {
 
     public void setAdditionalName(String additionalName) {
         this.additionalName = additionalName;
+    }
+
+    public Long getNumber() {
+        return number;
+    }
+
+    public void setNumber(Long number) {
+        this.number = number;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public Date getStartDate() {
@@ -205,11 +208,11 @@ public class Matching implements Serializable {
                 .add("id", id)
                 .add("objectId", objectId)
                 .add("parentId", parentId)
-                .add("additionalCode", additionalParentId)
-                .add("code", code)
-                .add("additionalExternalId", additionalCode)
+                .add("additionalExternalId", code)
                 .add("name", name)
                 .add("additionalName", additionalName)
+                .add("additionalCode", additionalParentId)
+                .add("code", number)
                 .add("startDate", startDate)
                 .add("endDate", endDate)
                 .add("companyId", companyId)

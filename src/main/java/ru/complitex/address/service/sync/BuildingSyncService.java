@@ -58,7 +58,7 @@ public class BuildingSyncService implements ISyncHandler<Building> {
     }
 
     private Long getParentId(Sync sync, Long companyId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(Street.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(Street.ENTITY,
                 sync.getParentId(), companyId);
 
         if (matchingList.isEmpty()){
@@ -111,7 +111,7 @@ public class BuildingSyncService implements ISyncHandler<Building> {
     @Override
     public Matching insertMatching(Building building, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(Building.ENTITY, building.getObjectId(), building.getStreetId(),
-                sync.getExternalId(), sync.getName(), sync.getAdditionalName(), companyId));
+                sync.getName(), sync.getAdditionalName(), sync.getExternalId(), sync.getDate(), companyId));
     }
 
     @Override
@@ -125,7 +125,7 @@ public class BuildingSyncService implements ISyncHandler<Building> {
 
     @Override
     public void updateNames(Building building, Sync sync, Long companyId) {
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(District.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(District.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), companyId);
 
         if (matchingList.isEmpty()){

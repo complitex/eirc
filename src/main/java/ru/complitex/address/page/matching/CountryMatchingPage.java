@@ -33,7 +33,7 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     }
 
     @Override
-    protected IColumn<Matching, Sort> newObjectId() {
+    protected IColumn<Matching, Sort> newObjectColumn() {
         return new MapColumn<>("country"){
             @Override
             public String text(IModel<Matching> model) {
@@ -53,27 +53,12 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     }
 
     @Override
-    protected Component newObjectId(String componentId, IModel<Matching> model) {
+    protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return new DomainGroup(componentId, Country.ENTITY, Country.NAME, PropertyModel.of(model, "objectId")).setRequired(true);
     }
 
     @Override
-    protected boolean isParentIdVisible() {
-        return false;
-    }
-
-    @Override
-    protected boolean isAdditionalParentIdVisible() {
-        return false;
-    }
-
-    @Override
-    protected boolean isAdditionalCodeVisible() {
-        return false;
-    }
-
-    @Override
-    protected boolean isAdditionalNameVisible() {
+    protected boolean isParentVisible() {
         return false;
     }
 }

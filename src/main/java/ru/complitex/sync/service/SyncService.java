@@ -177,7 +177,7 @@ public abstract class SyncService {
                         return;
                     }
 
-                    List<Matching> matchingList = matchingMapper.getMatchingListCode(entity.getName(),
+                    List<Matching> matchingList = matchingMapper.getMatchingListByNumber(entity.getName(),
                             s.getExternalId(), companyId);
 
                     if (!matchingList.isEmpty()){
@@ -264,7 +264,7 @@ public abstract class SyncService {
 
 
             matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
-                if (getSyncs(entity.getId(), 0, m.getCode()).isEmpty()){
+                if (getSyncs(entity.getId(), 0, m.getNumber()).isEmpty()){
                     matchingMapper.delete(m.getId());
 
                     log.info("sync: delete matching {}", m);
@@ -274,7 +274,7 @@ public abstract class SyncService {
 
             getSyncs(entity.getId(), SyncStatus.DELAYED, null).forEach(s -> {
                 if (syncMapper.getSync(s.getId()).getStatus() == SyncStatus.DELAYED) {
-                    List<Matching> matchingList = matchingMapper.getMatchingListCode(entity.getName(),
+                    List<Matching> matchingList = matchingMapper.getMatchingListByNumber(entity.getName(),
                             s.getExternalId(), companyId);
 
                     if (matchingList.isEmpty()){
@@ -301,7 +301,7 @@ public abstract class SyncService {
 
                         objectMatchingList.forEach(m -> {
                             if (!m.getId().equals(matching.getId())){
-                                Sync sync = getSyncs(entity.getId(), 0, m.getCode()).get(0);
+                                Sync sync = getSyncs(entity.getId(), 0, m.getNumber()).get(0);
 
                                 sync.setStatus(SyncStatus.SYNCHRONIZED);
                                 syncMapper.updateStatus(sync);

@@ -5,10 +5,11 @@
         <id column="id" property="id"/>
         <result column="object_id" property="objectId"/>
         <result column="parent_id" property="parentId"/>
-        <result column="code" property="code"/>
-        <result column="additional_code" property="additionalCode"/>
+        <result column="additional_parent_id" property="additionalParentId"/>
         <result column="name" property="name"/>
         <result column="additional_name" property="additionalName"/>
+        <result column="number" property="number"/>
+        <result column="code" property="code"/>
         <result column="start_date" property="startDate"/>
         <result column="end_date" property="endDate"/>
         <result column="company_id" property="companyId"/>
@@ -21,22 +22,21 @@
     <!--suppress SqlResolve -->
     <insert id="insertMatching" parameterType="ru.complitex.matching.entity.Matching"
             keyProperty="id" useGeneratedKeys="true">
-        insert into "${entityName}_matching" ("object_id", "parent_id", "additional_parent_id",
-            "code", "additional_code", "name", "additional_name", "start_date", "end_date",
-            "company_id", "user_company_id", "locale_id")
-        values (#{objectId}, #{parentId}, #{additionalParentId},
-            #{code}, #{additionalCode}, upper(#{name}), upper(#{additionalName}), #{startDate}, #{endDate},
-            #{companyId}, #{userCompanyId}, #{localeId})
+        insert into "${entityName}_matching" ("object_id", "parent_id", "additional_parent_id", "name", "additional_name",
+            "number", "code", "start_date", "end_date", "company_id", "user_company_id", "locale_id")
+        values (#{objectId}, #{parentId}, #{additionalParentId}, upper(#{name}), upper(#{additionalName}),
+                #{number}, #{code}, #{startDate}, #{endDate}, #{companyId}, #{userCompanyId}, #{localeId})
     </insert>
 
     <!--suppress SqlResolve -->
     <update id="updateMatching" parameterType="ru.complitex.matching.entity.Matching">
         update "${entityName}_matching" set "object_id" = #{objectId},
             "parent_id" = #{parentId}, "additional_parent_id" = #{additionalParentId},
-            "code" = #{code}, "additional_code" = #{additionalCode},
             "name" = upper(#{name}), "additional_name" = upper(#{additionalName}),
+            "number" = #{number}, "code" = #{code},
             "start_date" = #{startDate}, "end_date" = #{endDate},
-            "company_id" = #{companyId}, "user_company_id" = #{userCompanyId}, "locale_id" = #{localeId}
+            "company_id" = #{companyId}, "user_company_id" = #{userCompanyId},
+            "locale_id" = #{localeId}
         where "id" = #{id}
     </update>
 
@@ -60,8 +60,6 @@
             <if test="object.objectId != null">${operator} m.object_id = #{object.objectId}</if>
             <if test="object.parentId != null">${operator} m.parent_id = #{object.parentId}</if>
             <if test="object.additionalParentId != null">${operator} m.additional_parent_id = #{object.additionalParentId}</if>
-            <if test="object.code != null">${operator} m.code = #{object.code}</if>
-            <if test="object.additionalCode != null">${operator} m.additional_code = #{object.additionalCode}</if>
             <if test="object.name != null">
                 <if test="filter == 'equal'">
                     ${operator} m.name = #{object.name}
@@ -71,6 +69,8 @@
                 </if>
             </if>
             <if test="object.additionalName != null">${operator} m.additional_name = #{object.additionalName}</if>
+            <if test="object.number != null">${operator} m.number = #{object.number}</if>
+            <if test="object.code != null">${operator} m.code = #{object.code}</if>
             <if test="object.startDate != null">${operator} m.start_date = #{object.startDate}</if>
             <if test="object.endDate != null">${operator} m.end_date = #{object.endDate}</if>
             <if test="object.companyId != null">${operator} m.company_id = #{object.companyId}</if>
@@ -87,8 +87,8 @@
     <sql id="selectMatchingSort">
         <choose>
             <when test="sort.key == 'id'">order by m.id ${asc}</when>
+            <when test="sort.key == 'number'">order by m.number ${asc}</when>
             <when test="sort.key == 'code'">order by m.code ${asc}</when>
-            <when test="sort.key == 'additionalCode'">order by m.additional_code ${asc}</when>
             <when test="sort.key == 'name'">order by m.name ${asc}</when>
             <when test="sort.key == 'additionalName'">order by m.additional_name ${asc}</when>
             <when test="sort.key == 'startDate'">order by m.start_date ${asc}</when>
@@ -101,7 +101,6 @@
     <select id="selectMatching" resultMap="matchingResultMap" parameterType="ru.complitex.matching.entity.Matching">
         select m.*, '${entityName}' entity_name from "${entityName}_matching" m where m."id" = #{id}
     </select>
-
 
     <!--suppress SqlResolve -->
     <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">

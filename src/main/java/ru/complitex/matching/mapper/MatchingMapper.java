@@ -31,11 +31,11 @@ public class MatchingMapper extends BaseMapper {
         return getMatchingList(Filter.of(matching));
     }
 
-    public List<Matching> getMatchingListCode(String entityName, Long code, Long companyId){
+    public List<Matching> getMatchingListByNumber(String entityName, Long number, Long companyId){
         Matching matching = new Matching();
 
         matching.setEntityName(entityName);
-        matching.setCode(code);
+        matching.setNumber(number);
         matching.setCompanyId(companyId);
 
         return getMatchingList(Filter.of(matching));

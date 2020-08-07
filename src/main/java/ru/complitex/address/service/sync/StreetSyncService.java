@@ -61,7 +61,7 @@ public class StreetSyncService implements ISyncHandler<Street> {
     }
 
     private Long getParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(City.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(City.ENTITY,
                 sync.getParentId(), organizationId);
 
         if (matchingList.isEmpty()){
@@ -72,7 +72,7 @@ public class StreetSyncService implements ISyncHandler<Street> {
     }
 
     private Long getAdditionalParentId(Sync sync, Long organizationId){
-        List<Matching> matchingList = matchingMapper.getMatchingListCode(StreetType.ENTITY,
+        List<Matching> matchingList = matchingMapper.getMatchingListByNumber(StreetType.ENTITY,
                 Long.valueOf(sync.getAdditionalParentId()), organizationId);
 
         if (matchingList.isEmpty()) {
@@ -119,7 +119,7 @@ public class StreetSyncService implements ISyncHandler<Street> {
     @Override
     public Matching insertMatching(Street street, Sync sync, Long companyId) {
         return matchingMapper.insert(new Matching(Street.ENTITY, street.getObjectId(), street.getCityId(),
-                street.getStreetTypeId(), sync.getExternalId(), sync.getName(), companyId));
+                street.getStreetTypeId(), sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
     }
 
     @Override

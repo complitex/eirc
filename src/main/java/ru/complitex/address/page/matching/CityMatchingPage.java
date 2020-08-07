@@ -18,7 +18,7 @@ public class CityMatchingPage extends MatchingPage<City> {
     }
 
     @Override
-    protected Component newObjectId(String componentId, IModel<Matching> model) {
+    protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return new CityGroup(componentId, PropertyModel.of(model, "objectId")).setCityRequired(true);
     }
 }
