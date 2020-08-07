@@ -22,7 +22,7 @@ public class Sync implements Serializable {
     private String servicingOrganization;
     private String balanceHolder;
     private Date date;
-    private int status;
+    private Integer status;
     private int entityId;
 
     public Sync() {
@@ -139,11 +139,11 @@ public class Sync implements Serializable {
         this.date = date;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

@@ -1,4 +1,4 @@
-package ru.complitex.sync.handler;
+package ru.complitex.address.service.sync;
 
 import ru.complitex.address.entity.StreetType;
 import ru.complitex.common.entity.Cursor;
@@ -10,6 +10,7 @@ import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.mapper.SyncMapper;
+import ru.complitex.sync.service.ISyncHandler;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -23,7 +24,7 @@ import static ru.complitex.common.util.Strings.equalsIgnoreCase;
  * Date: 23.07.2014 22:57
  */
 @RequestScoped
-public class StreetTypeSyncHandler implements ISyncHandler<StreetType> {
+public class StreetTypeSyncService implements ISyncHandler<StreetType> {
     @Inject
     private DomainService domainService;
 

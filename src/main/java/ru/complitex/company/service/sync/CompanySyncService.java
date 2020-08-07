@@ -1,17 +1,18 @@
-package ru.complitex.sync.handler;
+package ru.complitex.company.service.sync;
 
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.service.DomainService;
-import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
+import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
-import ru.complitex.sync.mapper.SyncMapper;
+import ru.complitex.sync.service.ISyncHandler;
+import ru.complitex.sync.service.SyncService;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
@@ -20,21 +21,27 @@ import java.util.Objects;
 import static ru.complitex.common.util.Strings.equalsIgnoreCase;
 
 /**
- * @author inheaven on 22.01.2016 13:09.
+ * @author Anatoly Ivanov
+ * 07.08.2020 22:23
  */
-@RequestScoped
-public class CompanySyncHandler implements ISyncHandler<Company> {
+@ApplicationScoped
+public class CompanySyncService extends SyncService implements ISyncHandler<Company> {
     @Inject
     private DomainService domainService;
-
-    @Inject
-    private SyncMapper syncMapper;
 
     @Inject
     private MatchingMapper matchingMapper;
 
     @Inject
     private SyncAdapter syncAdapter;
+
+    protected ISyncHandler<?> getHandler(int entityId){
+        if (entityId == Company.ID) {
+            return this;
+        }
+
+        throw new IllegalArgumentException();
+    }
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
@@ -48,7 +55,7 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
 
     private Long getParentId(Sync sync, Long companyId) {
         if (sync.getParentId() == null){
-            return null;            
+            return null;
         }
 
         List<Matching> matchingList = matchingMapper.getMatchingListCode(Company.ENTITY,
@@ -118,4 +125,5 @@ public class CompanySyncHandler implements ISyncHandler<Company> {
         company.setCode(sync.getAdditionalExternalId());
 
     }
+
 }

@@ -1,4 +1,4 @@
-package ru.complitex.address;
+package ru.complitex.address.service;
 
 import ru.complitex.address.entity.*;
 import ru.complitex.domain.mapper.AttributeMapper;

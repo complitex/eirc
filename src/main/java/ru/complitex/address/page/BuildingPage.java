@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.address.AddressService;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.DistrictStreetGroup;
 import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
@@ -90,8 +90,7 @@ public class BuildingPage extends DomainPage<Building> {
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });
-        } else if (entityAttribute.getEntityAttributeId() != Building.CORPS && entityAttribute.getEntityAttributeId() != Building.STRUCTURE &&
-                entityAttribute.getEntityAttributeId() != Building.CODE) {
+        } else if (entityAttribute.getEntityAttributeId() != Building.CORPS && entityAttribute.getEntityAttributeId() != Building.STRUCTURE) {
             super.addColumn(entityAttribute, columns);
         }
     }

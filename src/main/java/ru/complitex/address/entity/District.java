@@ -12,7 +12,6 @@ public class District extends NameDomain<District> {
 
     public final static int CITY = 1;
     public final static int NAME = 2;
-    public final static int CODE = 3;
 
     public District() {
         super(ID, ENTITY, NAME);
@@ -25,13 +24,4 @@ public class District extends NameDomain<District> {
     public void setCityId(Long cityId){
         setNumber(CITY, cityId);
     }
-
-    public String getCode(){
-        return getText(CODE);
-    }
-
-    public void setCode(String code){
-        setText(CODE, code);
-    }
-
 }

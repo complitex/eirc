@@ -19,7 +19,6 @@ import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.BasePage;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.mapper.SyncMapper;
-import ru.complitex.sync.service.SyncService;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -29,14 +28,15 @@ import java.util.List;
  * @author Anatoly Ivanov
  * 29.04.2020 23:53
  */
-public class SyncPage<T extends Domain<T>> extends BasePage {
+public abstract class SyncPage<T extends Domain<T>> extends BasePage {
     @Inject
     private SyncMapper syncMapper;
 
-    @Inject
-    private SyncService syncService;
+    private Class<T> domainClass;
 
     public SyncPage(Class<T> domainClass) {
+        this.domainClass = domainClass;
+
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
@@ -87,7 +87,7 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         form.add(new SpinnerAjaxButton("load", new ResourceModel("load"), Buttons.Type.Outline_Primary) {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
-                syncService.load(domainClass);
+                SyncPage.this.load();
 
                 target.add(table);
             }
@@ -96,10 +96,18 @@ public class SyncPage<T extends Domain<T>> extends BasePage {
         form.add(new SpinnerAjaxButton("sync", new ResourceModel("sync"), Buttons.Type.Outline_Primary) {
             @Override
             public void onSubmit(AjaxRequestTarget target) {
-                syncService.sync(domainClass);
+                SyncPage.this.sync();
 
                 target.add(table);
             }
         }.setDefaultFormProcessing(false));
     }
+
+    public Class<T> getDomainClass() {
+        return domainClass;
+    }
+
+    protected abstract void load();
+
+    protected abstract void sync();
 }

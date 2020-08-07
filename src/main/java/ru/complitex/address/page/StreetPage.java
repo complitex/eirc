@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.AddressService;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.CityGroup;
 import ru.complitex.address.entity.Street;
 import ru.complitex.address.mapper.StreetMapper;
@@ -60,7 +60,7 @@ public class StreetPage extends DomainPage<Street> {
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });
-        } else if (entityAttribute.getEntityAttributeId() != Street.CODE) {
+        } else {
             super.addColumn(entityAttribute, columns);
         }
     }

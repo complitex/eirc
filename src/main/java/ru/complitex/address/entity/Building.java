@@ -16,7 +16,6 @@ public class Building extends Domain<Building> {
     public final static int NUMBER = 3;
     public final static int CORPS = 4;
     public final static int STRUCTURE = 5;
-    public final static int CODE = 6;
 
     public Building() {
         super(ID, ENTITY);

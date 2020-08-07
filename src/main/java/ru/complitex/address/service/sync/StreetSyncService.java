@@ -1,4 +1,4 @@
-package ru.complitex.sync.handler;
+package ru.complitex.address.service.sync;
 
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.CityType;
@@ -14,6 +14,7 @@ import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.entity.SyncStatus;
 import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.mapper.SyncMapper;
+import ru.complitex.sync.service.ISyncHandler;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -28,7 +29,7 @@ import static ru.complitex.common.util.Strings.equalsIgnoreCase;
  * Date: 03.08.2014 6:46
  */
 @RequestScoped
-public class StreetSyncHandler implements ISyncHandler<Street> {
+public class StreetSyncService implements ISyncHandler<Street> {
 
     @Inject
     private DomainService domainService;
@@ -136,6 +137,5 @@ public class StreetSyncHandler implements ISyncHandler<Street> {
         street.setStreetTypeId(getAdditionalParentId(sync, companyId));
         street.setName(sync.getName());
         street.setAltName(sync.getAltName());
-        street.setCode(sync.getAdditionalExternalId());
     }
 }

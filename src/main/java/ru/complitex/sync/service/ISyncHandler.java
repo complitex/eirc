@@ -1,4 +1,4 @@
-package ru.complitex.sync.handler;
+package ru.complitex.sync.service;
 
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.domain.entity.Domain;

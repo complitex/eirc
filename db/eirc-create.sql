@@ -92,18 +92,15 @@ DROP TABLE IF EXISTS "entity_attribute" CASCADE;
 
 CREATE TABLE "entity_attribute" (
   "id" BIGSERIAL,  -- 'Идентификатор'
-  "entity_id" INT NOT NULL,  -- 'Идентификатор сущности'
+  "entity_id" INT NOT NULL REFERENCES "entity" ON DELETE CASCADE,  -- 'Идентификатор сущности'
   "entity_attribute_id" INT NOT NULL,  -- 'Идентификатор атрибута'
   "start_date" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- 'Дата начала периода действия атрибута'
   "end_date" TIMESTAMP,  -- 'Дата окончания периода действия атрибута'
-  "value_type_id" INT,  -- 'Тип значения атрибута'
-  "reference_entity_id" INT,  -- 'Ссылка на сущность'
-  "reference_entity_attribute_id" INT,  -- 'Ссылка на атрибут'
+  "value_type_id" INT REFERENCES "entity_value_type",  -- 'Тип значения атрибута'
+  "reference_entity_id" INT REFERENCES "entity",  -- 'Ссылка на сущность'
+  "reference_entity_attribute_id" INT REFERENCES "entity_attribute",  -- 'Ссылка на атрибут'
   PRIMARY KEY ("id"),
-  UNIQUE ("entity_attribute_id", "entity_id"),
-  CONSTRAINT "fk_entity_attribute__entity" FOREIGN KEY ("entity_id") REFERENCES "entity" ("id"),
-  CONSTRAINT "fk_entity_attribute__entity_value_type" FOREIGN KEY ("value_type_id") REFERENCES entity_value_type ("id"),
-  CONSTRAINT "fk_entity_attribute__entity__ref" FOREIGN KEY ("reference_entity_id") REFERENCES "entity" ("id")
+  UNIQUE ("entity_attribute_id", "entity_id")
 );  -- 'Атрибут'
 
 
@@ -111,16 +108,14 @@ DROP TABLE IF EXISTS "entity_value";
 
 CREATE TABLE "entity_value" (
   "id" BIGSERIAL,  -- 'Идентификатор'
-  "entity_id" INT NOT NULL,  -- 'Идентификатор сущности'
+  "entity_id" INT NOT NULL REFERENCES "entity" ON DELETE CASCADE,  -- 'Идентификатор сущности'
   "entity_attribute_id" INT NULL,  -- 'Идентификатор атрибута'
-  "locale_id" INT NOT NULL,  -- 'Идентификатор локали'
+  "locale_id" INT NOT NULL REFERENCES "locale",  -- 'Идентификатор локали'
   "text" VARCHAR(1000),  -- 'Текстовое значение'
   PRIMARY KEY ("id"),
   UNIQUE ("entity_id", "entity_attribute_id", "locale_id"),
-  CONSTRAINT "fk_entity_value__entity" FOREIGN KEY ("entity_id") REFERENCES "entity" ("id"),
   CONSTRAINT "fk_entity_value__entity_attribute" FOREIGN KEY ("entity_attribute_id", "entity_id")
-    REFERENCES "entity_attribute" ("entity_attribute_id", "entity_id"),
-  CONSTRAINT "fk_entity_value__locale" FOREIGN KEY ("locale_id") REFERENCES "locale" ("id")
+    REFERENCES "entity_attribute" ("entity_attribute_id", "entity_id") ON DELETE CASCADE
 );  -- 'Значения'
 
 
@@ -327,7 +322,6 @@ CALL create_attribute(4, 3, 8, 'Название', 'Назва');
 CALL create_domain(5,'district', 'Район', 'Район');
 CALL create_reference(5, 1, 4, 3, 'Населённый пункт', 'Населений пункт');
 CALL create_attribute(5, 2, 8, 'Название', 'Назва');
-CALL create_attribute(5, 3, 4, 'Код', 'Код');
 
 CALL create_domain(6, 'street_type', 'Тип улицы', 'Тип вулиці');
 CALL create_attribute(6, 1, 8, 'Название', 'Назва');
@@ -337,7 +331,6 @@ CALL create_domain(7,'street', 'Улица', 'Вулиця');
 CALL create_reference(7, 1, 4, 3, 'Населённый пункт', 'Населений пункт');
 CALL create_reference(7, 2, 6, 1, 'Тип', 'Тип');
 CALL create_attribute(7, 3, 8, 'Название', 'Назва');
-CALL create_attribute(7, 4, 4, 'Код', 'Код');
 
 CALL create_domain(8,'building', 'Дом', 'Будинок');
 CALL create_reference(8, 1, 5, 2, 'Район', 'Район');
@@ -345,7 +338,6 @@ CALL create_reference(8, 2, 7, 3, 'Улица', 'Вулиця');
 CALL create_attribute(8, 3, 8, 'Номер', 'Номер');
 CALL create_attribute(8, 4, 8, 'Корпус', 'Корпус');
 CALL create_attribute(8, 5, 8, 'Строение', 'Будова');
-CALL create_attribute(8, 6, 4, 'Код', 'Код');
 
 CALL create_domain(9,'apartment', 'Квартира', 'Квартира');
 CALL create_reference(9, 1, 8, 3, 'Дом', 'Будинок');

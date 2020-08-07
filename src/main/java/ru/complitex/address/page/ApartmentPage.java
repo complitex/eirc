@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.AddressService;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.BuildingGroup;
 import ru.complitex.address.entity.Apartment;
 import ru.complitex.address.mapper.ApartmentMapper;

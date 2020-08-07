@@ -13,7 +13,6 @@ public class Street extends NameDomain<Street> {
     public final static int CITY = 1;
     public final static int STREET_TYPE = 2;
     public final static int NAME = 3;
-    public final static int CODE = 4;
 
     public Street() {
         super(ID, ENTITY, NAME);
@@ -33,13 +32,5 @@ public class Street extends NameDomain<Street> {
 
     public void setStreetTypeId(Long streetTypeId){
         setNumber(STREET_TYPE, streetTypeId);
-    }
-
-    public String getCode(){
-        return getText(CODE);
-    }
-
-    public void setCode(String code){
-        setText(CODE, code);
     }
 }

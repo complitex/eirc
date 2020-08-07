@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.AddressService;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.CityGroup;
 import ru.complitex.address.entity.District;
 import ru.complitex.address.mapper.DistrictMapper;
@@ -60,7 +60,7 @@ public class DistrictPage extends DomainPage<District> {
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });
-        } else if (entityAttribute.getEntityAttributeId() != District.CODE){
+        } else {
             super.addColumn(entityAttribute, columns);
         }
     }

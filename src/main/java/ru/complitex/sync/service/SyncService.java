@@ -2,7 +2,6 @@ package ru.complitex.sync.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.complitex.address.entity.*;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.service.BroadcastService;
@@ -15,17 +14,14 @@ import ru.complitex.domain.entity.Status;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
-import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.entity.SyncMessage;
 import ru.complitex.sync.entity.SyncStatus;
 import ru.complitex.sync.exception.SyncException;
-import ru.complitex.sync.handler.*;
 import ru.complitex.sync.mapper.SyncMapper;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,8 +31,7 @@ import java.util.stream.Collectors;
  * @author Anatoly Ivanov
  * 21.04.2020 23:38
  */
-@ApplicationScoped
-public class SyncService {
+public abstract class SyncService {
     private Logger log = LoggerFactory.getLogger(SyncService.class);
 
     @Inject
@@ -52,67 +47,13 @@ public class SyncService {
     private BroadcastService broadcastService;
 
     @Inject
-    private SyncAdapter syncAdapter;
-
-    @Inject
     private MatchingMapper matchingMapper;
 
-    @Inject
-    private CountrySyncHandler countrySyncHandler;
+    private final AtomicBoolean processing = new AtomicBoolean(false);
 
-    @Inject
-    private RegionSyncHandler regionSyncHandler;
+    private final AtomicBoolean cancelSync = new AtomicBoolean(false);
 
-    @Inject
-    private CityTypeSyncHandler cityTypeSyncHandler;
-
-    @Inject
-    private CitySyncHandler citySyncHandler;
-
-    @Inject
-    private DistrictSyncHandler districtSyncHandler;
-
-    @Inject
-    private StreetTypeSyncHandler streetTypeSyncHandler;
-
-    @Inject
-    private StreetSyncHandler streetSyncHandler;
-
-    @Inject
-    private BuildingSyncHandler buildingSyncHandler;
-
-    @Inject
-    private CompanySyncHandler companySyncHandler;
-
-    private AtomicBoolean processing = new AtomicBoolean(false);
-
-    private AtomicBoolean cancelSync = new AtomicBoolean(false);
-
-    private ISyncHandler getHandler(int entityId){
-        switch (entityId){
-            case Country.ID:
-                return countrySyncHandler;
-            case Region.ID:
-                return regionSyncHandler;
-            case CityType.ID:
-                return cityTypeSyncHandler;
-            case City.ID:
-                return citySyncHandler;
-            case District.ID:
-                return districtSyncHandler;
-            case StreetType.ID:
-                return streetTypeSyncHandler;
-            case Street.ID:
-                return streetSyncHandler;
-            case Building.ID:
-                return buildingSyncHandler;
-            case Company.ID:
-                return companySyncHandler;
-
-            default:
-                throw new IllegalArgumentException();
-        }
-    }
+    protected abstract ISyncHandler<?> getHandler(int entityId);
 
     public <T extends Domain<T>> void load(Class<T> domainClass){
         if (processing.get()){
@@ -204,7 +145,9 @@ public class SyncService {
                     level++;
                 }
 
-                levelMap.put(s.getExternalId(), level);
+                if (s != null) {
+                    levelMap.put(s.getExternalId(), level);
+                }
             });
 
             syncs.sort(Comparator.comparingInt(ds -> levelMap.get(ds.getExternalId())));
@@ -225,7 +168,7 @@ public class SyncService {
 
             Long companyId = 1L; //syncAdapter.getCompany().getObjectId();
 
-            ISyncHandler<T> handler = getHandler(entity.getId());
+            @SuppressWarnings("unchecked") ISyncHandler<T> handler = (ISyncHandler<T>) getHandler(entity.getId());
 
 
             getSyncs(entity.getId(), SyncStatus.LOADED, null).forEach(s -> {

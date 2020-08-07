@@ -56,7 +56,7 @@
             <if test="object.servicingOrganization != null">and "servicing_organization" = #{object.servicingOrganization}</if>
             <if test="object.balanceHolder != null">and "balance_holder" = #{object.balanceHolder}</if>
             <if test="object.date != null">and "date" = #{object.date}</if>
-            <if test="object.status != 0">and "status" = #{object.status}</if>
+            <if test="object.status != null">and "status" = #{object.status}</if>
             <if test="object.entityId != null">and "entity_id" = #{object.entityId}</if>
         </where>
     </sql>
