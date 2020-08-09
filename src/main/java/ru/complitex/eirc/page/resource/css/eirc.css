@@ -117,7 +117,7 @@ td .btn {
 }
 
 .table td span {
-    white-space: nowrap;
+
 }
 
 .table .filter-td {
@@ -158,10 +158,6 @@ td .btn {
 
 .pointer {
     cursor: pointer;
-}
-
-.text-value {
-    margin-top: 3px;
 }
 
 .navigation .bootstrap-select {

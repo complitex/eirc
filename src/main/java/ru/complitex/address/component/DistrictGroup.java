@@ -1,78 +1,22 @@
 package ru.complitex.address.component;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.entity.District;
-import ru.complitex.address.model.AddressModel;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.domain.component.form.DomainGroup;
-import ru.complitex.domain.entity.Domain;
+import org.apache.wicket.model.ResourceModel;
+import ru.complitex.common.component.form.Group;
 
 /**
  * @author Anatoly Ivanov
- * 16.06.2020 22:25
+ * 09.08.2020 21:20
  */
-public class DistrictGroup extends CityGroup {
-    private final IModel<Long> districtModel;
-
-    private final DomainGroup district;
-
-    private boolean districtRequired;
-
+public class DistrictGroup extends Group {
     public DistrictGroup(String id, IModel<Long> districtModel) {
-        super(id, new AddressModel(District.ENTITY, districtModel, District.CITY));
+        super(id, new ResourceModel("district"));
 
-        this.districtModel = districtModel;
-
-        district = new DomainGroup("district", District.ENTITY, districtModel, District.NAME){
+        add(new DistrictInput("district", districtModel){
             @Override
-            protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(District.CITY, getCityModel().getObject());
+            public boolean isDistrictRequired() {
+                return DistrictGroup.this.isRequired();
             }
-
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                updateCountry(target);
-                updateRegion(target);
-                updateCity(target);
-
-                onDistrictChange(target);
-            }
-
-            @Override
-            public boolean isRequired() {
-                return isDistrictRequired();
-            }
-        };
-        add(district);
-    }
-
-    public boolean isDistrictRequired() {
-        return districtRequired;
-    }
-
-    public DistrictGroup setDistrictRequired(boolean districtRequired) {
-        this.districtRequired = districtRequired;
-
-        return this;
-    }
-
-    @Override
-    protected void onCityChange(AjaxRequestTarget target) {
-        updateDistrict(target);
-
-        onDistrictChange(target);
-    }
-
-    protected void onDistrictChange(AjaxRequestTarget target){
-
-    }
-
-    protected void updateDistrict(AjaxRequestTarget target) {
-        if (districtModel.getObject() != null){
-            districtModel.setObject(null);
-
-            target.add(district);
-        }
+        });
     }
 }

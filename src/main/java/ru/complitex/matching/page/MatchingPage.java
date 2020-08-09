@@ -19,6 +19,7 @@ import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.mapper.IFilterMapper;
 import ru.complitex.common.model.FilterModel;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.component.table.ActionColumn;
@@ -60,7 +61,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         Provider<Matching> provider = new Provider<>(FilterModel.of(new Matching(domain.getEntityName()))) {
             @Override
             public Long count() {
-                return MatchingPage.this.getMatchingListCount(getFilter());
+                return MatchingPage.this.getMatchingCount(getFilter());
             }
 
             @Override
@@ -68,6 +69,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
                 return MatchingPage.this.getMatchingList(getFilter());
             }
         };
+        provider.getFilter().sort("id", false);
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
@@ -107,8 +109,9 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             @Override
             protected void onSearch(Table<Matching> table, AjaxRequestTarget target) {
                 table.getFilterModel().getObject().setObject(new Matching(domain.getEntityName()));
+                table.getFilterModel().getObject().getMap().clear();
 
-                table.update(target);
+                target.add(container);
             }
 
             @Override
@@ -193,12 +196,16 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         });
     }
 
-    protected Long getMatchingListCount(Filter<Matching> filter) {
-        return matchingMapper.getMatchingListCount(filter);
+    protected IFilterMapper<Matching> getFilterMapper(){
+        return matchingMapper;
+    }
+
+    protected Long getMatchingCount(Filter<Matching> filter) {
+        return getFilterMapper().getCount(filter);
     }
 
     protected List<Matching> getMatchingList(Filter<Matching> filter) {
-        return matchingMapper.getMatchingList(filter);
+        return getFilterMapper().getList(filter);
     }
 
     protected Component newObjectGroup(String componentId, IModel<Matching> model) {

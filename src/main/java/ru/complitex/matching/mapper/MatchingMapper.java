@@ -1,7 +1,7 @@
 package ru.complitex.matching.mapper;
 
 import ru.complitex.common.entity.Filter;
-import ru.complitex.common.mapper.BaseMapper;
+import ru.complitex.common.mapper.FilterMapper;
 import ru.complitex.matching.entity.Matching;
 
 import javax.enterprise.context.RequestScoped;
@@ -12,14 +12,10 @@ import java.util.List;
  * 29.04.2020 00:21
  */
 @RequestScoped
-public class MatchingMapper extends BaseMapper {
+public class MatchingMapper extends FilterMapper<Matching> {
 
-    public List<Matching> getMatchingList(Filter<Matching> filter){
-        return sqlSession().selectList("selectMatchingList", filter);
-    }
-
-    public Long getMatchingListCount(Filter<Matching> filter){
-        return sqlSession().selectOne("selectMatchingListCount", filter);
+    public MatchingMapper() {
+        super("Matching");
     }
 
     public List<Matching> getMatchingList(String entityName, Long companyId){
@@ -28,7 +24,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setEntityName(entityName);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(Filter.of(matching));
+        return getList(Filter.of(matching));
     }
 
     public List<Matching> getMatchingListByNumber(String entityName, Long number, Long companyId){
@@ -38,7 +34,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setNumber(number);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(Filter.of(matching));
+        return getList(Filter.of(matching));
     }
 
     public List<Matching> getMatchingListByObjectId(String entityName, Long objectId, Long companyId){
@@ -48,7 +44,7 @@ public class MatchingMapper extends BaseMapper {
         matching.setObjectId(objectId);
         matching.setCompanyId(companyId);
 
-        return getMatchingList(Filter.of(matching));
+        return getList(Filter.of(matching));
     }
 
     public Matching insert(Matching matching){

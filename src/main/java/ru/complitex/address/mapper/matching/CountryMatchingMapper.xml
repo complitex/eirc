@@ -22,8 +22,17 @@
     </sql>
 
     <!--suppress SqlResolve -->
+    <select id="selectCountryMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "country_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectCountryMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectCountryMatchingWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
     <select id="selectCountryMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
-        select m.*, '${object.entityName}' entity_name from "${object.entityName}_matching" m
+        select m.*, 'country' entity_name from "country_matching" m
         <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
         <include refid="selectCountryMatchingJoin"/>
         <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
@@ -31,12 +40,5 @@
         <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
         <include refid="selectCountryMatchingSort"/>
         ${limit}
-    </select>
-
-    <!--suppress SqlResolve -->
-    <select id="selectCountryMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
-        select count(*) from "${object.entityName}_matching" m
-        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
-        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
     </select>
 </mapper>

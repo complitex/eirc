@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.matching.DistrictMatchingMapper">
+    <sql id="selectDistrictMatchingJoin">
+        <if test="map.district != null or sort.key == 'district'">
+            left join "district" d on d.object_id = m.object_id and d.status = 1
+            left join "district_attribute" d_a on d_a.domain_id = d.id and d_a.entity_attribute_id = 2 and d_a.status = 1
+            left join "district_value" d_v on d_v.attribute_id = d_a.id and d_v.locale_id = #{localeId}
+        </if>
+
+        <if test="map.city != null or sort.key == 'city'">
+            left join "city" c on c.object_id = m.parent_id and c.status = 1
+            left join "city_attribute" c_a on c_a.domain_id = c.id and c_a.entity_attribute_id = 3 and c_a.status = 1
+            left join "city_value" c_v on c_v.attribute_id = c_a.id and c_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectDistrictMatchingWhere">
+        <if test="map.district != null">
+            ${operator} d_v.text ilike concat('%', #{map.district}, '%')
+        </if>
+
+        <if test="map.city != null">
+            ${operator} c_v.text ilike concat('%', #{map.city}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectDistrictMatchingSort">
+        <if test="sort.key == 'district'">
+            order by d_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'city'">
+            order by c_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDistrictMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "district_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectDistrictMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectDistrictMatchingWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectDistrictMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, 'district' entity_name from "district_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectDistrictMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectDistrictMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectDistrictMatchingSort"/>
+        ${limit}
+    </select>
+</mapper>

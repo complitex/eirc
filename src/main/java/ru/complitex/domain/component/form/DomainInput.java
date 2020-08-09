@@ -34,7 +34,7 @@ public class DomainInput extends AbstractAutoComplete<Domain<?>> {
         filter = newFilter();
     }
 
-    public DomainInput(String id, String entityName, int entityAttributeId, IModel<Long> model) {
+    public DomainInput(String id, String entityName, IModel<Long> model, int entityAttributeId) {
         super(id, model);
 
         entityAttribute = entityService.getEntityAttribute(entityName, entityAttributeId);

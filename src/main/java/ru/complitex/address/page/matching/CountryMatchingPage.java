@@ -7,15 +7,14 @@ import org.apache.wicket.model.PropertyModel;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.mapper.matching.CountryMatchingMapper;
 import ru.complitex.common.component.table.MapColumn;
-import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.mapper.IFilterMapper;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.domain.mapper.AttributeMapper;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.page.MatchingPage;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * @author Anatoly Ivanov
@@ -33,13 +32,8 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     }
 
     @Override
-    protected Long getMatchingListCount(Filter<Matching> filter) {
-        return countryMatchingMapper.getCountryMatchingListCount(filter);
-    }
-
-    @Override
-    protected List<Matching> getMatchingList(Filter<Matching> filter) {
-        return countryMatchingMapper.getCountryMatchingList(filter);
+    protected IFilterMapper<Matching> getFilterMapper() {
+        return countryMatchingMapper;
     }
 
     @Override

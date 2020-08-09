@@ -38,6 +38,8 @@
         <mapper resource="ru/complitex/address/mapper/matching/CountryMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/RegionMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/CityTypeMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/CityMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/DistrictMatchingMapper.xml"/>
 
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/sync/adapter/SyncAdapter.xml"/>

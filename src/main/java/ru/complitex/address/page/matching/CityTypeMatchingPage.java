@@ -8,14 +8,13 @@ import ru.complitex.address.entity.CityType;
 import ru.complitex.address.mapper.matching.CityTypeMatchingMapper;
 import ru.complitex.address.service.AddressService;
 import ru.complitex.common.component.table.MapColumn;
-import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
+import ru.complitex.common.mapper.IFilterMapper;
 import ru.complitex.domain.component.form.DomainGroup;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.page.MatchingPage;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * @author Anatoly Ivanov
@@ -32,14 +31,10 @@ public class CityTypeMatchingPage extends MatchingPage<CityType> {
         super(CityType.class);
     }
 
-    @Override
-    protected Long getMatchingListCount(Filter<Matching> filter) {
-        return cityTypeMatchingMapper.getCityTypeMatchingListCount(filter);
-    }
 
     @Override
-    protected List<Matching> getMatchingList(Filter<Matching> filter) {
-        return cityTypeMatchingMapper.getCityTypeMatchingList(filter);
+    protected IFilterMapper<Matching> getFilterMapper() {
+        return cityTypeMatchingMapper;
     }
 
     @Override

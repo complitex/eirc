@@ -4,10 +4,10 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.CityGroup;
 import ru.complitex.address.entity.District;
 import ru.complitex.address.mapper.DistrictMapper;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.entity.Sort;
@@ -56,7 +56,7 @@ public class DistrictPage extends DomainPage<District> {
             columns.add(new DomainColumn<>(entityAttribute){
                 @Override
                 protected String displayReference(int referenceEntityId, Long objectId, IModel<District> rowModel) {
-                    return addressService.getCityTypeNameByCityId(rowModel.getObject().getCityId()) + " " +
+                    return addressService.getCityTypeShortNameByCityId(rowModel.getObject().getCityId()) + " " +
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });
@@ -83,7 +83,7 @@ public class DistrictPage extends DomainPage<District> {
     @Override
     protected Component newGroup(String groupId, IModel<District> domainModel, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == District.CITY){
-            return new CityGroup(groupId, NumberModel.of(domainModel, District.CITY)).setCityRequired(true);
+            return new CityGroup(groupId, NumberModel.of(domainModel, District.CITY)).setRequired(true);
         }
 
         return super.newGroup(groupId, domainModel, entityAttribute);

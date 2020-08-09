@@ -69,7 +69,7 @@ public class CityPage extends DomainPage<City> {
     @Override
     protected Component newGroup(String groupId, IModel<City> domainModel, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == City.REGION){
-            return new RegionGroup(groupId, NumberModel.of(domainModel, City.REGION)).setRegionRequired(true);
+            return new RegionGroup(groupId, NumberModel.of(domainModel, City.REGION)).setRequired(true);
         }
 
         return super.newGroup(groupId, domainModel, entityAttribute);

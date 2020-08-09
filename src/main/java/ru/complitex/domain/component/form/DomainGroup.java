@@ -15,7 +15,7 @@ public class DomainGroup extends Group {
     public DomainGroup(String id, IModel<String> labelModel, String entityName, int entityAttributeId, IModel<Long> model) {
         super(id, labelModel);
 
-        add(new DomainInput("input", entityName, entityAttributeId, model){
+        add(new DomainInput("input", entityName, model, entityAttributeId){
             @Override
             public boolean isRequired() {
                 return DomainGroup.this.isRequired();

@@ -7,11 +7,11 @@ import javax.enterprise.context.RequestScoped;
 
 /**
  * @author Anatoly Ivanov
- * 07.08.2020 17:08
+ * 10.08.2020 0:26
  */
 @RequestScoped
-public class CountryMatchingMapper extends FilterMapper<Matching> {
-    public CountryMatchingMapper() {
-        super("CountryMatching");
+public class CityMatchingMapper extends FilterMapper<Matching> {
+    public CityMatchingMapper() {
+        super("CityMatching");
     }
 }

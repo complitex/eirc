@@ -12,7 +12,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly Ivanov
  * 16.06.2020 22:26
  */
-public class StreetGroup extends CityGroup {
+public class StreetGroup extends CityInput {
     private final IModel<Long> streetModel;
 
     private final DomainGroup street;

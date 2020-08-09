@@ -103,7 +103,7 @@
     </select>
 
     <!--suppress SqlResolve -->
-    <select id="selectMatchingListCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+    <select id="selectMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
         select count(*) from "${object.entityName}_matching" m
         <include refid="selectMatchingJoin"/>
         <include refid="selectMatchingWhere"/>

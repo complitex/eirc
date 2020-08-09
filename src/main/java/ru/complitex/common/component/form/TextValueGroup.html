@@ -2,7 +2,13 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <wicket:extend>
-        <input wicket:id="inputRu" class="form-control" autocomplete="autocomplete-off" placeholder="Русский"/>
-        <input wicket:id="inputUa" class="form-control text-value" autocomplete="autocomplete-off" placeholder="Українська"/>
+        <div class="form-row">
+            <div class="col">
+                <input wicket:id="inputRu" class="form-control" autocomplete="autocomplete-off" placeholder="Русский"/>
+            </div>
+            <div class="col">
+                <input wicket:id="inputUa" class="form-control" autocomplete="autocomplete-off" placeholder="Українська"/>
+            </div>
+        </div>
     </wicket:extend>
 </wicket:panel>

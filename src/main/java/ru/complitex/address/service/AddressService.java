@@ -49,6 +49,10 @@ public class AddressService {
         return attributeMapper.getTextValue(Region.ENTITY, regionId, Region.NAME);
     }
 
+    public String getRegionFullName(Long regionId){
+        return getCountryNameByRegionId(regionId) + ", " + getRegionName(regionId);
+    }
+
     public String getRegionNameByCityId(Long cityId){
         Long regionId = attributeMapper.getNumber(City.ENTITY, cityId, City.REGION);
 
@@ -63,34 +67,50 @@ public class AddressService {
         return getRegionNameByStreetId(getStreetIdByBuildingId(buildingId));
     }
 
-    public String getRegionFullName(Long regionId){
-        return getCountryNameByRegionId(regionId) + ", " + getRegionName(regionId);
-    }
-
     public String getCityTypeName(Long cityTypeId){
         return attributeMapper.getTextValue(CityType.ENTITY, cityTypeId, CityType.NAME);
     }
 
-    public String getCityTypeNameByCityId(Long cityId){
+    public String getCityTypeShortNameByCityId(Long cityId){
         Long cityTypeId = attributeMapper.getNumber(City.ENTITY, cityId, City.CITY_TYPE);
 
         return attributeMapper.getTextValue(CityType.ENTITY, cityTypeId, CityType.SHORT_NAME);
     }
 
+    public String getCityName(Long cityId){
+        return getCityTypeShortNameByCityId(cityId) + " " + attributeMapper.getTextValue(City.ENTITY, cityId, City.NAME);
+
+    }
+
+    public String getCityFullName(Long cityId){
+        return getCountryNameByCityId(cityId) + ", " + getRegionNameByCityId(cityId) + ", " +
+                getCityTypeShortNameByCityId(cityId) + " " + attributeMapper.getTextValue(City.ENTITY, cityId, City.NAME);
+    }
+
     public String getCityNameByStreetId(Long streetId){
         Long cityId = attributeMapper.getNumber(Street.ENTITY, streetId, Street.CITY);
 
-        return getCityTypeNameByCityId(cityId) + " " + attributeMapper.getTextValue(City.ENTITY, cityId, City.NAME);
+        return getCityName(cityId);
     }
 
     public String getCityNameByBuildingId(Long buildingId){
         return getCityNameByStreetId(getStreetIdByBuildingId(buildingId));
     }
 
+    public String getDistrictName(Long districtId){
+        return attributeMapper.getTextValue(District.ENTITY, districtId, District.NAME);
+    }
+
+    public String getDistrictFullName(Long districtId){
+        Long cityId = attributeMapper.getNumber(District.ENTITY, districtId, District.CITY);
+
+        return getCityFullName(cityId) + ", " + getDistrictName(districtId);
+    }
+
     public String getDistrictNameByBuildingId(Long buildingId){
         Long districtId = attributeMapper.getNumber(Building.ENTITY, buildingId, Building.DISTRICT);
 
-        return attributeMapper.getTextValue(District.ENTITY, districtId, District.NAME);
+        return getDistrictName(districtId);
     }
 
     public String getStreetTypeNameByStreetId(Long streetId){
