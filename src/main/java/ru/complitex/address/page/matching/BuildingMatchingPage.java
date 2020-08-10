@@ -3,7 +3,7 @@ package ru.complitex.address.page.matching;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import ru.complitex.address.component.BuildingGroup;
+import ru.complitex.address.component.group.BuildingGroup;
 import ru.complitex.address.entity.Building;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.page.MatchingPage;

@@ -3,6 +3,10 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
+    <settings>
+        <setting name="shrinkWhitespacesInSql" value="true"/>
+    </settings>
+
     <environments default="eirc">
         <environment id="local">
             <transactionManager type="MANAGED"/>
@@ -40,6 +44,8 @@
         <mapper resource="ru/complitex/address/mapper/matching/CityTypeMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/CityMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/DistrictMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/StreetTypeMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/StreetMatchingMapper.xml"/>
 
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/sync/adapter/SyncAdapter.xml"/>

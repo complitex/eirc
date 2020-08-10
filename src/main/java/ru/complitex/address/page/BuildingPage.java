@@ -9,7 +9,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import ru.complitex.address.service.AddressService;
-import ru.complitex.address.component.DistrictStreetGroup;
+import ru.complitex.address.component.group.DistrictStreetGroup;
 import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
 import ru.complitex.common.component.form.TextFieldPanel;
@@ -86,7 +86,7 @@ public class BuildingPage extends DomainPage<Building> {
             columns.add(new DomainColumn<>(entityAttribute){
                 @Override
                 protected String displayReference(int referenceEntityId, Long objectId, IModel<Building> rowModel) {
-                    return addressService.getStreetTypeNameByStreetId(rowModel.getObject().getStreetId()) + " " +
+                    return addressService.getStreetTypeNameShortByStreetId(rowModel.getObject().getStreetId()) + " " +
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });

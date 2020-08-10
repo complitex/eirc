@@ -118,8 +118,18 @@ public class StreetSyncService implements ISyncHandler<Street> {
 
     @Override
     public Matching insertMatching(Street street, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Street.ENTITY, street.getObjectId(), street.getCityId(),
-                street.getStreetTypeId(), sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
+        Matching matching = new Matching(Street.ENTITY);
+
+        matching.setObjectId(street.getObjectId());
+        matching.setParentId(street.getCityId());
+        matching.setAdditionalParentId(street.getStreetTypeId());
+        matching.setName(sync.getName());
+        matching.setNumber(sync.getExternalId());
+        matching.setCode(sync.getAdditionalExternalId());
+        matching.setStartDate(sync.getDate());
+        matching.setCompanyId(companyId);
+
+        return matchingMapper.insert(matching);
     }
 
     @Override

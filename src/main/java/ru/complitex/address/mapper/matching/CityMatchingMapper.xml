@@ -13,6 +13,12 @@
             left join "region_attribute" r_a on r_a.domain_id = r.id and r_a.entity_attribute_id = 2 and r_a.status = 1
             left join "region_value" r_v on r_v.attribute_id = r_a.id and r_v.locale_id = #{localeId}
         </if>
+
+        <if test="map.cityType != null or sort.key == 'cityType'">
+            left join "city_type" ct on ct.object_id = m.additional_parent_id and ct.status = 1
+            left join "city_type_attribute" ct_a on ct_a.domain_id = ct.id and ct_a.entity_attribute_id = 1 and ct_a.status = 1
+            left join "city_type_value" ct_v on ct_v.attribute_id = ct_a.id and ct_v.locale_id = #{localeId}
+        </if>
     </sql>
 
     <sql id="selectCityMatchingWhere">
@@ -23,6 +29,10 @@
         <if test="map.region != null">
             ${operator} r_v.text ilike concat('%', #{map.region}, '%')
         </if>
+
+        <if test="map.cityType != null">
+            ${operator} ct_v.text ilike concat('%', #{map.cityType}, '%')
+        </if>
     </sql>
 
     <sql id="selectCityMatchingSort">
@@ -32,6 +42,10 @@
 
         <if test="sort.key == 'region'">
             order by r_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'cityType'">
+            order by ct_v.text ${asc}
         </if>
     </sql>
 

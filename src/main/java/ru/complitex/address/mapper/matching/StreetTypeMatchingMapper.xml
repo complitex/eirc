@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.matching.StreetTypeMatchingMapper">
+    <sql id="selectStreetTypeMatchingJoin">
+        <if test="map.streetType != null or sort.key == 'streetType'">
+            left join "street_type" st on st.object_id = m.object_id and st.status = 1
+            left join "street_type_attribute" st_a on st_a.domain_id = st.id and st_a.entity_attribute_id = 1 and st_a.status = 1
+            left join "street_type_value" st_v on st_v.attribute_id = st_a.id and st_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectStreetTypeMatchingWhere">
+        <if test="map.streetType != null">
+            ${operator} st_v.text ilike concat('%', #{map.streetType}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectStreetTypeMatchingSort">
+        <if test="sort.key == 'streetType'">
+            order by st_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectStreetTypeMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "street_type_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectStreetTypeMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectStreetTypeMatchingWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectStreetTypeMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, 'city_type' entity_name from "street_type_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectStreetTypeMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectStreetTypeMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectStreetTypeMatchingSort"/>
+        ${limit}
+    </select>
+</mapper>

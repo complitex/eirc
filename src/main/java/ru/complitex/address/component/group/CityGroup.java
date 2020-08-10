@@ -1,7 +1,8 @@
-package ru.complitex.address.component;
+package ru.complitex.address.component.group;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.address.component.input.CityInput;
 import ru.complitex.common.component.form.Group;
 
 /**
@@ -14,7 +15,7 @@ public class CityGroup extends Group {
 
         add(new CityInput("city", cityModel){
             @Override
-            public boolean isRegionRequired() {
+            public boolean isCityRequired() {
                 return CityGroup.this.isRequired();
             }
         });

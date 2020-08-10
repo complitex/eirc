@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.address.mapper.matching.StreetMatchingMapper">
+    <sql id="selectStreetMatchingJoin">
+        <if test="map.street != null or map.streetType != null or sort.key in {'street', 'streetType'}">
+            left join "street" s on s.object_id = m.object_id and s.status = 1
+            left join "street_attribute" s_a on s_a.domain_id = s.id and s_a.entity_attribute_id = ${@ru.complitex.address.entity.Street@NAME} and s_a.status = 1
+            left join "street_value" s_v on s_v.attribute_id = s_a.id and s_v.locale_id = #{localeId}
+            
+            <if test="map.streetType != null or sort.key == 'streetType'">
+                left join "street_attribute" s_a_st on s_a_st.domain_id = s.id and s_a_st.entity_attribute_id = ${@ru.complitex.address.entity.Street@STREET_TYPE} and s_a_st.status = 1
+                left join "street_type" st on st.object_id = s_a_st.number and st.status = 1
+                left join "street_type_attribute" st_a on st_a.domain_id = st.id and st_a.entity_attribute_id = ${@ru.complitex.address.entity.StreetType@NAME}  and st_a.status = 1
+                left join "street_type_value" st_v on st_v.attribute_id = st_a.id and st_v.locale_id = #{localeId}
+            </if>
+        </if>
+
+        <if test="map.city != null or sort.key == 'city'">
+            left join "city" c on c.object_id = m.parent_id and c.status = 1
+            left join "city_attribute" c_a on c_a.domain_id = c.id and c_a.entity_attribute_id = ${@ru.complitex.address.entity.City@NAME} and c_a.status = 1
+            left join "city_value" c_v on c_v.attribute_id = c_a.id and c_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectStreetMatchingWhere">
+        <if test="map.street != null">
+            ${operator} s_v.text ilike concat('%', #{map.street}, '%')
+        </if>
+
+        <if test="map.streetType != null">
+            ${operator} st_v.text ilike concat('%', #{map.streetType}, '%')
+        </if>
+
+        <if test="map.city != null">
+            ${operator} c_v.text ilike concat('%', #{map.city}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectStreetMatchingSort">
+        <if test="sort.key == 'street'">
+            order by s_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'streetType'">
+            order by st_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'city'">
+            order by c_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectStreetMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "street_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectStreetMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectStreetMatchingWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectStreetMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, 'street' entity_name from "street_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectStreetMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectStreetMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectStreetMatchingSort"/>
+        ${limit}
+    </select>
+</mapper>

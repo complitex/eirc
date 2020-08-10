@@ -1,4 +1,4 @@
-package ru.complitex.address.component;
+package ru.complitex.address.component.input;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;

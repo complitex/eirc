@@ -113,22 +113,39 @@ public class AddressService {
         return getDistrictName(districtId);
     }
 
-    public String getStreetTypeNameByStreetId(Long streetId){
+    public String getStreetTypeName(Long streetTypeId){
+        return attributeMapper.getTextValue(StreetType.ENTITY, streetTypeId, StreetType.NAME);
+    }
+
+    public String getStreetTypeShortName(Long streetTypeId){
+        return attributeMapper.getTextValue(StreetType.ENTITY, streetTypeId, StreetType.SHORT_NAME);
+    }
+
+    public String getStreetTypeNameShortByStreetId(Long streetId){
         Long streetTypeId = attributeMapper.getNumber(Street.ENTITY, streetId, Street.STREET_TYPE);
 
-        return attributeMapper.getTextValue(StreetType.ENTITY, streetTypeId, StreetType.SHORT_NAME);
+        return getStreetTypeShortName(streetTypeId);
     }
 
     public Long getStreetIdByBuildingId(Long buildingId){
         return attributeMapper.getNumber(Building.ENTITY, buildingId, Building.STREET);
     }
 
+    public String getStreetName(Long streetId){
+        return attributeMapper.getTextValue(Street.ENTITY, streetId, Street.NAME);
+    }
+
+    public String getStreetFullName(Long streetId){
+        Long cityId = attributeMapper.getNumber(Street.ENTITY, streetId, Street.CITY);
+
+        return getCityFullName(cityId) + " , " + getRegionNameByCityId(cityId) + ", " +
+                getStreetTypeNameShortByStreetId(streetId) + " " + getStreetName(streetId);
+    }
+
     public String getStreetNameByBuildingId(Long buildingId){
         Long streetId = getStreetIdByBuildingId(buildingId);
 
-        return getStreetTypeNameByStreetId(streetId) + " " +
-                attributeMapper.getTextValue(Street.ENTITY, streetId, Street.NAME);
-
+        return getStreetTypeNameShortByStreetId(streetId) + " " + getStreetName(streetId);
     }
 
     public String getBuildingName(Building building){

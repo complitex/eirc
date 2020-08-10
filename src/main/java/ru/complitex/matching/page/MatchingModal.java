@@ -47,13 +47,15 @@ public class MatchingModal extends Modal<Matching> {
         NotificationPanel notification = new NotificationPanel("notification");
         container.add(notification);
 
-        container.add(newObjectId("objectId"));
+        container.add(newObjectGroup("objectId"));
 
-        container.add(newParentId("parentId").setVisible(isParentVisible()));
-        container.add(newAdditionalParentId("additionalParentId").setVisible(isAdditionalParentVisible()));
+        container.add(newParentGroup("parentId").setVisible(isParentVisible()));
+        container.add(newAdditionalParentGroup("additionalParentId").setVisible(isAdditionalParentVisible()));
 
         container.add(new TextGroup<>("name", PropertyModel.of(getModel(), "name")).setRequired(true));
-        container.add(new TextGroup<>("additionalName", PropertyModel.of(getModel(), "additionalName")).setVisible(isAdditionalNameVisible()));
+        container.add(new TextGroup<>("additionalName", PropertyModel.of(getModel(), "additionalName"))
+                .setRequired(isAdditionalNameRequired())
+                .setVisible(isAdditionalNameVisible()));
 
         container.add(new TextGroup<>("number", PropertyModel.of(getModel(), "number"), Long.class));
         container.add(new TextGroup<>("code", PropertyModel.of(getModel(), "code")).setVisible(isCodeVisible()));
@@ -87,16 +89,24 @@ public class MatchingModal extends Modal<Matching> {
 
     }
 
-    protected Component newObjectId(String componentId){
+    protected Component newObjectGroup(String componentId){
         return new TextGroup<>(componentId, PropertyModel.of(getModel(), "objectId"), Long.class);
+    }
+
+    protected Component newParentGroup(String componentId){
+        return new TextGroup<>(componentId, PropertyModel.of(getModel(), "parentId"), Long.class);
+    }
+
+    protected Component newAdditionalParentGroup(String componentId){
+        return new TextGroup<>(componentId, PropertyModel.of(getModel(), "additionalParentId"), Long.class);
+    }
+
+    protected boolean isAdditionalNameRequired(){
+        return false;
     }
 
     protected boolean isParentVisible(){
         return true;
-    }
-
-    protected Component newParentId(String componentId){
-        return new TextGroup<>(componentId, PropertyModel.of(getModel(), "parentId"), Long.class);
     }
 
     protected boolean isAdditionalParentVisible(){
@@ -109,10 +119,6 @@ public class MatchingModal extends Modal<Matching> {
 
     protected boolean isAdditionalNameVisible(){
         return true;
-    }
-
-    protected Component newAdditionalParentId(String componentId){
-        return new TextGroup<>(componentId, PropertyModel.of(getModel(), "additionalParentId"), Long.class);
     }
 
     protected void edit(Matching matching, AjaxRequestTarget target){

@@ -1,7 +1,8 @@
-package ru.complitex.address.component;
+package ru.complitex.address.component.group;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import ru.complitex.address.component.input.StreetInput;
 import ru.complitex.address.entity.District;
 import ru.complitex.address.entity.Street;
 import ru.complitex.common.entity.Filter;
@@ -16,7 +17,7 @@ import java.util.Objects;
  * @author Anatoly Ivanov
  * 29.06.2020 18:41
  */
-public class DistrictStreetGroup extends StreetGroup {
+public class DistrictStreetGroup extends StreetInput {
     @Inject
     private AttributeMapper attributeMapper;
 

@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import ru.complitex.address.component.RegionGroup;
+import ru.complitex.address.component.group.RegionGroup;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
 import ru.complitex.address.mapper.matching.RegionMatchingMapper;

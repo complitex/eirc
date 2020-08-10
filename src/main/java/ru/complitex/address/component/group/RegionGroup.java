@@ -1,7 +1,8 @@
-package ru.complitex.address.component;
+package ru.complitex.address.component.group;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import ru.complitex.address.component.input.RegionInput;
 import ru.complitex.common.component.form.Group;
 
 /**

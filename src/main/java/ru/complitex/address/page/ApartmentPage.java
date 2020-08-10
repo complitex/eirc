@@ -5,7 +5,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.service.AddressService;
-import ru.complitex.address.component.BuildingGroup;
+import ru.complitex.address.component.group.BuildingGroup;
 import ru.complitex.address.entity.Apartment;
 import ru.complitex.address.mapper.ApartmentMapper;
 import ru.complitex.common.component.table.MapColumn;

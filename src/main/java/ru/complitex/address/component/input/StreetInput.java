@@ -1,37 +1,38 @@
-package ru.complitex.address.component;
+package ru.complitex.address.component.input;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 import ru.complitex.address.entity.Street;
 import ru.complitex.address.model.AddressModel;
 import ru.complitex.common.entity.Filter;
-import ru.complitex.domain.component.form.DomainGroup;
+import ru.complitex.domain.component.form.DomainInput;
 import ru.complitex.domain.entity.Domain;
 
 /**
  * @author Anatoly Ivanov
  * 16.06.2020 22:26
  */
-public class StreetGroup extends CityInput {
+public class StreetInput extends CityInput {
     private final IModel<Long> streetModel;
 
-    private final DomainGroup street;
+    private final DomainInput street;
 
     private boolean streetRequired;
 
-    public StreetGroup(String id, IModel<Long> streetModel) {
+    public StreetInput(String id, IModel<Long> streetModel) {
         super(id, new AddressModel(Street.ENTITY, streetModel, Street.CITY));
 
         this.streetModel = streetModel;
 
-        street = new DomainGroup("street", Street.ENTITY, streetModel, Street.NAME){
+        street = new DomainInput("street", Street.ENTITY, streetModel, Street.NAME){
             @Override
             protected void onFilter(Filter<Domain<?>> filter) {
                 filter.getObject().setNumber(Street.CITY, getCityModel().getObject());
             }
 
             @Override
-            protected void onChange(AjaxRequestTarget target) {
+            protected void onChangeId(AjaxRequestTarget target) {
                 updateCountry(target);
                 updateRegion(target);
                 updateCity(target);
@@ -44,6 +45,7 @@ public class StreetGroup extends CityInput {
                 return isStreetRequired();
             }
         };
+        street.setPlaceholder(new StringResourceModel("_street", this));
         add(street);
     }
 
@@ -55,7 +57,7 @@ public class StreetGroup extends CityInput {
         return streetRequired;
     }
 
-    public StreetGroup setStreetRequired(boolean streetRequired) {
+    public StreetInput setStreetRequired(boolean streetRequired) {
         this.streetRequired = streetRequired;
 
         return this;

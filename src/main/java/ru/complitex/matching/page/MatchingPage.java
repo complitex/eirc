@@ -81,7 +81,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         }
 
         if (isAdditionalParentVisible()) {
-            columns.add(new PropertyColumn<>("additionalParentId"));
+            columns.add(newAdditionalParentColumn());
         }
 
         columns.add(new PropertyColumn<>("name"));
@@ -147,33 +147,46 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         modal = new MatchingModal("modal"){
             @Override
-            protected Component newObjectId(String componentId) {
+            protected Component newObjectGroup(String componentId) {
                 Component component =  MatchingPage.this.newObjectGroup(componentId, getModel());
 
-                return component != null ? component : super.newObjectId(componentId);
+                return component != null ? component : super.newObjectGroup(componentId);
             }
+
+            @Override
+            public Component newParentGroup(String componentId) {
+                Component component = MatchingPage.this.newParentGroup(componentId, getModel());
+
+                return component != null ? component : super.newParentGroup(componentId);
+            }
+
+            @Override
+            public Component newAdditionalParentGroup(String componentId) {
+                Component component = MatchingPage.this.newAdditionalParentGroup(componentId, getModel());
+
+                return component != null ? component : super.newAdditionalParentGroup(componentId);
+            }
+
 
             @Override
             protected boolean isParentVisible() {
                 return MatchingPage.this.isParentVisible();
             }
 
-            @Override
-            public Component newParentId(String componentId) {
-                Component component = MatchingPage.this.newParentGroup(componentId, getModel());
-
-                return component != null ? component : super.newParentId(componentId);
-            }
 
             @Override
             protected boolean isAdditionalParentVisible() {
                 return MatchingPage.this.isAdditionalParentVisible();
             }
 
-
             @Override
             protected boolean isCodeVisible(){
                 return MatchingPage.this.isCodeVisible();
+            }
+
+            @Override
+            protected boolean isAdditionalNameRequired() {
+                return MatchingPage.this.isAdditionalNameRequired();
             }
 
             @Override
@@ -216,8 +229,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return null;
     }
 
-    protected IColumn<Matching, Sort> newAdditionalParentColumn(String columnKey) {
-        return new PropertyColumn<>(columnKey);
+    protected Component newAdditionalParentGroup(String componentId, IModel<Matching> model) {
+        return null;
     }
 
     protected IColumn<Matching, Sort> newObjectColumn() {
@@ -228,12 +241,20 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return new PropertyColumn<>("parentId");
     }
 
+    protected IColumn<Matching, Sort> newAdditionalParentColumn() {
+        return new PropertyColumn<>("additionalParentId");
+    }
+
 
     protected boolean isParentVisible() {
         return true;
     }
 
     protected boolean isAdditionalParentVisible() {
+        return false;
+    }
+
+    protected boolean isAdditionalNameRequired(){
         return false;
     }
 

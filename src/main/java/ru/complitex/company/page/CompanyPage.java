@@ -38,8 +38,8 @@ public class CompanyPage extends DomainPage<Company> {
     @Override
     protected Component newGroup(String groupId, IModel<Company> domainModel, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == Company.PARENT){
-             return new DomainGroup(groupId, new ResourceModel("_parent"), Company.ENTITY, Company.NAME,
-                     NumberModel.of(domainModel, Company.PARENT));
+             return new DomainGroup(groupId, new ResourceModel("_parent"), Company.ENTITY, NumberModel.of(domainModel, Company.PARENT), Company.NAME
+             );
         }
 
         return super.newGroup(groupId, domainModel, entityAttribute);

@@ -137,8 +137,8 @@ public class DomainModal<T extends Domain<T>> extends Modal<T> {
             case ValueType.REFERENCE:
                 EntityAttribute reference = entityService.getReferenceEntityAttribute(entityAttribute);
 
-                return new DomainGroup(groupId, labelModel, reference.getEntityName(), reference.getEntityAttributeId(),
-                        NumberModel.of(getModel(), entityAttributeId))
+                return new DomainGroup(groupId, labelModel, reference.getEntityName(), NumberModel.of(getModel(), entityAttributeId), reference.getEntityAttributeId()
+                )
                         .setRequired(true);
 
             case ValueType.TEXT_VALUE:

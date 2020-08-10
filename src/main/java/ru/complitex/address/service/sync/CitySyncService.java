@@ -107,8 +107,17 @@ public class CitySyncService implements ISyncHandler<City> {
 
     @Override
     public Matching insertMatching(City city, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(City.ENTITY, city.getObjectId(), city.getRegionId(),
-                sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
+        Matching matching = new Matching(City.ENTITY);
+
+        matching.setObjectId(city.getObjectId());
+        matching.setParentId(city.getRegionId());
+        matching.setAdditionalParentId(city.getCityTypeId());
+        matching.setName(sync.getName());
+        matching.setNumber(sync.getExternalId());
+        matching.setStartDate(sync.getDate());
+        matching.setCompanyId(companyId);
+
+        return matchingMapper.insert(matching);
     }
 
     @Override

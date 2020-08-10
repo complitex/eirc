@@ -12,7 +12,7 @@ import ru.complitex.domain.entity.Domain;
  * 20.05.2020 00:22
  */
 public class DomainGroup extends Group {
-    public DomainGroup(String id, IModel<String> labelModel, String entityName, int entityAttributeId, IModel<Long> model) {
+    public DomainGroup(String id, IModel<String> labelModel, String entityName, IModel<Long> model, int entityAttributeId) {
         super(id, labelModel);
 
         add(new DomainInput("input", entityName, model, entityAttributeId){
@@ -39,7 +39,7 @@ public class DomainGroup extends Group {
     }
 
     public DomainGroup(String id, String entityName, IModel<Long> model, int entityAttributeId) {
-        this(id, new ResourceModel("_" + id), entityName, entityAttributeId, model);
+        this(id, new ResourceModel("_" + id), entityName, model, entityAttributeId);
     }
 
     protected void onFilter(Filter<Domain<?>> filter) {

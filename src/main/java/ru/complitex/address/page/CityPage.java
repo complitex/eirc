@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.component.RegionGroup;
+import ru.complitex.address.component.group.RegionGroup;
 import ru.complitex.address.entity.City;
 import ru.complitex.address.entity.Country;
 import ru.complitex.address.entity.Region;
