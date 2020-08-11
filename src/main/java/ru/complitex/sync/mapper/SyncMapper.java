@@ -3,6 +3,7 @@ package ru.complitex.sync.mapper;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.common.mapper.BaseMapper;
 import ru.complitex.sync.entity.Sync;
+import ru.complitex.sync.entity.SyncStatus;
 
 import javax.enterprise.context.RequestScoped;
 import java.util.List;
@@ -43,5 +44,15 @@ public class SyncMapper extends BaseMapper {
 
     public void deleteAll(int entityId){
         sqlSession().delete("deleteAllSyncs", entityId);
+    }
+
+    public Sync getSync(int entityId, Long parentId){
+        List<Sync> syncs = getSyncs(Filter.of(new Sync(entityId, SyncStatus.SYNCHRONIZED, parentId)));
+
+        if (syncs.isEmpty()){
+            throw new RuntimeException("sync not found ");
+        }
+
+        return syncs.get(0);
     }
 }

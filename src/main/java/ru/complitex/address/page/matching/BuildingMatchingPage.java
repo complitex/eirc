@@ -21,4 +21,6 @@ public class BuildingMatchingPage extends MatchingPage<Building> {
     protected Component newObjectGroup(String componentId, IModel<Matching> model) {
         return new BuildingGroup(componentId, PropertyModel.of(model, "objectId")).setBuildingRequired(true);
     }
+
+    //todo add group and component
 }

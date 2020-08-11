@@ -8,10 +8,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.address.service.AddressService;
 import ru.complitex.address.component.group.DistrictStreetGroup;
 import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
+import ru.complitex.address.service.AddressService;
 import ru.complitex.common.component.form.TextFieldPanel;
 import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.MapColumn;
@@ -118,9 +118,7 @@ public class BuildingPage extends DomainPage<Building> {
 
         if (entityAttribute.getEntityAttributeId() == Building.STREET) {
             return new DistrictStreetGroup(groupId, NumberModel.of(domainModel, Building.DISTRICT),
-                    NumberModel.of(domainModel, Building.STREET))
-                    .setDistrictRequired(true)
-                    .setStreetRequired(true);
+                    NumberModel.of(domainModel, Building.STREET)).setRequired(true);
         }
 
         return super.newGroup(groupId, domainModel, entityAttribute);

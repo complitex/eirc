@@ -1,103 +1,28 @@
 package ru.complitex.address.component.group;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.component.input.StreetInput;
-import ru.complitex.address.entity.District;
-import ru.complitex.address.entity.Street;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.domain.component.form.DomainGroup;
-import ru.complitex.domain.entity.Domain;
-import ru.complitex.domain.mapper.AttributeMapper;
-
-import javax.inject.Inject;
-import java.util.Objects;
+import org.apache.wicket.model.ResourceModel;
+import ru.complitex.address.component.input.DistrictStreetInput;
+import ru.complitex.common.component.form.Group;
 
 /**
  * @author Anatoly Ivanov
- * 29.06.2020 18:41
+ * 11.08.2020 23:22
  */
-public class DistrictStreetGroup extends StreetInput {
-    @Inject
-    private AttributeMapper attributeMapper;
-
-    private final IModel<Long> districtModel;
-
-    private final DomainGroup district;
-
-    private boolean districtRequired;
-
+public class DistrictStreetGroup extends Group {
     public DistrictStreetGroup(String id, IModel<Long> districtModel, IModel<Long> streetModel) {
-        super(id, streetModel);
+        super(id, new ResourceModel("street"));
 
-        this.districtModel = districtModel;
-
-        district = new DomainGroup("district", District.ENTITY, districtModel, District.NAME){
+        add(new DistrictStreetInput("street", districtModel, streetModel){
             @Override
-            protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(District.CITY, getCityModel().getObject());
+            public boolean isDistrictRequired() {
+                return DistrictStreetGroup.this.isRequired();
             }
 
             @Override
-            protected void onChange(AjaxRequestTarget target) {
-                Long cityId = attributeMapper.getNumber(District.ENTITY, districtModel.getObject(), District.CITY);
-
-                if (!Objects.equals(cityId, getCityModel().getObject())){
-                    updateStreet(target);
-
-                    getCityModel().setObject(cityId);
-                    renderCity(target);
-
-                    updateRegion(target);
-
-                    updateCountry(target);
-                }
-
-                onDistrictStreetChange(target);
+            public boolean isStreetRequired() {
+                return DistrictStreetGroup.this.isRequired();
             }
-
-            @Override
-            public boolean isRequired() {
-                return isDistrictRequired();
-            }
-        };
-        add(district);
-    }
-
-    public IModel<Long> getDistrictModel() {
-        return districtModel;
-    }
-
-    public boolean isDistrictRequired() {
-        return districtRequired;
-    }
-
-    public DistrictStreetGroup setDistrictRequired(boolean districtRequired) {
-        this.districtRequired = districtRequired;
-
-        return this;
-    }
-
-    @Override
-    protected void onStreetChange(AjaxRequestTarget target) {
-        onDistrictStreetChange(target);
-
-        Long cityId = attributeMapper.getNumber(Street.ENTITY, getStreetModel().getObject(), Street.CITY);
-
-        if (!Objects.equals(cityId, getCityModel().getObject())){
-            updateDistrict(target);
-        }
-    }
-
-    protected void onDistrictStreetChange(AjaxRequestTarget target){
-
-    }
-
-    protected void updateDistrict(AjaxRequestTarget target) {
-        if (districtModel.getObject() != null){
-            districtModel.setObject(null);
-
-            target.add(district);
-        }
+        });
     }
 }

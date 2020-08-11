@@ -41,20 +41,22 @@ public class BuildingSyncService implements ISyncHandler<Building> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        List<Sync> cityTypeSyncs = syncMapper.getSyncs(Filter.of(new Sync(CityType.ID, SyncStatus.SYNCHRONIZED,
-                Long.valueOf(parentSync.getAdditionalParentId()))));
+        try {
+            Sync citySync = syncMapper.getSync(City.ID, parentSync.getParentId());
+            Sync cityTypeSync = syncMapper.getSync(CityType.ID, Long.valueOf(citySync.getAdditionalParentId()));
 
-        if (cityTypeSyncs.isEmpty()){
-            throw new RuntimeException("city type matching not found " + parentSync);
+            Sync streetTypeSync = syncMapper.getSync(StreetType.ID, Long.valueOf(parentSync.getAdditionalParentId()));
+
+            return syncAdapter.getBuildingSyncs(citySync.getName(),cityTypeSync.getAdditionalName(), "",
+                    streetTypeSync.getAdditionalName(), parentSync.getName(), date);
+        } catch (Exception e) {
+            throw new RuntimeException("sync error: getCursorSync" + parentSync);
         }
-
-        return syncAdapter.getBuildingSyncs(parentSync.getName(), cityTypeSyncs.get(0).getAdditionalName(), null,
-                null, null, date);
     }
 
     @Override
     public List<Sync> getParentSyncs() {
-        return syncMapper.getSyncs(Filter.of(new Sync(City.ID, SyncStatus.SYNCHRONIZED)));
+        return syncMapper.getSyncs(Filter.of(new Sync(Street.ID, SyncStatus.SYNCHRONIZED)));
     }
 
     private Long getParentId(Sync sync, Long companyId){

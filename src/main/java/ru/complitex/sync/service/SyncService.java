@@ -343,7 +343,6 @@ public abstract class SyncService {
         }
     }
 
-
     public void cancelSync(){
         cancelSync.set(true);
     }
@@ -351,5 +350,4 @@ public abstract class SyncService {
     public boolean getProcessing(){
         return processing.get();
     }
-
 }
