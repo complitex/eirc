@@ -2,6 +2,7 @@ package ru.complitex.address.component.group;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import ru.complitex.address.component.input.BuildingInput;
 import ru.complitex.address.entity.Apartment;
 import ru.complitex.address.model.AddressModel;
 import ru.complitex.common.entity.Filter;
@@ -12,7 +13,7 @@ import ru.complitex.domain.entity.Domain;
  * @author Anatoly Ivanov
  * 17.06.2020 17:20
  */
-public class ApartmentGroup extends BuildingGroup {
+public class ApartmentGroup extends BuildingInput {
 
     private final DomainGroup apartment;
 

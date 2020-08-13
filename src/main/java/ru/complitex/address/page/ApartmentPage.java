@@ -5,7 +5,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
 import ru.complitex.address.service.AddressService;
-import ru.complitex.address.component.group.BuildingGroup;
+import ru.complitex.address.component.input.BuildingInput;
 import ru.complitex.address.entity.Apartment;
 import ru.complitex.address.mapper.ApartmentMapper;
 import ru.complitex.common.component.table.MapColumn;
@@ -95,7 +95,7 @@ public class ApartmentPage extends DomainPage<Apartment> {
     @Override
     protected Component newGroup(String groupId, IModel<Apartment> domainModel, EntityAttribute entityAttribute) {
         if (entityAttribute.getEntityAttributeId() == Apartment.BUILDING){
-            return new BuildingGroup(groupId, NumberModel.of(domainModel, Apartment.BUILDING)).setBuildingRequired(true);
+            return new BuildingInput(groupId, NumberModel.of(domainModel, Apartment.BUILDING)).setBuildingRequired(true);
         }
 
         return super.newGroup(groupId, domainModel, entityAttribute);

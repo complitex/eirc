@@ -2,6 +2,7 @@ package ru.complitex.address.service;
 
 import ru.complitex.address.entity.*;
 import ru.complitex.domain.mapper.AttributeMapper;
+import ru.complitex.domain.service.DomainService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -14,6 +15,9 @@ import javax.inject.Inject;
 public class AddressService {
     @Inject
     private AttributeMapper attributeMapper;
+
+    @Inject
+    private DomainService domainService;
 
     public String getCountryName(Long countryId){
         return attributeMapper.getTextValue(Country.ENTITY, countryId, Country.NAME);
@@ -139,18 +143,31 @@ public class AddressService {
         Long cityId = attributeMapper.getNumber(Street.ENTITY, streetId, Street.CITY);
 
         return getCityFullName(cityId) + " , " + getRegionNameByCityId(cityId) + ", " +
-                getStreetTypeNameShortByStreetId(streetId) + " " + getStreetName(streetId);
+                getStreetTypeNameShortByStreetId(streetId) + ". " + getStreetName(streetId);
+    }
+
+    public String getStreetFullName(Long district, Long streetId){
+        Long cityId = attributeMapper.getNumber(Street.ENTITY, streetId, Street.CITY);
+
+        return getCityFullName(cityId) + " , " + getRegionNameByCityId(cityId) + ", " + getDistrictName(district) + ", " +
+                getStreetTypeNameShortByStreetId(streetId) + ". " + getStreetName(streetId);
     }
 
     public String getStreetNameByBuildingId(Long buildingId){
         Long streetId = getStreetIdByBuildingId(buildingId);
 
-        return getStreetTypeNameShortByStreetId(streetId) + " " + getStreetName(streetId);
+        return getStreetTypeNameShortByStreetId(streetId) + ". " + getStreetName(streetId);
     }
 
     public String getBuildingName(Building building){
         return building.getNumber() +
                 (building.getCorps() != null ? ", КОРП. " + building.getCorps() : "") +
                 (building.getStructure() != null ? ", СТР. " + building.getStructure() : "");
+    }
+
+    public String getBuildingFullName(Long buildingId){
+        Building building = domainService.getDomain(Building.class, buildingId);
+
+        return getStreetFullName(building.getDistrictId(), building.getStreetId()) + " Д. " + getBuildingName(building);
     }
 }

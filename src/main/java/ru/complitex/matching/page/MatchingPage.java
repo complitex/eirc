@@ -7,6 +7,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
@@ -69,7 +70,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
                 return MatchingPage.this.getMatchingList(getFilter());
             }
         };
-        provider.getFilter().sort("id", false);
+        provider.setSort(new Sort("id"), SortOrder.DESCENDING);
 
         List<IColumn<Matching, Sort>> columns = new ArrayList<>();
 
@@ -110,6 +111,8 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
             protected void onSearch(Table<Matching> table, AjaxRequestTarget target) {
                 table.getFilterModel().getObject().setObject(new Matching(domain.getEntityName()));
                 table.getFilterModel().getObject().getMap().clear();
+
+                provider.setSort(new Sort("id"), SortOrder.DESCENDING);
 
                 target.add(container);
             }

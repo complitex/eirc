@@ -46,6 +46,7 @@
         <mapper resource="ru/complitex/address/mapper/matching/DistrictMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/StreetTypeMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/StreetMatchingMapper.xml"/>
+        <mapper resource="ru/complitex/address/mapper/matching/BuildingMatchingMapper.xml"/>
 
         <mapper resource="ru/complitex/sync/mapper/SyncMapper.xml"/>
         <mapper resource="ru/complitex/sync/adapter/SyncAdapter.xml"/>

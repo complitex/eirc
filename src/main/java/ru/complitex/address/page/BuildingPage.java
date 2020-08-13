@@ -86,7 +86,7 @@ public class BuildingPage extends DomainPage<Building> {
             columns.add(new DomainColumn<>(entityAttribute){
                 @Override
                 protected String displayReference(int referenceEntityId, Long objectId, IModel<Building> rowModel) {
-                    return addressService.getStreetTypeNameShortByStreetId(rowModel.getObject().getStreetId()) + " " +
+                    return addressService.getStreetTypeNameShortByStreetId(rowModel.getObject().getStreetId()) + ". " +
                             super.displayReference(referenceEntityId, objectId, rowModel);
                 }
             });

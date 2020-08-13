@@ -100,7 +100,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
         columns.add(idColumn);
 
-        provider.setSort(idColumn.getSortProperty(), SortOrder.DESCENDING);
+        provider.setSort(new Sort("object_id"), SortOrder.DESCENDING);
 
         getListEntityAttributes().forEach(entityAttribute -> addColumn(entityAttribute, columns));
 
@@ -118,6 +118,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
                     });
 
                     filter.getMap().clear();
+
+                    provider.setSort(new Sort("object_id"), SortOrder.DESCENDING);
 
                     target.add(container);
                 }

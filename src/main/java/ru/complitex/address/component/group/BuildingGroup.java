@@ -1,101 +1,23 @@
 package ru.complitex.address.component.group;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.component.input.DistrictStreetInput;
-import ru.complitex.address.entity.Building;
-import ru.complitex.address.model.AddressModel;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.domain.component.form.DomainGroup;
-import ru.complitex.domain.entity.Domain;
+import org.apache.wicket.model.ResourceModel;
+import ru.complitex.address.component.input.BuildingInput;
+import ru.complitex.common.component.form.Group;
 
 /**
  * @author Anatoly Ivanov
- * 16.06.2020 22:27
+ * 11.08.2020 23:22
  */
-public class BuildingGroup extends DistrictStreetInput {
-    private final IModel<Long> buildingModel;
-
-    private final DomainGroup building;
-
-    private boolean buildingRequired;
-
+public class BuildingGroup extends Group {
     public BuildingGroup(String id, IModel<Long> buildingModel) {
-        super(id, new AddressModel(Building.ENTITY, buildingModel, Building.DISTRICT),
-                new AddressModel(Building.ENTITY, buildingModel, Building.STREET));
+        super(id, new ResourceModel("building"));
 
-        this.buildingModel = buildingModel;
-
-        building = new DomainGroup("building", Building.ENTITY, buildingModel, Building.NUMBER){
+        add(new BuildingInput("building", buildingModel){
             @Override
-            protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(Building.DISTRICT, getDistrictModel().getObject());
-                filter.getObject().setNumber(Building.STREET, getStreetModel().getObject());
+            public boolean isBuildingRequired() {
+                return BuildingGroup.this.isRequired();
             }
-
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                updateDistrict(target);
-                updateStreet(target);
-                updateCity(target);
-                updateRegion(target);
-                updateCountry(target);
-
-                onBuildingChange(target);
-            }
-
-            @Override
-            protected String getTextValue(Domain<?> object, String textValue) {
-                String buildingTextValue = textValue;
-
-                if (object.hasValueText(Building.CORPS)){
-                    buildingTextValue += ", КОРП." + object.getTextValue(Building.CORPS);
-                }
-
-                if (object.hasValueText(Building.STRUCTURE)){
-                    buildingTextValue += ", СТР." + object.getTextValue(Building.STRUCTURE);
-                }
-
-                return buildingTextValue;
-            }
-
-            @Override
-            public boolean isRequired() {
-                return isBuildingRequired();
-            }
-        };
-
-        add(building);
-    }
-
-    public IModel<Long> getBuildingModel() {
-        return buildingModel;
-    }
-
-    public boolean isBuildingRequired() {
-        return buildingRequired;
-    }
-
-    public BuildingGroup setBuildingRequired(boolean buildingRequired) {
-        this.buildingRequired = buildingRequired;
-
-        return this;
-    }
-
-    @Override
-    protected void onDistrictStreetChange(AjaxRequestTarget target) {
-        updateBuilding(target);
-    }
-
-    protected void onBuildingChange(AjaxRequestTarget target){
-
-    }
-
-    protected void updateBuilding(AjaxRequestTarget target) {
-        if (buildingModel.getObject() != null){
-            buildingModel.setObject(null);
-
-            target.add(building);
-        }
+        });
     }
 }

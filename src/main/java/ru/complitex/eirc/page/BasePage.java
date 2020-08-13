@@ -38,6 +38,7 @@ public class BasePage extends WebPage {
         WebMarkupContainer address = new WebMarkupContainer("domains");
         add(address);
 
+        address.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
         address.add(new BookmarkablePageLink<>("counties", CountryPage.class));
         address.add(new BookmarkablePageLink<>("regions", RegionPage.class));
         address.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
@@ -46,8 +47,6 @@ public class BasePage extends WebPage {
         address.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
         address.add(new BookmarkablePageLink<>("streets", StreetPage.class));
         address.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
-        address.add(new BookmarkablePageLink<>("apartments", ApartmentPage.class));
-        address.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
 
         WebMarkupContainer matching = new WebMarkupContainer("matching");
         add(matching);
@@ -60,7 +59,6 @@ public class BasePage extends WebPage {
         matching.add(new BookmarkablePageLink<>("streetTypes", StreetTypeMatchingPage.class));
         matching.add(new BookmarkablePageLink<>("streets", StreetMatchingPage.class));
         matching.add(new BookmarkablePageLink<>("buildings", BuildingMatchingPage.class));
-        matching.add(new BookmarkablePageLink<>("apartments", ApartmentMatchingPage.class));
 
         WebMarkupContainer sync = new WebMarkupContainer("sync");
         add(sync);
@@ -73,7 +71,6 @@ public class BasePage extends WebPage {
         sync.add(new BookmarkablePageLink<>("streetTypes", StreetTypeSyncPage.class));
         sync.add(new BookmarkablePageLink<>("streets", StreetSyncPage.class));
         sync.add(new BookmarkablePageLink<>("buildings", BuildingSyncPage.class));
-        sync.add(new BookmarkablePageLink<>("apartments", HomePage.class));
     }
 
     @Override
