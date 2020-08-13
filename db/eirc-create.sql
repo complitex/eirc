@@ -298,6 +298,16 @@ $$;
 CALL create_domain(0,'setting', 'Настройки', 'Налаштування');
 CALL create_attribute(0, 1, 4, 'Значение', 'Значення');
 
+-- ------------------------------
+--  Company
+-- ------------------------------
+
+CALL create_domain(11, 'company', 'Компания', 'Компанія');
+CALL create_reference(11, 1, 11, 2, 'Родительская компания', 'Батьківська компанія');
+CALL create_attribute(11, 2, 8, 'Название', 'Назва');
+CALL create_attribute(11, 3, 8, 'Краткое название', 'Коротка назва');
+CALL create_attribute(11, 4, 4, 'ЕДРПОУ', 'ЄДРПОУ');
+CALL create_attribute(11, 5, 4, 'Код', 'Код');
 
 -- ---------------------------
 -- Address
@@ -347,17 +357,6 @@ CALL create_domain(10,'room', 'Комната', 'Кімната');
 CALL create_reference(10, 1, 8, 3, 'Дом', 'Будинок');
 CALL create_attribute(10, 2, 8, 'Номер', 'Номер');
 
--- ------------------------------
---  Company
--- ------------------------------
-
-CALL create_domain(11, 'company', 'Компания', 'Компанія');
-CALL create_reference(11, 1, 11, 2, 'Родительская компания', 'Батьківська компанія');
-CALL create_attribute(11, 2, 8, 'Название', 'Назва');
-CALL create_attribute(11, 3, 8, 'Краткое название', 'Коротка назва');
-CALL create_attribute(11, 4, 4, 'ЕДРПОУ', 'ЄДРПОУ');
-CALL create_attribute(11, 5, 4, 'Код', 'Код');
-
 
 -- ---------------------------
 -- Matching
@@ -390,6 +389,8 @@ BEGIN
     EXECUTE CONCAT('COMMENT ON TABLE ', entityName, '_matching IS ''', entityDescription, ' - Соответствия'';');
 END;
 $$;
+
+CALL create_matching('company', 'Компании');
 
 CALL create_matching('country', 'Страны');
 CALL create_matching('region', 'Регионы');

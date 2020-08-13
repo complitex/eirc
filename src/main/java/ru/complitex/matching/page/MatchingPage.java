@@ -99,7 +99,7 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
 
         columns.add(new PropertyColumn<>("startDate"));
 
-        columns.add(new MapColumn<>("company"){
+        columns.add(new MapColumn<>("_company"){
             @Override
             public String text(IModel<Matching> model) {
                 return attributeService.getTextValue(Company.ENTITY, model.getObject().getCompanyId(), Company.NAME);

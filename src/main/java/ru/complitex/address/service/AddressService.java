@@ -168,6 +168,12 @@ public class AddressService {
     public String getBuildingFullName(Long buildingId){
         Building building = domainService.getDomain(Building.class, buildingId);
 
-        return getStreetFullName(building.getDistrictId(), building.getStreetId()) + " Д. " + getBuildingName(building);
+        return getStreetFullName(building.getDistrictId(), building.getStreetId()) + ", Д. " + getBuildingName(building);
+    }
+
+    public String getApartmentFullName(Long apartmentId){
+        Long buildingId = attributeMapper.getNumber(Apartment.ENTITY, apartmentId, Apartment.BUILDING);
+
+        return getBuildingFullName(buildingId) + ", КВ. " + attributeMapper.getTextValue(Apartment.ENTITY, apartmentId, Apartment.NAME);
     }
 }

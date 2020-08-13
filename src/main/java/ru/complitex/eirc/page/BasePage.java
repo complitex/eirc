@@ -12,6 +12,8 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import ru.complitex.address.page.*;
 import ru.complitex.company.page.CompanyPage;
+import ru.complitex.company.page.matching.CompanyMatchingPage;
+import ru.complitex.company.page.sync.CompanySyncPage;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
@@ -35,21 +37,25 @@ public class BasePage extends WebPage {
             }
         });
 
-        WebMarkupContainer address = new WebMarkupContainer("domains");
-        add(address);
+        WebMarkupContainer domains = new WebMarkupContainer("domains");
+        add(domains);
 
-        address.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
-        address.add(new BookmarkablePageLink<>("counties", CountryPage.class));
-        address.add(new BookmarkablePageLink<>("regions", RegionPage.class));
-        address.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
-        address.add(new BookmarkablePageLink<>("cities", CityPage.class));
-        address.add(new BookmarkablePageLink<>("districts", DistrictPage.class));
-        address.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
-        address.add(new BookmarkablePageLink<>("streets", StreetPage.class));
-        address.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
+        domains.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
+
+        domains.add(new BookmarkablePageLink<>("counties", CountryPage.class));
+        domains.add(new BookmarkablePageLink<>("regions", RegionPage.class));
+        domains.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
+        domains.add(new BookmarkablePageLink<>("cities", CityPage.class));
+        domains.add(new BookmarkablePageLink<>("districts", DistrictPage.class));
+        domains.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
+        domains.add(new BookmarkablePageLink<>("streets", StreetPage.class));
+        domains.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
+        domains.add(new BookmarkablePageLink<>("apartments", ApartmentPage.class));
 
         WebMarkupContainer matching = new WebMarkupContainer("matching");
         add(matching);
+
+        matching.add(new BookmarkablePageLink<>("companies", CompanyMatchingPage.class));
 
         matching.add(new BookmarkablePageLink<>("counties", CountryMatchingPage.class));
         matching.add(new BookmarkablePageLink<>("regions", RegionMatchingPage.class));
@@ -59,9 +65,12 @@ public class BasePage extends WebPage {
         matching.add(new BookmarkablePageLink<>("streetTypes", StreetTypeMatchingPage.class));
         matching.add(new BookmarkablePageLink<>("streets", StreetMatchingPage.class));
         matching.add(new BookmarkablePageLink<>("buildings", BuildingMatchingPage.class));
+        matching.add(new BookmarkablePageLink<>("apartments", ApartmentMatchingPage.class));
 
         WebMarkupContainer sync = new WebMarkupContainer("sync");
         add(sync);
+
+        sync.add(new BookmarkablePageLink<>("companies", CompanySyncPage.class));
 
         sync.add(new BookmarkablePageLink<>("counties", CountrySyncPage.class));
         sync.add(new BookmarkablePageLink<>("regions", RegionSyncPage.class));

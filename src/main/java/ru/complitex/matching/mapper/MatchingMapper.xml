@@ -46,7 +46,7 @@
     </delete>
 
     <sql id="selectMatchingJoin">
-        <if test="map.company != null or sort.key == 'company'">
+        <if test="map._company != null or sort.key == '_company'">
             left join "company" company on company.object_id = #{object.companyId} and company.status = 1
             left join "company_attribute" company_a on company_a.domain_id = company.id and company_a.entity_attribute_id = 2 and company_a.status = 1
             left join "company_value" company_v on company_v.attribute_id = company_a.id and company_v.locale_id = #{localeId}
@@ -68,15 +68,22 @@
                     ${operator} m.name ilike concat('%', #{object.name}, '%')
                 </if>
             </if>
-            <if test="object.additionalName != null">${operator} m.additional_name = #{object.additionalName}</if>
+            <if test="object.additionalName != null">
+                <if test="filter == 'equal'">
+                    ${operator} m.additional_name = #{object.additionalName}
+                </if>
+                <if test="filter == 'like'">
+                    ${operator} m.additional_name ilike concat('%', #{object.additionalName}, '%')
+                </if>
+            </if>
             <if test="object.number != null">${operator} m.number = #{object.number}</if>
             <if test="object.code != null">${operator} m.code = #{object.code}</if>
             <if test="object.startDate != null">${operator} m.start_date = #{object.startDate}</if>
             <if test="object.endDate != null">${operator} m.end_date = #{object.endDate}</if>
             <if test="object.companyId != null">${operator} m.company_id = #{object.companyId}</if>
-            <if test="map.company != null">
+            <if test="map._company != null">
                 <if test="filter == 'like'">
-                    ${operator} company_v.text ilike concat('%', #{map.company}, '%')
+                    ${operator} company_v.text ilike concat('%', #{map._company}, '%')
                 </if>
             </if>
             <if test="object.userCompanyId != null">${operator} m.user_company_id = #{object.userCompanyId}</if>
@@ -93,7 +100,7 @@
             <when test="sort.key == 'additionalName'">order by m.additional_name ${asc}</when>
             <when test="sort.key == 'startDate'">order by m.start_date ${asc}</when>
             <when test="sort.key == 'endDate'">order by m.end_date ${asc}</when>
-            <when test="sort.key == 'company'">order by company_v.text ${asc}</when>
+            <when test="sort.key == '_company'">order by company_v.text ${asc}</when>
         </choose>
     </sql>
 

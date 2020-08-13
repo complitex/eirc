@@ -1,53 +1,23 @@
 package ru.complitex.address.component.group;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import ru.complitex.address.component.input.BuildingInput;
-import ru.complitex.address.entity.Apartment;
-import ru.complitex.address.model.AddressModel;
-import ru.complitex.common.entity.Filter;
-import ru.complitex.domain.component.form.DomainGroup;
-import ru.complitex.domain.entity.Domain;
+import org.apache.wicket.model.ResourceModel;
+import ru.complitex.address.component.input.ApartmentInput;
+import ru.complitex.common.component.form.Group;
 
 /**
  * @author Anatoly Ivanov
- * 17.06.2020 17:20
+ * 14.08.2020 1:20
  */
-public class ApartmentGroup extends BuildingInput {
-
-    private final DomainGroup apartment;
-
-    private boolean apartmentRequired;
-
+public class ApartmentGroup extends Group {
     public ApartmentGroup(String id, IModel<Long> apartmentModel) {
-        super(id, new AddressModel(Apartment.ENTITY, apartmentModel, Apartment.BUILDING));
+        super(id, new ResourceModel("apartment"));
 
-        apartment = new DomainGroup("apartment", Apartment.ENTITY, apartmentModel, Apartment.NAME){
+        add(new ApartmentInput("apartment", apartmentModel){
             @Override
-            protected void onFilter(Filter<Domain<?>> filter) {
-                filter.getObject().setNumber(Apartment.BUILDING, getBuildingModel().getObject());
+            public boolean isApartmentRequired() {
+                return ApartmentGroup.this.isRequired();
             }
-
-            @Override
-            protected void onChange(AjaxRequestTarget target) {
-                updateBuilding(target);
-            }
-
-            @Override
-            public boolean isRequired() {
-                return isApartmentRequired();
-            }
-        };
-        add(apartment);
-    }
-
-    public boolean isApartmentRequired() {
-        return apartmentRequired;
-    }
-
-    public ApartmentGroup setApartmentRequired(boolean apartmentRequired) {
-        this.apartmentRequired = apartmentRequired;
-
-        return this;
+        });
     }
 }

@@ -166,7 +166,7 @@ public abstract class SyncService {
 
             Entity entity = entityService.getEntity(domainClass);
 
-            Long companyId = 1L; //syncAdapter.getCompany().getObjectId();
+            Long companyId = null; //todo
 
             @SuppressWarnings("unchecked") ISyncHandler<T> handler = (ISyncHandler<T>) getHandler(entity.getId());
 

@@ -79,7 +79,8 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
 
     @Override
     public boolean isMatch(Matching matching, Sync sync, Long companyId) {
-        return Objects.equals(matching.getName(), sync.getName()); //todo additional external id
+        return Objects.equals(matching.getName(), sync.getName()) &&
+                Objects.equals(matching.getAdditionalName(), sync.getAdditionalName());
     }
 
     @Override
@@ -103,8 +104,18 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
 
     @Override
     public Matching insertMatching(Company company, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(Company.ENTITY, company.getObjectId(), company.getParentId(),
-                sync.getAdditionalExternalId(), sync.getExternalId(), sync.getDate(), companyId));
+        Matching matching = new Matching(Company.ENTITY);
+
+        matching.setObjectId(company.getObjectId());
+        matching.setParentId(company.getParentId());
+        matching.setNumber(sync.getExternalId());
+        matching.setCode(sync.getAdditionalExternalId());
+        matching.setName(sync.getName());
+        matching.setAdditionalName(sync.getAdditionalName());
+        matching.setStartDate(sync.getDate());
+        matching.setCompanyId(companyId);
+
+        return matchingMapper.insert(matching);
     }
 
     @Override
@@ -123,7 +134,13 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
         company.setAltShortName(sync.getAltAdditionalName());
         company.setEDRPOU(sync.getAdditionalParentId());
         company.setCode(sync.getAdditionalExternalId());
-
     }
 
+    public void load(){
+        load(Company.class);
+    }
+
+    public void sync(){
+        sync(Company.class);
+    }
 }

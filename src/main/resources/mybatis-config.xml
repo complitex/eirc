@@ -39,6 +39,8 @@
         <mapper resource="ru/complitex/address/mapper/BuildingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/ApartmentMapper.xml"/>
 
+        <mapper resource="ru/complitex/company/mapper/matching/CompanyMatchingMapper.xml"/>
+
         <mapper resource="ru/complitex/address/mapper/matching/CountryMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/RegionMatchingMapper.xml"/>
         <mapper resource="ru/complitex/address/mapper/matching/CityTypeMatchingMapper.xml"/>

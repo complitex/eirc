@@ -56,4 +56,14 @@ public class CityTypeMatchingPage extends MatchingPage<CityType> {
     protected boolean isParentVisible() {
         return false;
     }
+
+    @Override
+    protected boolean isAdditionalNameVisible() {
+        return true;
+    }
+
+    @Override
+    protected boolean isAdditionalNameRequired() {
+        return true;
+    }
 }

@@ -62,9 +62,9 @@ public class CitySyncService implements ISyncHandler<City> {
         return matchingList.get(0).getObjectId();
     }
 
-    private Long getAdditionalParentId(Sync sync, Long organizationId){
+    private Long getAdditionalParentId(Sync sync, Long companyId){
         List<Matching> matchingList = matchingMapper.getMatchingListByNumber(CityType.ENTITY,
-                Long.valueOf(sync.getAdditionalParentId()), organizationId);
+                Long.valueOf(sync.getAdditionalParentId()), companyId);
 
         if (matchingList.isEmpty()){
             throw new RuntimeException("city type matching not found " + sync);

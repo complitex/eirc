@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ru.complitex.company.mapper.matching.CompanyMatchingMapper">
+    <sql id="selectCompanyMatchingJoin">
+        <if test="map.company != null or sort.key == 'company'">
+            left join "company" c on c.object_id = m.object_id and c.status = 1
+            left join "company_attribute" c_a on c_a.domain_id = c.id and c_a.entity_attribute_id = ${@ru.complitex.company.entity.Company@NAME} and c_a.status = 1
+            left join "company_value" c_v on c_v.attribute_id = c_a.id and c_v.locale_id = #{localeId}
+        </if>
+
+        <if test="map.parentCompany != null or sort.key == 'parentCompany'">
+            left join "company" pc on pc.object_id = m.parent_id and pc.status = 1
+            left join "company_attribute" pc_a on pc_a.domain_id = pc.id and pc_a.entity_attribute_id = ${@ru.complitex.company.entity.Company@NAME} and pc_a.status = 1
+            left join "company_value" pc_v on pc_v.attribute_id = pc_a.id and pc_v.locale_id = #{localeId}
+        </if>
+    </sql>
+
+    <sql id="selectCompanyMatchingWhere">
+        <if test="map.company != null">
+            ${operator} c_v.text ilike concat('%', #{map.company}, '%')
+        </if>
+
+        <if test="map.parentCompany != null">
+            ${operator} pc_v.text ilike concat('%', #{map.parentCompany}, '%')
+        </if>
+    </sql>
+
+    <sql id="selectCompanyMatchingSort">
+        <if test="sort.key == 'company'">
+            order by c_v.text ${asc}
+        </if>
+
+        <if test="sort.key == 'parentCompany'">
+            order by pc_v.text ${asc}
+        </if>
+    </sql>
+
+    <!--suppress SqlResolve -->
+    <select id="selectCompanyMatchingCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
+        select count(*) from "company_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectCompanyMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectCompanyMatchingWhere"/>
+    </select>
+
+    <!--suppress SqlResolve -->
+    <select id="selectCompanyMatchingList" parameterType="ru.complitex.common.entity.Filter" resultMap="ru.complitex.matching.mapper.MatchingMapper.matchingResultMap">
+        select m.*, 'company' entity_name from "company_matching" m
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingJoin"/>
+        <include refid="selectCompanyMatchingJoin"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingWhere"/>
+        <include refid="selectCompanyMatchingWhere"/>
+        <include refid="ru.complitex.matching.mapper.MatchingMapper.selectMatchingSort"/>
+        <include refid="selectCompanyMatchingSort"/>
+        ${limit}
+    </select>
+</mapper>
