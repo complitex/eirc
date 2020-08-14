@@ -138,7 +138,6 @@ public class MatchingModal extends Modal<Matching> {
         });
     }
 
-
     protected void save(AjaxRequestTarget target) {
         matchingMapper.save(getModelObject());
 

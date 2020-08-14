@@ -1,7 +1,7 @@
 package ru.complitex.domain.component.form;
 
 import org.apache.wicket.model.IModel;
-import ru.complitex.common.component.form.AbstractAutoComplete;
+import ru.complitex.common.component.form.AutoComplete;
 import ru.complitex.common.entity.Filter;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.EntityAttribute;
@@ -15,7 +15,7 @@ import java.util.Iterator;
  * @author Anatoly A. Ivanov
  * 22.12.2017 12:45
  */
-public class DomainInput extends AbstractAutoComplete<Domain<?>> {
+public class DomainInput extends AutoComplete<Domain<?>> {
     @Inject
     private EntityService entityService;
 

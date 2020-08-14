@@ -4,7 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import ru.complitex.common.component.form.TextFieldPanel;
+import ru.complitex.common.component.form.TextInput;
 import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
@@ -24,7 +24,7 @@ public class PropertyColumn<T extends Serializable> extends Column<T>{
 
     @Override
     public Component filter(String componentId, Table<T> table) {
-        return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "object." + property), table::update);
+        return new TextInput<>(componentId, PropertyModel.of(table.getFilterModel(), "object." + property), table::update);
     }
 
     @Override

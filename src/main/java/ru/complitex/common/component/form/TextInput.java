@@ -10,8 +10,8 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
  * @author Anatoly Ivanov
  * 29.07.2020 0:25
  */
-public class TextFieldPanel<T> extends Panel {
-    public TextFieldPanel(String id, IModel<T> model, SerializableConsumer<AjaxRequestTarget> onChange) {
+public class TextInput<T> extends Panel {
+    public TextInput(String id, IModel<T> model, SerializableConsumer<AjaxRequestTarget> onChange) {
         super(id);
 
         TextField<T> textField = new TextField<>("text", model);

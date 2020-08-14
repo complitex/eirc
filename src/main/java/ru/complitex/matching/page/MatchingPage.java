@@ -248,7 +248,6 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
         return new PropertyColumn<>("additionalParentId");
     }
 
-
     protected boolean isParentVisible() {
         return true;
     }
@@ -268,5 +267,4 @@ public class MatchingPage<T extends Domain<T>> extends BasePage {
     protected boolean isCodeVisible(){
         return false;
     }
-
 }

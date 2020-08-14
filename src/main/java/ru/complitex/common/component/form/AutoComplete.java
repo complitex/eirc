@@ -22,7 +22,7 @@ import java.util.Objects;
  * @author Anatoly Ivanov
  * 12.06.2020 19:27
  */
-public abstract class AbstractAutoComplete<T extends Serializable> extends Panel {
+public abstract class AutoComplete<T extends Serializable> extends Panel {
     private final HiddenField<Long> idField;
 
     private final AutoCompleteTextField<T> textField;
@@ -31,7 +31,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
     private IModel<String> placeholder;
 
-    public AbstractAutoComplete(String id, IModel<Long> model) {
+    public AutoComplete(String id, IModel<Long> model) {
         super(id);
 
         setOutputMarkupId(true);
@@ -39,7 +39,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
         idField = new HiddenField<>("id", model, Long.class){
             @Override
             public boolean isRequired() {
-                return AbstractAutoComplete.this.isRequired();
+                return AutoComplete.this.isRequired();
             }
         };
 
@@ -54,7 +54,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
                 new IModel<>(){
                     @Override
                     public T getObject() {
-                        return AbstractAutoComplete.this.getObject(model.getObject());
+                        return AutoComplete.this.getObject(model.getObject());
                     }
 
                     @Override
@@ -65,12 +65,12 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
                 new AbstractAutoCompleteTextRenderer<>() {
                     @Override
                     protected String getTextValue(T object) {
-                        return AbstractAutoComplete.this.getTextValue(object);
+                        return AutoComplete.this.getTextValue(object);
                     }
 
                     @Override
                     protected CharSequence getOnSelectJavaScriptExpression(T item) {
-                        Long id = AbstractAutoComplete.this.getId(item);
+                        Long id = AutoComplete.this.getId(item);
 
                         return  "$('#" + idField.getMarkupId() + "').val('" + id + "'); " +
                                 " $('#" + idField.getMarkupId() + "').change();" +
@@ -89,7 +89,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
             protected void onComponentTag(final ComponentTag tag){
                 super.onComponentTag(tag);
 
-                IModel<String> placeholder = AbstractAutoComplete.this.getPlaceholder();
+                IModel<String> placeholder = AutoComplete.this.getPlaceholder();
 
                 if (placeholder != null){
                     tag.put("placeholder", placeholder.getObject());
@@ -98,7 +98,7 @@ public abstract class AbstractAutoComplete<T extends Serializable> extends Panel
 
             @Override
             protected Iterator<T> getChoices(String input) {
-                return AbstractAutoComplete.this.getChoices(input);
+                return AutoComplete.this.getChoices(input);
             }
 
             @SuppressWarnings("unchecked")

@@ -2,7 +2,7 @@ package ru.complitex.common.component.table;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.*;
-import ru.complitex.common.component.form.TextFieldPanel;
+import ru.complitex.common.component.form.TextInput;
 import ru.complitex.common.entity.Sort;
 
 import java.io.Serializable;
@@ -22,7 +22,7 @@ public abstract class MapColumn<T extends Serializable> extends Column<T>{
 
     @Override
     public Component filter(String componentId, Table<T> table) {
-        return new TextFieldPanel<>(componentId, PropertyModel.of(table.getFilterModel(), "map." + property), table::update);
+        return new TextInput<>(componentId, PropertyModel.of(table.getFilterModel(), "map." + property), table::update);
     }
 
     public abstract String text(IModel<T> model);

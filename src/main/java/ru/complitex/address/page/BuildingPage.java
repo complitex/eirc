@@ -12,7 +12,7 @@ import ru.complitex.address.component.group.DistrictStreetGroup;
 import ru.complitex.address.entity.Building;
 import ru.complitex.address.mapper.BuildingMapper;
 import ru.complitex.address.service.AddressService;
-import ru.complitex.common.component.form.TextFieldPanel;
+import ru.complitex.common.component.form.TextInput;
 import ru.complitex.common.component.table.Column;
 import ru.complitex.common.component.table.MapColumn;
 import ru.complitex.common.component.table.Table;
@@ -74,7 +74,7 @@ public class BuildingPage extends DomainPage<Building> {
             columns.add(new Column<>(new ResourceModel("building"), new EntityAttributeSort(entityAttribute)) {
                 @Override
                 public Component filter(String componentId, Table<Building> table) {
-                    return new TextFieldPanel<>(componentId, TextModel.of(Model.of(table.getFilterModel().getObject().getObject()), Building.NUMBER), table::update);
+                    return new TextInput<>(componentId, TextModel.of(Model.of(table.getFilterModel().getObject().getObject()), Building.NUMBER), table::update);
                 }
 
                 @Override
