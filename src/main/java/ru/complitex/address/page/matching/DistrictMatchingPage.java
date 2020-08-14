@@ -66,4 +66,9 @@ public class DistrictMatchingPage extends MatchingPage<District> {
             }
         };
     }
+
+    @Override
+    protected boolean isCodeVisible() {
+        return true;
+    }
 }

@@ -101,8 +101,17 @@ public class DistrictSyncService implements ISyncHandler<District> {
 
     @Override
     public Matching insertMatching(District district, Sync sync, Long companyId) {
-        return matchingMapper.insert(new Matching(District.ENTITY, district.getObjectId(), district.getCityId(),
-                sync.getName(), sync.getExternalId(), sync.getDate(), companyId));
+        Matching matching = new Matching(District.ENTITY);
+
+        matching.setObjectId(district.getObjectId());
+        matching.setParentId(district.getCityId());
+        matching.setName(sync.getName());
+        matching.setNumber(sync.getExternalId());
+        matching.setCode(sync.getAdditionalExternalId());
+        matching.setStartDate(sync.getDate());
+        matching.setCompanyId(companyId);
+
+        return matchingMapper.insert(matching);
     }
 
     @Override
