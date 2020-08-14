@@ -55,4 +55,9 @@ public class CountryMatchingPage extends MatchingPage<Country> {
     protected boolean isParentVisible() {
         return false;
     }
+
+    @Override
+    protected boolean isCodeVisible() {
+        return true;
+    }
 }

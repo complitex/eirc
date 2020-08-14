@@ -77,6 +77,7 @@ public class CountrySyncService implements ISyncHandler<Country> {
         matching.setObjectId(country.getObjectId());
         matching.setName(sync.getName());
         matching.setNumber(sync.getExternalId());
+        matching.setCode(sync.getAdditionalExternalId());
         matching.setStartDate(sync.getDate());
         matching.setCompanyId(companyId);
 
