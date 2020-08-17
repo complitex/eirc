@@ -1,4 +1,4 @@
-package ru.complitex.eirc.page;
+package ru.complitex.eirc.page.base;
 
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome5CssReference;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -11,22 +11,24 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import ru.complitex.address.page.*;
+import ru.complitex.address.page.matching.*;
+import ru.complitex.address.page.sync.*;
 import ru.complitex.company.page.CompanyPage;
 import ru.complitex.company.page.matching.CompanyMatchingPage;
 import ru.complitex.company.page.sync.CompanySyncPage;
+import ru.complitex.eirc.page.*;
+import ru.complitex.eirc.page.home.HomePage;
 import ru.complitex.eirc.page.resource.EircCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuCssResourceReference;
 import ru.complitex.eirc.page.resource.MenuJsResourceReference;
 import ru.complitex.eirc.security.EircRoles;
-import ru.complitex.address.page.matching.*;
-import ru.complitex.address.page.sync.*;
 
 /**
  * @author Anatoly A. Ivanov
  * 17.03.2020 11:21 PM
  */
 @AuthorizeInstantiation(EircRoles.AUTHORIZED)
-public class BasePage extends WebPage {
+public abstract class BasePage extends WebPage {
     public BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));
 
@@ -37,20 +39,34 @@ public class BasePage extends WebPage {
             }
         });
 
+        WebMarkupContainer address = new WebMarkupContainer("address");
+        add(address);
+
+        address.add(new BookmarkablePageLink<>("counties", CountryPage.class));
+        address.add(new BookmarkablePageLink<>("regions", RegionPage.class));
+        address.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
+        address.add(new BookmarkablePageLink<>("cities", CityPage.class));
+        address.add(new BookmarkablePageLink<>("districts", DistrictPage.class));
+        address.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
+        address.add(new BookmarkablePageLink<>("streets", StreetPage.class));
+        address.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
+        address.add(new BookmarkablePageLink<>("apartments", ApartmentPage.class));
+
+
         WebMarkupContainer domains = new WebMarkupContainer("domains");
         add(domains);
 
         domains.add(new BookmarkablePageLink<>("companies", CompanyPage.class));
 
-        domains.add(new BookmarkablePageLink<>("counties", CountryPage.class));
-        domains.add(new BookmarkablePageLink<>("regions", RegionPage.class));
-        domains.add(new BookmarkablePageLink<>("cityTypes", CityTypePage.class));
-        domains.add(new BookmarkablePageLink<>("cities", CityPage.class));
-        domains.add(new BookmarkablePageLink<>("districts", DistrictPage.class));
-        domains.add(new BookmarkablePageLink<>("streetTypes", StreetTypePage.class));
-        domains.add(new BookmarkablePageLink<>("streets", StreetPage.class));
-        domains.add(new BookmarkablePageLink<>("buildings", BuildingPage.class));
-        domains.add(new BookmarkablePageLink<>("apartments", ApartmentPage.class));
+        domains.add(new BookmarkablePageLink<>("service_types", ServiceTypePage.class));
+        domains.add(new BookmarkablePageLink<>("payment_parameters", PaymentParameterPage.class));
+        domains.add(new BookmarkablePageLink<>("partner_types", PartnerTypePage.class));
+        domains.add(new BookmarkablePageLink<>("partners", PartnerPage.class));
+        domains.add(new BookmarkablePageLink<>("contact_types", ContractTypePage.class));
+        domains.add(new BookmarkablePageLink<>("contracts", ContractPage.class));
+        domains.add(new BookmarkablePageLink<>("document_types", DocumentTypePage.class));
+        domains.add(new BookmarkablePageLink<>("data_types", DataTypePage.class));
+
 
         WebMarkupContainer matching = new WebMarkupContainer("matching");
         add(matching);

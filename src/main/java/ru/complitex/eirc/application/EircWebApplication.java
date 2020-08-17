@@ -1,4 +1,4 @@
-package ru.complitex.eirc.page;
+package ru.complitex.eirc.application;
 
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
@@ -10,14 +10,16 @@ import org.apache.wicket.cdi.CdiConfiguration;
 import org.apache.wicket.cdi.ConversationPropagation;
 import org.apache.wicket.protocol.http.WebApplication;
 import ru.complitex.address.page.*;
+import ru.complitex.address.page.matching.*;
+import ru.complitex.address.page.sync.*;
 import ru.complitex.common.application.ServletAuthorizationStrategy;
 import ru.complitex.common.application.ServletUnauthorizedListener;
 import ru.complitex.company.page.CompanyPage;
 import ru.complitex.company.page.matching.CompanyMatchingPage;
 import ru.complitex.company.page.sync.CompanySyncPage;
+import ru.complitex.eirc.page.*;
+import ru.complitex.eirc.page.home.HomePage;
 import ru.complitex.eirc.page.login.LoginPage;
-import ru.complitex.address.page.matching.*;
-import ru.complitex.address.page.sync.*;
 
 /**
  * @author Anatoly A. Ivanov
@@ -54,6 +56,16 @@ public class EircWebApplication extends WebApplication {
         mountPage("login", LoginPage.class);
 
         mountPage("companies", CompanyPage.class);
+
+        mountPage("service_types", ServiceTypePage.class);
+        mountPage("payment_parameters", PaymentParameterPage.class);
+        mountPage("partner_types", PartnerTypePage.class);
+        mountPage("partners", PartnerPage.class);
+        mountPage("contact_types", ContractTypePage.class);
+        mountPage("contracts", ContractPage.class);
+        mountPage("document_types", DocumentTypePage.class);
+        mountPage("data_types", DataTypePage.class);
+
         mountPage("counties", CountryPage.class);
         mountPage("regions", RegionPage.class);
         mountPage("city-types", CityTypePage.class);

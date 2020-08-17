@@ -32,7 +32,7 @@ public class ApartmentPage extends DomainPage<Apartment> {
     private AddressService addressService;
 
     public ApartmentPage() {
-        super(Apartment.class);
+        super(Apartment.class, Apartment.BUILDING, Apartment.NAME);
     }
 
     @Override
@@ -85,11 +85,6 @@ public class ApartmentPage extends DomainPage<Apartment> {
     @Override
     protected Long getDomainsCount(Filter<Apartment> filter) {
         return apartmentMapper.getApartmentsCount(filter);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{Apartment.BUILDING, Apartment.NAME};
     }
 
     @Override

@@ -424,4 +424,41 @@ CREATE TABLE "sync"(
   "balance_holder" BIGINT,  -- 'Балансодержатель',
   "status" INT NOT NULL,  -- 'Статус синхронизации',
   PRIMARY KEY ("id")
-)  -- 'Синхронизация';
+);  -- 'Синхронизация';
+
+-- ------------------------------
+--  Domains
+-- ------------------------------
+
+CALL create_domain(12, 'service_type', 'Тип услуги', 'Тип послуги');
+CALL create_attribute(12, 1, 8, 'Название', 'Назва');
+CALL create_attribute(12, 2, 4, 'Код', 'Код');
+
+CALL create_domain(13, 'payment_parameter', 'Параметр начислений', 'Параметр нарахувань');
+CALL create_attribute(13, 1, 8, 'Название', 'Назва');
+CALL create_attribute(13, 2, 4, 'Код', 'Код');
+
+CALL create_domain(14, 'partner_type', 'Тип участника', 'Тип учасника');
+CALL create_attribute(14, 1, 8, 'Название', 'Назва');
+CALL create_attribute(14, 2, 4, 'Код', 'Код');
+
+CALL create_domain(15, 'partner', 'Участник', 'Учасник');
+CALL create_attribute(15, 1, 8, 'Название', 'Назва');
+CALL create_attribute(15, 2, 8, 'Краткое название', 'Коротка назва');
+CALL create_attribute(15, 3, 4, 'ЕДРПОУ', 'ЄДРПОУ');
+
+CALL create_domain(16, 'contract_type', 'Тип договора', 'Тип договору');
+CALL create_attribute(16, 1, 8, 'Название', 'Назва');
+CALL create_attribute(16, 2, 4, 'Код', 'Код');
+
+CALL create_domain(17, 'contract', 'Договор', 'Договір');
+CALL create_attribute(17, 1, 8, 'Название', 'Назва');
+
+CALL create_domain(18, 'document_type', 'Тип документа', 'Тип документа');
+CALL create_attribute(18, 1, 8, 'Название', 'Назва');
+CALL create_attribute(18, 2, 4, 'Код', 'Код');
+
+CALL create_domain(19, 'data_type', 'Тип информации', 'Тип інформації');
+CALL create_attribute(19, 1, 8, 'Название', 'Назва');
+CALL create_attribute(19, 2, 4, 'Код', 'Код');
+

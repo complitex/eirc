@@ -16,7 +16,7 @@ import ru.complitex.common.entity.Sort;
 import ru.complitex.common.model.FilterModel;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.util.Domains;
-import ru.complitex.eirc.page.BasePage;
+import ru.complitex.eirc.page.base.BasePage;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.mapper.SyncMapper;
 

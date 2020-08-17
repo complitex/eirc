@@ -33,7 +33,7 @@ public class StreetPage extends DomainPage<Street> {
     private AddressService addressService;
     
     public StreetPage() {
-        super(Street.class);
+        super(Street.class, Street.CITY, Street.STREET_TYPE, Street.NAME);
     }
 
     @Override
@@ -73,11 +73,6 @@ public class StreetPage extends DomainPage<Street> {
     @Override
     protected Long getDomainsCount(Filter<Street> filter) {
         return streetMapper.getStreetsCount(filter);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{Street.CITY, Street.STREET_TYPE, Street.NAME};
     }
 
     @Override

@@ -34,12 +34,7 @@ public class CityPage extends DomainPage<City> {
     private CityMapper cityMapper;
 
     public CityPage() {
-        super(City.class);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{City.REGION, City.CITY_TYPE, City.NAME};
+        super(City.class, City.REGION, City.CITY_TYPE, City.NAME);
     }
 
     @Override

@@ -12,11 +12,6 @@ import ru.complitex.eirc.security.EircRoles;
 @AuthorizeInstantiation(EircRoles.ADMINISTRATORS)
 public class CityTypePage extends DomainPage<CityType> {
     public CityTypePage() {
-        super(CityType.class);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{CityType.NAME, CityType.SHORT_NAME};
+        super(CityType.class, CityType.NAME, CityType.SHORT_NAME);
     }
 }

@@ -7,10 +7,11 @@ import ru.complitex.domain.util.Locales;
  * 27.05.2020 00:23
  */
 public abstract class NameDomain<T extends NameDomain<T>> extends Domain<T> {
-    private int nameEntityAttributeId;
+    private final int nameEntityAttributeId;
 
     public NameDomain(int entityId, String entityName, int nameEntityAttributeId) {
         super(entityId, entityName);
+
         this.nameEntityAttributeId = nameEntityAttributeId;
     }
 

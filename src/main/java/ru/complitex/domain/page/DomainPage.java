@@ -31,7 +31,7 @@ import ru.complitex.domain.entity.EntityAttribute;
 import ru.complitex.domain.service.DomainService;
 import ru.complitex.domain.service.EntityService;
 import ru.complitex.domain.util.Domains;
-import ru.complitex.eirc.page.BasePage;
+import ru.complitex.eirc.page.base.BasePage;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -53,6 +53,8 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private Class<T> domainClass;
 
+    private int[] requiredEntityAttributeIds;
+
     private Entity entity;
 
     private WebMarkupContainer container;
@@ -63,8 +65,10 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
 
     private DomainModal<T> modal;
 
-    public DomainPage(Class<T> domainClass) {
+    public DomainPage(Class<T> domainClass, int... requiredEntityAttributeIds) {
         this.domainClass = domainClass;
+
+        this.requiredEntityAttributeIds = requiredEntityAttributeIds;
 
         this.entity = entityService.getEntity(domainClass);
 
@@ -253,7 +257,7 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
     }
 
     protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{};
+        return requiredEntityAttributeIds;
     }
 
     protected List<EntityAttribute> getListEntityAttributes() {

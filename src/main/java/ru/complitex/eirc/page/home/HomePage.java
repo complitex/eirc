@@ -1,6 +1,7 @@
-package ru.complitex.eirc.page;
+package ru.complitex.eirc.page.home;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import ru.complitex.eirc.page.base.BasePage;
 import ru.complitex.eirc.security.EircRoles;
 
 /**

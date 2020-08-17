@@ -27,7 +27,7 @@ import ru.complitex.domain.component.table.ActionColumn;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.service.AttributeService;
 import ru.complitex.domain.util.Domains;
-import ru.complitex.eirc.page.BasePage;
+import ru.complitex.eirc.page.base.BasePage;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 

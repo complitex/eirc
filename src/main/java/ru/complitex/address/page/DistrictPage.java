@@ -33,7 +33,7 @@ public class DistrictPage extends DomainPage<District> {
     private AddressService addressService;
 
     public DistrictPage() {
-        super(District.class);
+        super(District.class, District.CITY, District.NAME);
     }
 
     @Override
@@ -73,11 +73,6 @@ public class DistrictPage extends DomainPage<District> {
     @Override
     protected Long getDomainsCount(Filter<District> filter) {
         return districtMapper.getDistrictsCount(filter);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{District.CITY, District.NAME};
     }
 
     @Override

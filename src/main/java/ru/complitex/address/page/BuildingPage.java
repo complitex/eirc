@@ -42,7 +42,7 @@ public class BuildingPage extends DomainPage<Building> {
     private AddressService addressService;
 
     public BuildingPage() {
-        super(Building.class);
+        super(Building.class, Building.DISTRICT, Building.STREET, Building.NUMBER);
     }
 
     @Override
@@ -103,11 +103,6 @@ public class BuildingPage extends DomainPage<Building> {
     @Override
     protected Long getDomainsCount(Filter<Building> filter) {
         return buildingMapper.getBuildingsCount(filter);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{Building.DISTRICT, Building.STREET, Building.NUMBER};
     }
 
     @Override

@@ -16,12 +16,7 @@ import ru.complitex.domain.page.DomainPage;
  */
 public class CompanyPage extends DomainPage<Company> {
     public CompanyPage() {
-        super(Company.class);
-    }
-
-    @Override
-    protected int[] getRequiredEntityAttributeIds() {
-        return new int[]{Company.NAME};
+        super(Company.class, Company.NAME);
     }
 
     @Override

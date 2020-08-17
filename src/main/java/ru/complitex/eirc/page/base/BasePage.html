@@ -27,13 +27,12 @@
         <nav class="col-1 sidebar border-right">
             <ul id="menu" class="menu">
                 <li class="mm-active">
-                    <a href="#" class="has-arrow" aria-expanded="true">Справочник</a>
+                    <a href="#" class="has-arrow" aria-expanded="true">Адрес</a>
 
-                    <ul wicket:id="domains">
-                        <li><a wicket:id="companies" href="#">Компании</a></li>
+                    <ul wicket:id="address">
                         <li><a wicket:id="counties" href="#">Страны</a></li>
                         <li><a wicket:id="regions" href="#">Регионы</a></li>
-                        <li><a wicket:id="cityTypes" href="#">Типы нас. пунктов</a></li>
+                        <li><a wicket:id="cityTypes" href="#">Типы населённых пунктов</a></li>
                         <li><a wicket:id="cities" href="#">Населённые пункты</a></li>
                         <li><a wicket:id="districts" href="#">Районы</a></li>
                         <li><a wicket:id="streetTypes" href="#">Типы улиц</a></li>
@@ -43,13 +42,28 @@
                     </ul>
                 </li>
                 <li class="mm-active">
-                    <a href="#" class="has-arrow" aria-expanded="true">Соответствия</a>
+                    <a href="#" class="has-arrow" aria-expanded="true">Справочник</a>
+
+                    <ul wicket:id="domains">
+                        <li><a wicket:id="companies" href="#">Компании</a></li>
+                        <li><a wicket:id="service_types" href="#">Типы услуг</a></li>
+                        <li><a wicket:id="payment_parameters" href="#">Параметры начислений</a></li>
+                        <li><a wicket:id="partner_types" href="#">Типы участников</a></li>
+                        <li><a wicket:id="partners" href="#">Участники</a></li>
+                        <li><a wicket:id="contact_types" href="#">Типы договоров</a></li>
+                        <li><a wicket:id="contracts" href="#">Договоры</a></li>
+                        <li><a wicket:id="document_types" href="#">Типы документов</a></li>
+                        <li><a wicket:id="data_types" href="#">Типы информации</a></li>
+                    </ul>
+                </li>
+                <li class="mm-active">
+                    <a href="#" class="has-arrow" aria-expanded="true">Соответствие</a>
 
                     <ul wicket:id="matching">
                         <li><a wicket:id="companies" href="#">Компании</a></li>
                         <li><a wicket:id="counties" href="#">Страны</a></li>
                         <li><a wicket:id="regions" href="#">Регионы</a></li>
-                        <li><a wicket:id="cityTypes" href="#">Типы нас. пунктов</a></li>
+                        <li><a wicket:id="cityTypes" href="#">Типы населённых пунктов</a></li>
                         <li><a wicket:id="cities" href="#">Населённые пункты</a></li>
                         <li><a wicket:id="districts" href="#">Районы</a></li>
                         <li><a wicket:id="streetTypes" href="#">Типы улиц</a></li>
@@ -65,7 +79,7 @@
                         <li><a wicket:id="companies" href="#">Компании</a></li>
                         <li><a wicket:id="counties" href="#">Страны</a></li>
                         <li><a wicket:id="regions" href="#">Регионы</a></li>
-                        <li><a wicket:id="cityTypes" href="#">Типы нас. пунктов</a></li>
+                        <li><a wicket:id="cityTypes" href="#">Типы населённых пунктов</a></li>
                         <li><a wicket:id="cities" href="#">Населённые пункты</a></li>
                         <li><a wicket:id="districts" href="#">Районы</a></li>
                         <li><a wicket:id="streetTypes" href="#">Типы улиц</a></li>
@@ -80,6 +94,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>
