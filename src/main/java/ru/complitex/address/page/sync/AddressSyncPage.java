@@ -20,11 +20,11 @@ public class AddressSyncPage<T extends Domain<T>> extends SyncPage<T> {
 
     @Override
     protected void load() {
-        addressSyncService.load(getDomainClass());
+        addressSyncService.load(getDomainClass(), getSyncListener());
     }
 
     @Override
     protected void sync() {
-        addressSyncService.sync(getDomainClass());
+        addressSyncService.sync(getDomainClass(), getSyncListener());
     }
 }

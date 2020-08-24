@@ -41,17 +41,13 @@ public class BuildingSyncService implements ISyncHandler<Building> {
 
     @Override
     public Cursor<Sync> getCursorSyncs(Sync parentSync, Date date) throws SyncException {
-        try {
-            Sync citySync = syncMapper.getSync(City.ID, parentSync.getParentId());
-            Sync cityTypeSync = syncMapper.getSync(CityType.ID, Long.valueOf(citySync.getAdditionalParentId()));
+        Sync citySync = syncMapper.getSync(City.ID, parentSync.getParentId());
+        Sync cityTypeSync = syncMapper.getSync(CityType.ID, Long.valueOf(citySync.getAdditionalParentId()));
 
-            Sync streetTypeSync = syncMapper.getSync(StreetType.ID, Long.valueOf(parentSync.getAdditionalParentId()));
+        Sync streetTypeSync = syncMapper.getSync(StreetType.ID, Long.valueOf(parentSync.getAdditionalParentId()));
 
-            return syncAdapter.getBuildingSyncs(citySync.getName(),cityTypeSync.getAdditionalName(), "",
-                    streetTypeSync.getAdditionalName(), parentSync.getName(), date);
-        } catch (Exception e) {
-            throw new RuntimeException("sync error: getCursorSync" + parentSync);
-        }
+        return syncAdapter.getBuildingSyncs(citySync.getName(),cityTypeSync.getAdditionalName(), "",
+                streetTypeSync.getAdditionalName(), parentSync.getName(), date);
     }
 
     @Override

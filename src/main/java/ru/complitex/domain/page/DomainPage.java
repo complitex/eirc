@@ -94,17 +94,16 @@ public abstract class DomainPage<T extends Domain<T>> extends BasePage {
             }
         };
 
+        provider.setSort(new Sort("object_id"), SortOrder.DESCENDING);
+
         Form<T> form = new Form<>("form");
         container.add(form);
-
 
         List<IColumn<T, Sort>> columns = new ArrayList<>();
 
         IdColumn<T> idColumn = new IdColumn<>(t -> table.update(t));
 
         columns.add(idColumn);
-
-        provider.setSort(new Sort("object_id"), SortOrder.DESCENDING);
 
         getListEntityAttributes().forEach(entityAttribute -> addColumn(entityAttribute, columns));
 

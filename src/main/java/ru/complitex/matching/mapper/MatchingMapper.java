@@ -65,7 +65,7 @@ public class MatchingMapper extends FilterMapper<Matching> {
         }
     }
 
-    public void delete(Long id){
-        sqlSession().delete("deleteMatching", id);
+    public void delete(Matching matching){
+        sqlSession().delete("deleteMatching", matching);
     }
 }

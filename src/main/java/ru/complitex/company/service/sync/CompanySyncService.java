@@ -10,6 +10,7 @@ import ru.complitex.sync.adapter.SyncAdapter;
 import ru.complitex.sync.entity.Sync;
 import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.service.ISyncHandler;
+import ru.complitex.sync.service.ISyncListener;
 import ru.complitex.sync.service.SyncService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -136,11 +137,11 @@ public class CompanySyncService extends SyncService implements ISyncHandler<Comp
         company.setCode(sync.getAdditionalExternalId());
     }
 
-    public void load(){
-        load(Company.class);
+    public void load(ISyncListener syncListener){
+        load(Company.class, syncListener);
     }
 
-    public void sync(){
-        sync(Company.class);
+    public void sync(ISyncListener syncListener){
+        sync(Company.class, syncListener);
     }
 }

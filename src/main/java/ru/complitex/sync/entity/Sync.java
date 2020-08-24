@@ -19,8 +19,8 @@ public class Sync implements Serializable {
     private String additionalName;
     private String altName;
     private String altAdditionalName;
-    private Integer servicingOrganization;
-    private Integer balanceHolder;
+    private Long servicingOrganization;
+    private Long balanceHolder;
     private Date date;
     private Integer status;
     private int entityId;
@@ -115,19 +115,19 @@ public class Sync implements Serializable {
         this.altAdditionalName = altAdditionalName;
     }
 
-    public Integer getServicingOrganization() {
+    public Long getServicingOrganization() {
         return servicingOrganization;
     }
 
-    public void setServicingOrganization(Integer servicingOrganization) {
+    public void setServicingOrganization(Long servicingOrganization) {
         this.servicingOrganization = servicingOrganization;
     }
 
-    public Integer getBalanceHolder() {
+    public Long getBalanceHolder() {
         return balanceHolder;
     }
 
-    public void setBalanceHolder(Integer balanceHolder) {
+    public void setBalanceHolder(Long balanceHolder) {
         this.balanceHolder = balanceHolder;
     }
 

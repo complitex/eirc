@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.complitex.common.entity.Cursor;
 import ru.complitex.common.entity.Filter;
-import ru.complitex.common.service.BroadcastService;
 import ru.complitex.common.util.Dates;
-import ru.complitex.common.util.Exceptions;
 import ru.complitex.company.entity.Company;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.entity.Entity;
@@ -17,7 +15,6 @@ import ru.complitex.domain.util.Domains;
 import ru.complitex.matching.entity.Matching;
 import ru.complitex.matching.mapper.MatchingMapper;
 import ru.complitex.sync.entity.Sync;
-import ru.complitex.sync.entity.SyncMessage;
 import ru.complitex.sync.entity.SyncStatus;
 import ru.complitex.sync.exception.SyncException;
 import ru.complitex.sync.mapper.SyncMapper;
@@ -44,30 +41,28 @@ public abstract class SyncService {
     private SyncMapper syncMapper;
 
     @Inject
-    private BroadcastService broadcastService;
-
-    @Inject
     private MatchingMapper matchingMapper;
 
-    private final AtomicBoolean processing = new AtomicBoolean(false);
+    private final AtomicBoolean syncing = new AtomicBoolean(false);
 
-    private final AtomicBoolean cancelSync = new AtomicBoolean(false);
+    private final AtomicBoolean canceling = new AtomicBoolean(false);
 
     protected abstract ISyncHandler<?> getHandler(int entityId);
 
-    public <T extends Domain<T>> void load(Class<T> domainClass){
-        if (processing.get()){
-            return;
-        }
-
-        T domain = Domains.newObject(domainClass);
-
-        int entityId = domain.getEntityId();
-
+    public <T extends Domain<T>> void load(Class<T> domainClass, ISyncListener syncListener){
         try {
-            //lock sync
-            processing.set(true);
-            cancelSync.set(false);
+            if (syncing.get()){
+                return;
+            }
+
+            syncing.set(true);
+            canceling.set(false);
+
+            syncListener.onLoading();
+
+            T domain = Domains.newObject(domainClass);
+
+            int entityId = domain.getEntityId();
 
             //clear
             syncMapper.deleteAll(entityId);
@@ -78,40 +73,28 @@ public abstract class SyncService {
 
             if (parentSyncs != null){
                 for (Sync s : parentSyncs) {
-                    load(entityId, s, date);
+                    load(entityId, s, date, syncListener);
                 }
             }else{
-                load(entityId, null, date);
+                load(entityId, null, date, syncListener);
             }
+
+            syncListener.onLoaded();
         } catch (Exception e) {
             log.error("Ошибка синхронизации", e);
 
-            String message = Exceptions.getCauseMessage(e, true);
-
-            broadcastService.broadcast(getClass(), "error", message != null ? message : e.getMessage());
+            syncListener.onError(e);
         } finally {
-            //unlock sync
-            processing.set(false);
-
-            broadcastService.broadcast(getClass(), "done", entityId);
+            syncing.set(false);
         }
     }
 
-    private void load(int entityId, Sync parentSync, Date date) throws SyncException {
-        if (cancelSync.get()){
+    private void load(int entityId, Sync parentSync, Date date, ISyncListener syncListener) throws SyncException {
+        if (canceling.get()){
             return;
         }
 
         Cursor<Sync> cursor = getHandler(entityId).getCursorSyncs(parentSync, date);
-
-        SyncMessage message = new SyncMessage();
-        message.setEntityId(entityId);
-        message.setCount(cursor.getData() != null ? cursor.getData().size() : 0L);
-        if (parentSync != null){
-            message.setParentName(parentSync.getName());
-        }
-
-        broadcastService.broadcast(getClass(), "begin", message);
 
         if (cursor.getData() != null) {
             cursor.getData().forEach(s -> {
@@ -121,7 +104,7 @@ public abstract class SyncService {
 
                 syncMapper.insert(s);
 
-                broadcastService.broadcast(getClass(), "processed", s);
+                syncListener.onLoad();
             });
         }
     }
@@ -156,12 +139,13 @@ public abstract class SyncService {
         return syncs;
     }
 
-    public <T extends Domain<T>> void sync(Class<T> domainClass){
-        processing.set(true);
-        cancelSync.set(false);
-
+    public <T extends Domain<T>> void sync(Class<T> domainClass, ISyncListener syncListener){
         try {
-            broadcastService.broadcast(getClass(), "info", "Начата синхронизация");
+            syncing.set(true);
+            canceling.set(false);
+
+            syncListener.onSyncing();
+
             log.info("sync: begin");
 
             Entity entity = entityService.getEntity(domainClass);
@@ -173,7 +157,7 @@ public abstract class SyncService {
 
             getSyncs(entity.getId(), SyncStatus.LOADED, null).forEach(s -> {
                 try {
-                    if (cancelSync.get()){
+                    if (canceling.get()){
                         return;
                     }
 
@@ -259,18 +243,16 @@ public abstract class SyncService {
                     log.error("sync: error ", e);
                 }
 
-                broadcastService.broadcast(getClass(), "processed", s);
+                syncListener.onSync();
             });
 
-
-            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
-                if (getSyncs(entity.getId(), 0, m.getNumber()).isEmpty()){
-                    matchingMapper.delete(m.getId());
-
-                    log.info("sync: delete matching {}", m);
-                }
-            });
-
+//            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
+//                if (getSyncs(entity.getId(), 0, m.getNumber()).isEmpty()){
+//                    matchingMapper.delete(m);
+//
+//                    log.info("sync: delete matching {}", m);
+//                }
+//            });
 
             getSyncs(entity.getId(), SyncStatus.DELAYED, null).forEach(s -> {
                 if (syncMapper.getSync(s.getId()).getStatus() == SyncStatus.DELAYED) {
@@ -332,22 +314,19 @@ public abstract class SyncService {
                 }
             });
 
-            broadcastService.broadcast(getClass(), "info", "Синхронизация завершена успешно");
+            syncListener.onSynced();
+
             log.info("sync: completed");
         } catch (Exception e) {
             log.error("sync: error", e);
 
-            broadcastService.broadcast(getClass(), "error", Exceptions.getCauseMessage(e));
+            syncListener.onError(e);
         } finally {
-            processing.set(false);
+            syncing.set(false);
         }
     }
 
     public void cancelSync(){
-        cancelSync.set(true);
-    }
-
-    public boolean getProcessing(){
-        return processing.get();
+        canceling.set(true);
     }
 }

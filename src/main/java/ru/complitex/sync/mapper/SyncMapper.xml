@@ -62,7 +62,7 @@
     </sql>
 
     <select id="selectSyncs" parameterType="ru.complitex.common.entity.Filter" resultMap="syncResultMap">
-        select * from "sync" <include refid="selectSyncWhere"/> ${limit}
+        select * from "sync" <include refid="selectSyncWhere"/> order by "id" desc ${limit}
     </select>
 
     <select id="selectSyncsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">

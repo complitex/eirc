@@ -4,21 +4,32 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.spinner.SpinnerAjaxButton;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.protocol.ws.WebSocketSettings;
+import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
+import org.apache.wicket.protocol.ws.api.WebSocketRequestHandler;
+import org.apache.wicket.protocol.ws.api.message.IWebSocketPushMessage;
+import org.apache.wicket.protocol.ws.api.registry.PageIdKey;
 import ru.complitex.common.component.table.PropertyColumn;
 import ru.complitex.common.component.table.Provider;
 import ru.complitex.common.component.table.Table;
 import ru.complitex.common.entity.Sort;
 import ru.complitex.common.model.FilterModel;
+import ru.complitex.common.util.Exceptions;
 import ru.complitex.domain.entity.Domain;
 import ru.complitex.domain.util.Domains;
 import ru.complitex.eirc.page.base.BasePage;
 import ru.complitex.sync.entity.Sync;
+import ru.complitex.sync.entity.SyncErrorMessage;
+import ru.complitex.sync.entity.SyncInfoMessage;
+import ru.complitex.sync.entity.SyncMessage;
 import ru.complitex.sync.mapper.SyncMapper;
+import ru.complitex.sync.service.ISyncListener;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -34,6 +45,8 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
 
     private final Class<T> domainClass;
 
+    private final ISyncListener syncListener;
+
     public SyncPage(Class<T> domainClass) {
         this.domainClass = domainClass;
 
@@ -42,6 +55,7 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
         add(container);
 
         NotificationPanel notification = new NotificationPanel("notification");
+        notification.setOutputMarkupPlaceholderTag(true);
         notification.setOutputMarkupId(true);
         container.add(notification);
 
@@ -59,6 +73,8 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
             }
         };
 
+        provider.setSort(new Sort("id"), SortOrder.DESCENDING);
+
         List<IColumn<Sync, Sort>> columns = new ArrayList<>();
 
         columns.add(new PropertyColumn<Sync>("id").setCssClass("id-column"));
@@ -70,6 +86,7 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
         columns.add(new PropertyColumn<>("additionalParentId"));
         columns.add(new PropertyColumn<>("externalId"));
         columns.add(new PropertyColumn<>("additionalExternalId"));
+        columns.add(new PropertyColumn<>("balanceHolder"));
         columns.add(new PropertyColumn<>("date"));
         columns.add(new PropertyColumn<>("status"){
             @Override
@@ -88,8 +105,6 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
             @Override
             protected void onSubmit(AjaxRequestTarget target) {
                 SyncPage.this.load();
-
-                target.add(table);
             }
         }.setDefaultFormProcessing(false));
 
@@ -97,10 +112,84 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
             @Override
             public void onSubmit(AjaxRequestTarget target) {
                 SyncPage.this.sync();
-
-                target.add(table);
             }
         }.setDefaultFormProcessing(false));
+
+        add(new WebSocketBehavior() {
+            @Override
+            protected void onPush(WebSocketRequestHandler handler, IWebSocketPushMessage message) {
+                if (message instanceof SyncErrorMessage){
+                    error(((SyncErrorMessage) message).getError());
+
+                    handler.add(notification);
+                }
+
+                if (message instanceof SyncInfoMessage){
+                    success(((SyncInfoMessage) message).getInfo());
+
+                    handler.add(notification);
+                }
+
+                if (message instanceof SyncMessage){
+                    handler.add(table.getBody());
+                    handler.add(table.getBottomToolbars());
+                }
+            }
+        });
+
+        syncListener = new ISyncListener() {
+            private long time = 0;
+
+            @Override
+            public void onLoading() {
+                sendMessage(new SyncInfoMessage(getString("info_loading")));
+            }
+
+            @Override
+            public void onLoad() {
+                if (System.currentTimeMillis() - time > 100){
+                    sendMessage(new SyncMessage());
+
+                    time = System.currentTimeMillis();
+                }
+            }
+
+            @Override
+            public void onLoaded() {
+                sendMessage(new SyncInfoMessage(getString("info_loaded")));
+            }
+
+            @Override
+            public void onSyncing() {
+                sendMessage(new SyncInfoMessage(getString("info_syncing")));
+            }
+
+            @Override
+            public void onSync() {
+                if (System.currentTimeMillis() - time > 100){
+                    sendMessage(new SyncMessage());
+
+                    time = System.currentTimeMillis();
+                }
+            }
+
+            @Override
+            public void onSynced() {
+                sendMessage(new SyncInfoMessage(getString("info_synced")));
+            }
+
+            @Override
+            public void onError(Exception e) {
+                sendMessage(new SyncErrorMessage(getString("error") + ": " + Exceptions.getCauseMessage(e, true)));
+            }
+        };
+    }
+
+    protected void sendMessage(IWebSocketPushMessage message){
+        WebSocketSettings.Holder.get(getApplication())
+                .getConnectionRegistry()
+                .getConnection(getApplication(), getSession().getId(), new PageIdKey(getPageId()))
+                .sendMessage(message);
     }
 
     public Class<T> getDomainClass() {
@@ -110,4 +199,8 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
     protected abstract void load();
 
     protected abstract void sync();
+
+    public ISyncListener getSyncListener() {
+        return syncListener;
+    }
 }

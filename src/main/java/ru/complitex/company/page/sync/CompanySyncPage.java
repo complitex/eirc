@@ -20,11 +20,11 @@ public class CompanySyncPage extends SyncPage<Company> {
 
     @Override
     protected void load() {
-        companySyncService.load();
+        companySyncService.load(getSyncListener());
     }
 
     @Override
     protected void sync() {
-        companySyncService.sync();
+        companySyncService.sync(getSyncListener());
     }
 }
