@@ -147,10 +147,8 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
                     handler.add(notification);
                 }
 
-                if (message instanceof SyncMessage){
-                    handler.add(table.getBody());
-                    handler.add(table.getBottomToolbars());
-                }
+                handler.add(table.getBody());
+                handler.add(table.getBottomToolbars());
             }
         });
 
