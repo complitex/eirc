@@ -2,13 +2,17 @@ package ru.complitex.sync.page;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.common.NotificationPanel;
+import de.agilecoders.wicket.core.markup.html.bootstrap.components.progress.ProgressBar;
+import de.agilecoders.wicket.core.markup.html.bootstrap.utilities.BackgroundColorBehavior;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.spinner.SpinnerAjaxButton;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.ws.WebSocketSettings;
 import org.apache.wicket.protocol.ws.api.WebSocketBehavior;
@@ -46,6 +50,8 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
     private final Class<T> domainClass;
 
     private final ISyncListener syncListener;
+
+    private ProgressBar progress;
 
     public SyncPage(Class<T> domainClass) {
         this.domainClass = domainClass;
@@ -98,8 +104,19 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
         Form<Sync> form = new Form<>("form");
         container.add(form);
 
-        Table<Sync> table = new Table<>("table", provider, columns, 10, "syncPage" + domain.getEntityName());
+        Table<Sync> table = new Table<>("table", provider, columns, 10, "syncPage" + domain.getEntityName()){
+            @Override
+            protected Component newPagingComponent(String componentId) {
+                ProgressBar progress = new ProgressBar(componentId, Model.of(50), BackgroundColorBehavior.Color.Primary, true);
+
+                progress.setOutputMarkupId(true);
+                progress.setVisible(false);
+
+                return SyncPage.this.progress = progress;
+            }
+        };
         form.add(table);
+
 
         form.add(new SpinnerAjaxButton("load", new ResourceModel("load"), Buttons.Type.Outline_Primary) {
             @Override
@@ -139,42 +156,59 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
 
         syncListener = new ISyncListener() {
             private long time = 0;
+            private int val = 0;
 
             @Override
             public void onLoading() {
+                progress.setVisible(true);
+                progress.value(0);
+
                 sendMessage(new SyncInfoMessage(getString("info_loading")));
             }
 
             @Override
-            public void onLoad() {
-                if (System.currentTimeMillis() - time > 100){
+            public void onLoad(Integer value) {
+                if (System.currentTimeMillis() - time > 100 && value != val){
+                    progress.value(value);
+
                     sendMessage(new SyncMessage());
 
                     time = System.currentTimeMillis();
+                    val = value;
                 }
             }
 
             @Override
             public void onLoaded() {
+                progress.setVisible(false);
+
                 sendMessage(new SyncInfoMessage(getString("info_loaded")));
             }
 
             @Override
             public void onSyncing() {
+                progress.setVisible(true);
+                progress.value(0);
+
                 sendMessage(new SyncInfoMessage(getString("info_syncing")));
             }
 
             @Override
-            public void onSync() {
-                if (System.currentTimeMillis() - time > 100){
+            public void onSync(Integer value) {
+                if (System.currentTimeMillis() - time > 100 && value != val){
+                    progress.value(value);
+
                     sendMessage(new SyncMessage());
 
                     time = System.currentTimeMillis();
+                    val = value;
                 }
             }
 
             @Override
             public void onSynced() {
+                progress.setVisible(false);
+
                 sendMessage(new SyncInfoMessage(getString("info_synced")));
             }
 
@@ -186,10 +220,14 @@ public abstract class SyncPage<T extends Domain<T>> extends BasePage {
     }
 
     protected void sendMessage(IWebSocketPushMessage message){
-        WebSocketSettings.Holder.get(getApplication())
-                .getConnectionRegistry()
-                .getConnection(getApplication(), getSession().getId(), new PageIdKey(getPageId()))
-                .sendMessage(message);
+        try {
+            WebSocketSettings.Holder.get(getApplication())
+                    .getConnectionRegistry()
+                    .getConnection(getApplication(), getSession().getId(), new PageIdKey(getPageId()))
+                    .sendMessage(message);
+        } catch (Exception e) {
+            log.error("error sendMessage ", e);
+        }
     }
 
     public Class<T> getDomainClass() {

@@ -10,6 +10,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.complitex.address.page.*;
 import ru.complitex.address.page.matching.*;
 import ru.complitex.address.page.sync.*;
@@ -29,6 +31,8 @@ import ru.complitex.eirc.security.EircRoles;
  */
 @AuthorizeInstantiation(EircRoles.AUTHORIZED)
 public abstract class BasePage extends WebPage {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     public BasePage() {
         add(new BookmarkablePageLink<>("home", HomePage.class));
 

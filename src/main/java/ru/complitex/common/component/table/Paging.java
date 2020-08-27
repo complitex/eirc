@@ -3,6 +3,7 @@ package ru.complitex.common.component.table;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navigation.ajax.BootstrapAjaxPagingNavigator;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.form.select.BootstrapSelect;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -10,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractTool
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigatorLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -26,11 +28,14 @@ public class Paging extends AbstractToolbar {
     public Paging(DataTable<?, ?> table, String tableKey) {
         super(table);
 
-        WebMarkupContainer span = new WebMarkupContainer("span");
-        add(span);
-        span.add(AttributeModifier.replace("colspan", () -> String.valueOf(table.getColumns().size())));
-        span.add(new NavigatorLabel("label", table));
-        span.add(new BootstrapAjaxPagingNavigator("navigator", table));
+        WebMarkupContainer container = new WebMarkupContainer("container");
+
+        add(container);
+
+        container.add(newComponent("component"));
+        container.add(AttributeModifier.replace("colspan", () -> String.valueOf(table.getColumns().size())));
+        container.add(new NavigatorLabel("label", table));
+        container.add(new BootstrapAjaxPagingNavigator("navigator", table));
 
         HashMap<String, Long> map = getSession().getMetaData(ITEMS_PER_PAGE);
 
@@ -52,7 +57,7 @@ public class Paging extends AbstractToolbar {
 
         IModel<Long> itemsPerPageModel = Model.of(itemsPerPages);
 
-        span.add(new BootstrapSelect<>("size", itemsPerPageModel, Arrays.asList(5L, 10L, 15L, 20L, 25L, 50L, 100L))
+        container.add(new BootstrapSelect<>("size", itemsPerPageModel, Arrays.asList(5L, 10L, 15L, 20L, 25L, 50L, 100L))
                 .add(new OnChangeAjaxBehavior() {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
@@ -64,4 +69,9 @@ public class Paging extends AbstractToolbar {
                     }
                 }));
     }
+
+    protected Component newComponent(String componentId){
+        return new EmptyPanel(componentId);
+    }
+
 }

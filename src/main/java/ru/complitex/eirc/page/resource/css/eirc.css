@@ -1,5 +1,5 @@
 .login {
-    max-width: 277px;
+    max-width: 250px;
     margin: auto;
 }
 
@@ -188,4 +188,8 @@ form label[required=required]:after {
 
 .wicket_orderUp {
     text-decoration: underline;
+}
+
+.pagination{
+    margin: 0;
 }

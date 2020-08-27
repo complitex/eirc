@@ -2,11 +2,18 @@
 
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
     <tr class="navigation">
-        <td wicket:id="span">
-            <div class="float-right" style="display: flex">
-                <span wicket:id="label"></span>
-                <ul wicket:id="navigator"></ul>
-                <select wicket:id="size"></select>
+        <td wicket:id="container">
+            <div class="row">
+                <div class="col m-auto">
+                    <div wicket:id="component"></div>
+                </div>
+                <div class="col-auto">
+                <div class="d-inline-flex">
+                    <span wicket:id="label"></span>
+                    <ul wicket:id="navigator"></ul>
+                    <select wicket:id="size"></select>
+                </div>
+                </div>
             </div>
         </td>
     </tr>

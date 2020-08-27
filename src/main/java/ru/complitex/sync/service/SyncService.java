@@ -97,15 +97,19 @@ public abstract class SyncService {
         Cursor<Sync> cursor = getHandler(entityId).getCursorSyncs(parentSync, date);
 
         if (cursor.getData() != null) {
-            cursor.getData().forEach(s -> {
+            List<Sync> data = cursor.getData();
+
+            for (int i = 0, dataSize = data.size(); i < dataSize; i++) {
+                Sync s = data.get(i);
+
                 s.setStatus(SyncStatus.LOADED);
                 s.setEntityId(entityId);
                 s.setDate(date);
 
                 syncMapper.insert(s);
 
-                syncListener.onLoad();
-            });
+                syncListener.onLoad(100*i/dataSize);
+            }
         }
     }
 
@@ -154,24 +158,27 @@ public abstract class SyncService {
 
             @SuppressWarnings("unchecked") ISyncHandler<T> handler = (ISyncHandler<T>) getHandler(entity.getId());
 
+            List<Sync> syncs = getSyncs(entity.getId(), SyncStatus.LOADED, null);
 
-            getSyncs(entity.getId(), SyncStatus.LOADED, null).forEach(s -> {
+            for (int i = 0, syncsSize = syncs.size(); i < syncsSize; i++) {
+                Sync s = syncs.get(i);
+
                 try {
-                    if (canceling.get()){
-                        return;
+                    if (canceling.get()) {
+                        continue;
                     }
 
                     List<Matching> matchingList = matchingMapper.getMatchingListByNumber(entity.getName(),
                             s.getExternalId(), companyId);
 
-                    if (!matchingList.isEmpty()){
-                        if (matchingList.size() > 1){
+                    if (!matchingList.isEmpty()) {
+                        if (matchingList.size() > 1) {
                             log.warn("sync: matchingList > 1 {}", matchingList); //todo
                         }
 
                         Matching matching = matchingList.get(0);
 
-                        if (!handler.isMatch(matching, s, companyId)){
+                        if (!handler.isMatch(matching, s, companyId)) {
                             handler.updateMatching(matching, s, companyId);
 
                             log.info("sync: update matching name {}", matching);
@@ -179,26 +186,26 @@ public abstract class SyncService {
 
                         T domain = domainService.getDomain(domainClass, matching.getObjectId());
 
-                        if (handler.isMatch(domain, s, companyId)){
-                            if (domain.getStatus() != Status.ACTIVE){
+                        if (handler.isMatch(domain, s, companyId)) {
+                            if (domain.getStatus() != Status.ACTIVE) {
                                 domainService.enable(domain);
 
                                 log.info("sync: enable domain object {}", matching);
                             }
 
                             s.setStatus(SyncStatus.SYNCHRONIZED);
-                        }else{
+                        } else {
                             List<Matching> objectMatchingList = matchingMapper.getMatchingListByObjectId(entity.getName(),
-                                    domain.getObjectId(),  companyId);
+                                    domain.getObjectId(), companyId);
 
-                            if (objectMatchingList.size() == 1 && objectMatchingList.get(0).getId().equals(matching.getId())){
+                            if (objectMatchingList.size() == 1 && objectMatchingList.get(0).getId().equals(matching.getId())) {
                                 handler.updateNames(domain, s, companyId);
                                 domainService.update(domain);
 
                                 log.info("sync: update domain object {}", domain);
 
                                 s.setStatus(SyncStatus.SYNCHRONIZED);
-                            }else {
+                            } else {
                                 s.setStatus(SyncStatus.DELAYED);
 
                                 log.info("sync: delay domain object {}", domain);
@@ -206,12 +213,12 @@ public abstract class SyncService {
                         }
 
                         syncMapper.updateStatus(s);
-                    }else {
+                    } else {
                         T domain;
 
                         List<T> domains = handler.getDomains(s, companyId);
 
-                        if (!domains.isEmpty()){
+                        if (!domains.isEmpty()) {
                             domain = domains.get(0);
 
                             domains.forEach(d -> {
@@ -219,7 +226,7 @@ public abstract class SyncService {
 
                                 log.info("sync: disable domain object {}", d);
                             });
-                        }else{
+                        } else {
                             domain = Domains.newObject(domainClass);
 
                             handler.updateNames(domain, s, companyId);
@@ -243,8 +250,8 @@ public abstract class SyncService {
                     log.error("sync: error ", e);
                 }
 
-                syncListener.onSync();
-            });
+                syncListener.onSync(100*i/syncsSize);
+            }
 
 //            matchingMapper.getMatchingList(entity.getName(), companyId).forEach(m -> {
 //                if (getSyncs(entity.getId(), 0, m.getNumber()).isEmpty()){

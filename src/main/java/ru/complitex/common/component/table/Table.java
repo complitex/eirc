@@ -1,6 +1,7 @@
 package ru.complitex.common.component.table;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
@@ -70,6 +71,13 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
             public boolean isVisible() {
                 return getRowCount() > 5;
             }
+
+            @Override
+            protected Component newComponent(String componentId) {
+                Component component = newPagingComponent(componentId);
+
+                return component != null ? component : super.newComponent(componentId);
+            }
         });
     }
 
@@ -97,5 +105,9 @@ public class Table<T extends Serializable> extends DataTable<T, Sort>
     public void update(AjaxRequestTarget target) {
         target.add(getBody());
         target.add(getBottomToolbars());
+    }
+
+    protected Component newPagingComponent(String componentId){
+        return null;
     }
 }

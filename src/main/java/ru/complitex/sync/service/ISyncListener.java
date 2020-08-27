@@ -8,11 +8,11 @@ import java.io.Serializable;
  */
 public interface ISyncListener extends Serializable {
     void onLoading();
-    void onLoad();
+    void onLoad(Integer value);
     void onLoaded();
 
     void onSyncing();
-    void onSync();
+    void onSync(Integer value);
     void onSynced();
 
     void onError(Exception e);

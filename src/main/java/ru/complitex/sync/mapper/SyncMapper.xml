@@ -61,8 +61,15 @@
         </where>
     </sql>
 
+    <!--suppress SqlResolve -->
     <select id="selectSyncs" parameterType="ru.complitex.common.entity.Filter" resultMap="syncResultMap">
-        select * from "sync" <include refid="selectSyncWhere"/> order by "id" desc ${limit}
+        select * from "sync" <include refid="selectSyncWhere"/>
+
+        <if test="sort.key == 'id'">
+            order by "id" ${asc}
+        </if>
+
+        ${limit}
     </select>
 
     <select id="selectSyncsCount" parameterType="ru.complitex.common.entity.Filter" resultType="long">
