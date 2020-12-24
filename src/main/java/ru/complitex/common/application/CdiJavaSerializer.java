@@ -54,7 +54,7 @@ public class CdiJavaSerializer extends JavaSerializer {
         NonContextual.of(object).inject(object);
 
         for (Field field : object.getClass().getDeclaredFields()){
-            if (field.getType().getName().contains("ru.complitex.jedani") &&
+            if (field.getType().getName().contains("ru.complitex.eirc") &&
                     Component.class.isAssignableFrom(field.getType()) &&
                     !field.getName().contains("$")){
                 field.setAccessible(true);
@@ -74,7 +74,7 @@ public class CdiJavaSerializer extends JavaSerializer {
                 field.set(object, null);
             }
 
-            if (field.getType().getName().contains("ru.complitex.jedani") &&
+            if (field.getType().getName().contains("ru.complitex.eirc") &&
                     Component.class.isAssignableFrom(field.getType()) &&
                     !field.getName().contains("$")){
                 field.setAccessible(true);
